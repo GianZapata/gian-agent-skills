@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * ADAPTAR:
+ * - namespace App\Http\Actions\…
+ * - Form Request DTO / validated array
+ * - transacciones y side effects
+ */
+
+namespace App\Http\Actions\Entities;
+
+final class CreateEntityAction
+{
+    public function execute(array $data): \App\Models\Entity
+    {
+        return \App\Models\Entity::query()->create($data);
+    }
+}

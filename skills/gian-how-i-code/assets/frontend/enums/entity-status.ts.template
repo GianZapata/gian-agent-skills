@@ -1,0 +1,10 @@
+/**
+ * ADAPTAR:
+ * - path / export style del repo
+ * - miembros reales del dominio
+ */
+export enum EntityStatus {
+  Pending = 'pending',
+  Active = 'active',
+  Cancelled = 'cancelled',
+}

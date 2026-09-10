@@ -1,0 +1,32 @@
+/**
+ * ADAPTAR:
+ * - path del ErrorMapper / apiFetcher / SharedService del repo
+ * - tipos Entity, EntityParams, EntityOutput, EntityId
+ * - URL del recurso
+ * - firma real de SharedService/fetcher para AbortSignal (p. ej. 4º arg o config `{ signal }`)
+ * - si no hay SharedService: ver variante static + fetcher (20-variants)
+ * - eliminar este bloque ADAPTAR al materializar código productivo
+ */
+// import { SharedService } from '@/…';
+// import { apiFetcher } from '@/…';
+// import { ErrorMapper } from '@/…';
+
+export class EntityService /* extends SharedService */ {
+  static findAll = async (
+    options: /* EntityParams */ unknown,
+    signal?: AbortSignal
+  ): Promise<unknown> => {
+    // return SharedService.findAll(apiFetcher, '/entities', options, { signal });
+    throw new Error('ADAPTAR: findAll — reenviar signal al fetcher');
+  };
+
+  static create = async (dto: /* EntityOutput */ unknown): Promise<unknown> => {
+    try {
+      // return await SharedService.create(apiFetcher, '/entities', dto);
+      throw new Error('ADAPTAR: create');
+    } catch (error) {
+      // ErrorMapper.throwMappedError(error);
+      throw error;
+    }
+  };
+}

@@ -1,0 +1,27 @@
+/**
+ * ADAPTAR:
+ * - mergeQueryKeys / createQueryKeys del repo
+ * - nombre del dominio
+ * - Params tipados de la feature (no Record<string, unknown> | object)
+ * - EntityId: number (default) o string (UUID) — uno solo por feature
+ * - normalizar params vacíos para una sola forma de list key
+ * - shape real list/detail/metrics (no keys preventivas)
+ * - eliminar este bloque ADAPTAR al materializar
+ *
+ * Preferir definición estática (null) cuando no hay params.
+ * Evitar: [] as unknown as [Params] salvo evidencia de firma de la lib instalada.
+ */
+// import { createQueryKeys } from '@lukemorales/query-key-factory';
+// import type { EntityListParams } from '../interfaces/entity.interface';
+
+type EntityId = /* number | string — elegir uno según contrato API */ number;
+
+// const normalizeListParams = (params?: EntityListParams) =>
+//   params && Object.keys(params).length > 0 ? params : {};
+
+export const entityKeys = /* createQueryKeys('entities', {
+  list: (params?: EntityListParams) => ({
+    queryKey: [normalizeListParams(params)],
+  }),
+  detail: (id: EntityId) => ({ queryKey: [id] }),
+}) */ null;

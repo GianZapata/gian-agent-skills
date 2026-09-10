@@ -1,0 +1,27 @@
+/**
+ * ADAPTAR:
+ * - Entity, PaginationResponse, CustomError, EntityListParams, Service
+ * - import queries desde store central
+ * - pasar signal al service si el cliente HTTP lo soporta
+ * - placeholderData / keepPreviousData si aplica
+ * - eliminar este bloque ADAPTAR al materializar
+ */
+// import { useQuery, keepPreviousData, type UseQueryOptions } from '@tanstack/react-query';
+
+export interface EntitiesQueryProps extends /* Omit<
+  UseQueryOptions<PaginationResponse<Entity>, CustomError>,
+  'queryKey' | 'queryFn'
+> */ object {
+  options?: /* EntityListParams */ unknown;
+}
+
+export const useEntitiesQuery = ({
+  options = {},
+  ...rest
+}: EntitiesQueryProps) =>
+  /* useQuery({
+    queryKey: queries.entities.list(options).queryKey,
+    queryFn: ({ signal }) => EntityService.findAll(options, signal),
+    placeholderData: keepPreviousData,
+    ...rest,
+  }) */ null;

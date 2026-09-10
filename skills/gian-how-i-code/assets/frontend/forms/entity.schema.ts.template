@@ -1,0 +1,18 @@
+/**
+ * ADAPTAR:
+ * - schema Zod al Form Request
+ * - i18n.t para mensajes
+ * - enums de dominio
+ * - export type Dto = z.infer — NO crear interface Input paralela
+ * - eliminar este bloque ADAPTAR al materializar
+ */
+// import { z } from 'zod';
+
+export const entitySchema = /* z.object({
+  name: z.string().min(1, i18n.t('…')),
+  status: z.nativeEnum(EntityStatus),
+}) */ null;
+
+// export type EntityDto = z.infer<typeof entitySchema>;
+// export type EntityInput = z.input<typeof entitySchema>;
+// export type EntityOutput = z.output<typeof entitySchema>;

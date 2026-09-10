@@ -1,0 +1,21 @@
+{
+  "rules": {
+    "multiline_promoted_properties": {
+      "minimum_number_of_parameters": 1
+    },
+    "trailing_comma_in_multiline": {
+      "after_heredoc": true,
+      "elements": ["arguments", "array_destructuring", "arrays", "match", "parameters"]
+    },
+    "modifier_keywords": true,
+    "attribute_empty_parentheses": true,
+    "single_class_element_per_statement": {
+      "elements": ["property", "const"]
+    },
+    "class_attributes_separation": {
+      "elements": {
+        "method": "one"
+      }
+    }
+  }
+}

@@ -1,0 +1,23 @@
+/**
+ * ADAPTAR:
+ * - TData / TError / TVariables (Dto = z.infer del schema)
+ * - Service method
+ * - NO hardcodear onSuccess/onError/invalidate aquí — van en el caller vía options
+ * - eliminar este bloque ADAPTAR al materializar
+ */
+// import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
+// import type { EntityDto } from '../schemas/entity.schema';
+
+interface UseCreateEntityMutationOptions extends /* UseMutationOptions<
+  MutationResponse<Entity>,
+  CustomError,
+  EntityDto
+> */ object {}
+
+export const useCreateEntity = (
+  options?: UseCreateEntityMutationOptions,
+) =>
+  /* useMutation({
+    mutationFn: EntityService.create,
+    ...options,
+  }) */ null;

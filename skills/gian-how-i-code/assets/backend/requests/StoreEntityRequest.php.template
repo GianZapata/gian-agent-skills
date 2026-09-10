@@ -1,0 +1,41 @@
+<?php
+
+// ADAPTAR: rules Store vs Update; authorize; namespace.
+// ADAPTAR: messages() y attributes() según cobertura semántica (05).
+// Template-only ADAPTAR markers MUST be resolved or removed when instantiated.
+// They MUST NOT survive in product code.
+
+namespace App\Http\Requests\Entities;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+final class StoreEntityRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'name' => ['required', 'string', 'max:255'],
+        ];
+    }
+
+    // ADAPTAR: entradas específicas solo si el mensaje resultante no es human-facing.
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Ingresa el nombre',
+        ];
+    }
+
+    // ADAPTAR: solo si :attribute llegaría al usuario o el copy lo necesita.
+    public function attributes(): array
+    {
+        return [
+            'name' => 'nombre',
+        ];
+    }
+}

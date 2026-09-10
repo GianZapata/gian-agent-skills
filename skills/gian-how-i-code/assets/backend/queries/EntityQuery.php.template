@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * ADAPTAR:
+ * - Spatie QueryBuilder AllowedInclude/Filter/Sort
+ * - withCount forzado si se filtra/ordena
+ * - namespace
+ */
+
+namespace App\Queries;
+
+use Spatie\QueryBuilder\QueryBuilder;
+
+final class EntityQuery
+{
+    public static function make(): QueryBuilder
+    {
+        return QueryBuilder::for(\App\Models\Entity::class)
+            ->allowedIncludes([])
+            ->allowedFilters([])
+            ->allowedSorts([]);
+    }
+}
