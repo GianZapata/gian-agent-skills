@@ -9,7 +9,7 @@ Cargar cuando: arranque humano, modo Consultar, orientación general.
 | 03 | `03-feature-mold.md` | Molde de carpetas FE |
 | 04 | `04-frontend-architecture.md` | Arquitectura FE, styling MUI+Tailwind |
 | 05 | `05-backend-mold.md` | Molde Laravel; FormRequest `rules`/`messages`/`attributes` |
-| 06 | `06-api-contracts.md` | Contratos HTTP |
+| 06 | `06-api-contracts.md` | Contratos HTTP; whenLoaded → Resource ctor |
 | 07 | `07-types-enums-statuses.md` | Enums, ownership, membresía includes / in_array |
 | 08 | `08-display-conventions.md` | Display inline **o** Record en helper; no display.config |
 | 09 | `09-dialogs-drawers.md` | Diálogos / drawers; `{isOpen && user && (` |

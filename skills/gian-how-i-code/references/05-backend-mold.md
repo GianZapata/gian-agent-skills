@@ -13,7 +13,7 @@ Lectura compleja → Query (Spatie QueryBuilder) → Resource
 
 - Actions: mutaciones, transacciones, dominio
 - Queries: includes, filters, sorts, counts
-- Resources: serializan; **no** cargan relaciones ni disparan queries
+- Resources: serializan; **no** cargan relaciones ni disparan queries; `whenLoaded` al ctor del Resource (`06`)
 - Services Laravel: solo integraciones externas
 
 ## Query table aliases

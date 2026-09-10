@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.11 — 2026-09-10
+
+- Resources (`06`): `new XResource($this->whenLoaded('rel'))` y `::collection($this->whenLoaded('rels'))`. Prohibido callback `whenLoaded(..., fn() => new X($this->rel))` salvo lógica extra.
+- `05` apunta a `06`. Evals: `impl-whenloaded-resource-ctor`, `audit-whenloaded-callback`.
+
 ## 1.2.10 — 2026-09-09
 
 - Membresía HARD (`07`): 2+ `===`/`!==` del mismo identificador contra un conjunto cerrado → `.includes()` (TS) / `in_array(..., true)` (PHP). Una sola comparación sigue `===`.

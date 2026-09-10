@@ -20,6 +20,7 @@ final class EntityResource extends JsonResource
         return [
             'id' => $this->id,
             // 'status' => $this->status,
+            // 'city' => new CityResource($this->whenLoaded('city')),
             // 'items' => ItemResource::collection($this->whenLoaded('items')),
         ];
     }

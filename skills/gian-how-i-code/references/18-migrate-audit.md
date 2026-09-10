@@ -85,7 +85,7 @@ Contrato `19`. Costos/riesgos reales — no “ninguno”; no “garantiza CI”
 |-------|----------|
 | Alta | N+1, status update a mano, contrato inventado, diálogo rompe datos, falta dayjs / `new Date` sistemático de negocio, falta ErrorMapper/apiFetcher cuando el molde lo exige |
 | Media | Display helper (labels/colores), `*Helper` cajón multi-dominio, función local que duplica `DateHelper`/`NumberHelper`/util compartido, keys sueltas, props aplanadas, typed strings vs enum `APP_OWNED`, shadow type `LIBRARY_OWNED`, `useMemo` ceremonial (`23` A; no C/E), constantes `*_SX` / `get*Sx` locales, `sx` de layout/spacing/sizing ordinario, concat/template de `className` condicional, `useTheme()` ceremonial (solo para `sx`), mutation con `onSuccess`/`onError` fijos en el hook, `interface XxxInput` duplicando Zod, query sin `*QueryProps`, dayjs crudo pese a módulo configurado, QueryClient por feature, archivo hook kebab/snake `use-*` sistemático (`04`), cadena `=== \|\| ===` de conjunto cerrado sistemático (`07`) |
-| Baja | Naming `handle*`, `open` vs `isOpen`, `entity=`/`data=` vs prop por tipo (`09`), `=== \|\| ===` vs includes/`in_array` aislado (`07`), archivo hook `use-*`/`use_*` aislado (`04`), copy Title Case, nit de carpeta, mutation sin interface `UseMutationOptions` |
+| Baja | Naming `handle*`, `open` vs `isOpen`, `entity=`/`data=` vs prop por tipo (`09`), `=== \|\| ===` vs includes/`in_array` aislado (`07`), callback `whenLoaded` innecesario (`06`), archivo hook `use-*`/`use_*` aislado (`04`), copy Title Case, nit de carpeta, mutation sin interface `UseMutationOptions` |
 
 Considerar impacto, frecuencia y si el patrón es **sistemático** — no bajar todo a Baja.
 

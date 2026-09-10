@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.2.10"
+  version: "1.2.11"
 ---
 
 # gian-how-i-code
@@ -34,6 +34,7 @@ No usar como única skill para: explicación genérica de React/Laravel sin apli
 - Comentarios `ADAPTAR` solo en templates de `assets/`; eliminarlos al materializar código productivo. Template-only `ADAPTAR` MUST resolverse o quitarse al instanciar; MUST NOT sobrevivir en código de producto.
 - Validación user-facing: no dar por terminado un FormRequest solo con `rules()`; revisar `messages()` y, si hace falta, `attributes()`; copy de dominio; cobertura semántica regla→mensaje; 422→campos en la UI existente — ver `05`/`10`/`14`.
 - Display FE: Record de enum en `<entity>.helper.ts` con `i18n.t()`; if-chain ad-hoc en el componente con `t()`. Prohibido `*.display.config.ts`, inyectar `TFunction`, `labelKey` diferido — ver `08`/`15`.
+- Resource: `new XResource($this->whenLoaded('rel'))` / `::collection($this->whenLoaded('rels'))`; no callback `fn() => new X($this->rel)` salvo lógica extra — ver `06`.
 
 ## Autoridad y precedencia
 
@@ -111,7 +112,7 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 | Laravel Action/Query/Resource/Request | `05-backend-mold`, `06-api-contracts` |
 | Joins / Query Builder / SQL table aliases | `05-backend-mold` (t1/t2, st1 por nivel) |
 | Formato visual PHP (indent, braces, guards, arrays) | **no esta skill** — cargar `gian-php-style` |
-| Contratos HTTP / envelopes | `06-api-contracts` |
+| Contratos HTTP / envelopes / whenLoaded Resource | `06-api-contracts` |
 | Errores / toasts / apiFetcher | `14-errors-feedback` |
 | i18n / copy / `t()` vs `i18n.t()` | `15-i18n-copy`, `08-display-conventions`, `10-forms-validation` |
 | Central/tenant | `16-multi-tenant` |

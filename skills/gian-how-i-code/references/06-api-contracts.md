@@ -33,9 +33,28 @@ Adaptar a convención del proyecto; ser consistente (unwrap vs envelope).
 ## Resources
 
 - `whenLoaded()` → campo opcional/nullable en TS
+- Relación → Resource (HARD): pasar `whenLoaded` al constructor (Laravel omite si es `MissingValue`). Colección: `::collection($this->whenLoaded('rels'))`.
 - No inventar datos ni fallbacks mentirosos (`code ?? \`X-${id}\``)
 - No exponer `pivot` crudo; aplanar campos documentados
 - Clasificar relaciones: public_api / internal / sensitive
+
+```php
+'city' => new CityResource($this->whenLoaded('city')),
+'items' => ItemResource::collection($this->whenLoaded('items')),
+```
+
+No:
+
+```php
+'client' => $this->whenLoaded(
+    'client',
+    fn() => new ClientResource($this->client)
+),
+```
+
+KEEP el callback si hay lógica extra (recurso distinto, default, map). KEEP `whenLoaded()` sin Resource (escalar).
+
+AUDIT: FAIL. WRITE/FIX: SAFE en el Resource tocado; no barrer el repo.
 
 ## Anti-patrones
 
