@@ -1,8 +1,12 @@
 # Changelog
 
+## 1.4.2 — 2026-09-30
+
+- Vue (`25`): si hay computed, handler, `watch` o llamada al service, vive en `composables/useThing.ts`. El script inline solo declara macros, imports y la llamada. El `.vue` no acumula esa lógica.
+
 ## 1.4.1 — 2026-09-30
 
-- Vue (`25`): `<script setup lang="ts">` inline en el `.vue`. Sin `src`. Las macros no se mueven a un `.ts`. La lógica extraída va a `composables/useThing.ts`.
+- Vue (`25`): `<script setup lang="ts">` inline en el `.vue`. Sin `src`. Las macros no se mueven a un `.ts`. La lógica extraída va a `composables/useThing.ts`. La extracción pasa a ser obligatoria en 1.4.2.
 - Supersede el SFC partido `<script setup lang="ts" src="./Nombre.ts">` de 1.3.0.
 
 ## 1.4.0 — 2026-09-30

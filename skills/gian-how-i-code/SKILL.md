@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.4.1"
+  version: "1.4.2"
 ---
 
 # gian-how-i-code
@@ -26,7 +26,7 @@ No usar como única skill para: explicación genérica de React/Vue/Angular/Lara
 - Auditoría no modifica código ni manifests.
 - El conocimiento vive en esta skill; no depender de skills externas como autoridad, **excepto** formato visual PHP → `gian-php-style` y formato visual TS/TSX → `gian-react-ts-style`.
 - El lenguaje no apaga el estándar. Núcleo (nombres, helpers, enums, contratos, errores, display) vale en cualquier stack. Un capítulo de stack solo documenta el adaptador. Ver `01`.
-- Vue: SFC con lógica → `<script setup lang="ts">` inline en el `.vue`. Sin `src`. `defineProps` / `defineEmits` con `interface Props` / `interface Emits` locales. La lógica extraída va a un composable. Sin `defineComponent`. `25` es el delta; no reemplaza el núcleo.
+- Vue: `<script setup lang="ts">` inline en el `.vue`. Sin `src`. El script solo declara macros (`defineProps` / `defineEmits` / `defineModel`), imports y la llamada a `composables/useThing.ts`. Computed, handlers, `watch` y llamadas al service no se acumulan ahí. Sin `defineComponent`. `25` es el delta; no reemplaza el núcleo.
 - Tests/contratos ejecutables del repo no se rompen para imponer estilo.
 - String enum (TS) para conjuntos cerrados; PHP: backed Enum por default, o constantes `public const` en State Machine string-based (`asantibanez`) como fuente única — ver `07`. `Record<Enum, V>` en mappings FE exhaustivos. Membresía 2+: `.includes()` / `in_array(..., true)` / `in (A, B)` en Python, no `=== || ===` — ver `07`.
 - Ownership **antes** de declarar `type`/union/enum/mapping: `APP_OWNED` \| `LIBRARY_OWNED` \| `EXTERNAL_GENERATED` \| `UNION LEGÍTIMA` — ver `07`.
