@@ -93,6 +93,12 @@ That must list only the skills that belong in this repo. `skills-ref validate` i
 npx --yes skills@latest add GianZapata/gian-agent-skills --skill <name>
 ```
 
+## Agent commits
+
+If you change a skill in this repo, commit and push in the same turn. Do not ask first. Do not leave the edit uncommitted for the user to notice.
+
+That applies to `skills/<name>/` only. Do not commit `evals/`. The same order is in `AGENTS.md`.
+
 ## Update
 
 After the first `npx skills add` (so the CLI lock records provenance):

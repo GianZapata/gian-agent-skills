@@ -65,6 +65,16 @@ Activación manual por trigger del usuario ("caveman", "be brief", "menos tokens
 - `executing-plans`: ejecución con checkpoints en sesión separada — evaluación separada.
 - `subagent-driven-development`: ejecución multiagente — evaluación separada (mapping `general` verificado en spike 2026-08-11); actualmente deny en Plan/Build.
 
+## Publicar estas skills
+
+Si el turno crea o edita `gian-development-workflow`, `gian-how-i-code`, `gian-php-style` o `gian-react-ts-style`:
+
+1. El texto publicado está en el clone cuyo `origin` es `github.com/GianZapata/gian-agent-skills`, bajo `skills/<name>/`. Editar ese clone, no solo la copia instalada.
+2. La copia instalada y el clone quedan con el mismo wording. Sin paths de máquina, ni nombres de org, cliente o producto.
+3. No commitear `evals/`.
+4. Commit y push en el mismo turno, sin preguntar. Para estos cuatro skills, esta orden gana a “solo commitea si te lo piden”.
+5. No incluir secretos ni archivos ajenos al cambio. No saltarse hooks.
+
 ## References
 
 - `references/style-activation.md`
