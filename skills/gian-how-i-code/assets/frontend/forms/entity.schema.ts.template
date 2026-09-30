@@ -1,6 +1,7 @@
 /**
  * ADAPTAR:
- * - schema Zod al Form Request
+ * - schema Zod al Form Request / body HTTP; NO meter IDs de ruta
+ * - un schema nombrado por acción aunque tenga un solo campo
  * - i18n.t para mensajes
  * - enums de dominio
  * - export type Dto = z.infer — NO crear interface Input paralela

@@ -1,5 +1,48 @@
 # Changelog
 
+## 1.3.2 — 2026-09-30
+
+- `25`: ejemplos genéricos (`EntityPage`, `entityId`, `confirm` / `cancel`). Tailwind solo si el repo lo usa.
+- `20`: adaptador (otra tecnología, misma capacidad) distinto de legacy (rompe el núcleo). Alineado con `24` §3.
+- `01`: filas de backend sin capítulo nuevo. El DTO sale de un schema nombrado; Zod es ese schema en TypeScript. El nombre de archivo que impone el framework es `LIBRARY_OWNED`.
+- `19`: cliente HTTP por capacidad. En Angular, `HttpClient` + interceptor; no pedir axios.
+- `13` y la hard rule de mutaciones: el envelope `*Variables` queda en el adaptador de React Query o Vue Query. El DTO sale de un schema nombrado.
+
+## 1.3.1 — 2026-09-30
+
+- El lenguaje no apaga el estándar (`01`). Núcleo (nombres, helpers de área, enums, contratos, errores, display) vale en cualquier stack. Un capítulo de stack solo documenta el adaptador. Lo que el framework impone es `LIBRARY_OWNED`.
+- “No aplica” no cierra la responsabilidad: se cumple con el equivalente del stack, en todo modo, no solo en la auditoría de repo (`24` §3).
+- Fase 0 y `19` inventarían capacidades. En un repo que no es React, no se propone instalar TanStack Query, RHF ni MUI.
+- `20`: solo se sigue una variante de la lista. Un patrón local no reconocido es legacy, no molde.
+- `01` #4 y `04` quedan alineados con `08`: metadata del enum en el entity helper; ad-hoc inline.
+- `25` es delta. Se quita `formatMoney` como ejemplo. Un archivo por función no es un helper de área.
+
+## 1.3.0 — 2026-09-30
+
+- Vue (`25`): SFC con lógica en `<script setup lang="ts" src="./Nombre.ts">`; `interface Props` / `interface Emits` locales; `composables/` en lugar de `hooks/`. Prohibido `defineComponent` y el genérico anónimo de `defineProps`.
+- El stack React de `04`/`13` no se hereda. Naming sigue en esta skill; el formato del `.ts` hermano sigue en `gian-react-ts-style`.
+
+## 1.2.14 — 2026-09-17
+
+- Mutaciones (`13`): HARD ruta ≠ body. Service `(id, data)` o `(params, data)`; `TVariables` DTO / `{ id, data }` / `{ params, data }` / `EntityId`.
+- DTOs (`10`): schema Zod nombrado = body HTTP; prohibido anónimo e IDs de ruta en el schema.
+- UI (`09`) no serializa multipart; `FormDataHelper` shared (`23`) solo si el endpoint es multipart (Laravel `null` → `""`).
+- Templates de service/mutation/schema + helper/tests. Evals `impl-mutation-route-vs-dto`, `impl-mutation-bind-id-at-hook`, `impl-named-dto-not-anonymous`, `audit-hybrid-mutation-vars`.
+
+## 1.2.13 — 2026-09-15
+
+- Metadata nullable (`07`/`08`/`15`): `getXMeta(Enum | null | undefined)` es el resolver canónico para componentes; `unknownMeta` y `getMeta` son privados.
+- El `Record<Enum, Meta>` público se conserva para valores garantizados e iteración; los resolvers no aceptan `string`, casts ni fallbacks para ocultar drift.
+- `unknownMeta.label` usa getter cuando el copy es dinámico para no congelar el locale.
+
+## 1.2.12 — 2026-09-15
+
+- Metadata de enums (`07`/`08`): un único mapa público `static readonly Record<Enum, Meta>` en el entity helper; no métodos que reconstruyen el Record.
+- i18n (`15`): getters de `label` ejecutan `i18n.t()` al leer para que el cambio de locale no deje traducciones congeladas.
+- Consumo normal directo `Helper.statusMeta[status]` o spread al componente, sin método, `?.`, `??` ni fallback para enums cerrados.
+- Nullable, contratos externos y legacy se validan, normalizan o ramifican por separado sin debilitar el Record canónico.
+- Checklists `03`/`23` y evals de implementación/auditoría alineados con exhaustividad, locale dinámico, consumo directo y fronteras desconocidas.
+
 ## 1.2.11 — 2026-09-10
 
 - Resources (`06`): `new XResource($this->whenLoaded('rel'))` y `::collection($this->whenLoaded('rels'))`. Prohibido callback `whenLoaded(..., fn() => new X($this->rel))` salvo lógica extra.

@@ -1,0 +1,168 @@
+/**
+ * ADAPTAR:
+ * - runner: `bun:test` o `vitest` según el repo
+ * - paths de FormDataHelper y del módulo dayjs
+ * - eliminar este bloque ADAPTAR al materializar
+ */
+import { describe, expect, it } from 'bun:test';
+
+import { dayjs } from '@/lib/dayjs';
+
+import { FormDataHelper } from './form-data.helper';
+
+const entriesOf = (formData: FormData) =>
+  Array.from(formData.entries()).map(([key, value]) => [key, value]);
+
+const asFileList = (files: File[]): FileList | null => {
+  if (typeof DataTransfer === 'undefined') return null;
+  const transfer = new DataTransfer();
+  files.forEach((file) => {
+    transfer.items.add(file);
+  });
+  return transfer.files;
+};
+
+describe('FormDataHelper.toFormData', () => {
+  it('throws on non-object root', () => {
+    expect(() => FormDataHelper.toFormData(null as never)).toThrow(TypeError);
+    expect(() => FormDataHelper.toFormData([] as never)).toThrow(TypeError);
+    expect(() => FormDataHelper.toFormData(1 as never)).toThrow(TypeError);
+  });
+
+  it('omits undefined and serializes null as empty string', () => {
+    const formData = FormDataHelper.toFormData({
+      keep: 'yes',
+      skip: undefined,
+      empty: null,
+    });
+
+    expect(entriesOf(formData)).toEqual([
+      ['keep', 'yes'],
+      ['empty', ''],
+    ]);
+  });
+
+  it('appends Blob and File as binary, FileList as indexed keys', () => {
+    const blob = new Blob(['hello'], { type: 'text/plain' });
+    const file = new File(['world'], 'world.txt', { type: 'text/plain' });
+    const formData = FormDataHelper.toFormData({ blob, file });
+    const entries = Array.from(formData.entries());
+
+    expect(entries[0]?.[0]).toBe('blob');
+    expect(entries[0]?.[1]).toBe(blob);
+    expect(entries[1]?.[0]).toBe('file');
+    expect(entries[1]?.[1]).toBe(file);
+
+    const list = asFileList([
+      new File(['a'], 'a.txt'),
+      new File(['b'], 'b.txt'),
+    ]);
+    if (!list) return;
+
+    const listed = FormDataHelper.toFormData({ evidence: list });
+    const listedEntries = Array.from(listed.entries());
+    expect(listedEntries[0]?.[0]).toBe('evidence[0]');
+    expect(listedEntries[1]?.[0]).toBe('evidence[1]');
+    expect(listedEntries[0]?.[1]).toBeInstanceOf(File);
+    expect(listedEntries[1]?.[1]).toBeInstanceOf(File);
+  });
+
+  it('formats calendar Dayjs as YYYY-MM-DD and timed Dayjs as ISO', () => {
+    const calendar = dayjs('2024-01-15');
+    const timed = dayjs('2024-01-15T12:30:00.000Z');
+    const formData = FormDataHelper.toFormData({ calendar, timed });
+
+    expect(formData.get('calendar')).toBe('2024-01-15');
+    expect(formData.get('timed')).toBe(timed.toISOString());
+  });
+
+  it('throws on invalid Dayjs and invalid Date', () => {
+    expect(() =>
+      FormDataHelper.toFormData({ when: dayjs('not-a-date') }),
+    ).toThrow(TypeError);
+    expect(() =>
+      FormDataHelper.toFormData({ when: new Date('not-a-date') }),
+    ).toThrow(TypeError);
+  });
+
+  it('honors formatDayjs and formatDate options', () => {
+    const calendar = dayjs('2024-01-15');
+    const native = new Date('2024-01-15T12:30:00.000Z');
+    const formData = FormDataHelper.toFormData(
+      { calendar, native },
+      {
+        formatDayjs: (value) => value.format('DD/MM/YYYY'),
+        formatDate: (value) => String(value.getUTCFullYear()),
+      },
+    );
+
+    expect(formData.get('calendar')).toBe('15/01/2024');
+    expect(formData.get('native')).toBe('2024');
+  });
+
+  it('serializes nested objects and arrays with bracket keys', () => {
+    const formData = FormDataHelper.toFormData({
+      nested: { a: 1, b: { c: 'x' } },
+      list: ['p', 'q'],
+    });
+
+    expect(entriesOf(formData)).toEqual([
+      ['nested[a]', '1'],
+      ['nested[b][c]', 'x'],
+      ['list[0]', 'p'],
+      ['list[1]', 'q'],
+    ]);
+  });
+
+  it('booleans as 1/0, finite numbers as strings, bigint as string', () => {
+    const formData = FormDataHelper.toFormData({
+      ok: true,
+      no: false,
+      count: 3,
+      big: 10n,
+    });
+
+    expect(entriesOf(formData)).toEqual([
+      ['ok', '1'],
+      ['no', '0'],
+      ['count', '3'],
+      ['big', '10'],
+    ]);
+  });
+
+  it('throws on NaN/Infinity', () => {
+    expect(() => FormDataHelper.toFormData({ n: Number.NaN })).toThrow(
+      TypeError,
+    );
+    expect(() => FormDataHelper.toFormData({ n: Number.POSITIVE_INFINITY })).toThrow(
+      TypeError,
+    );
+  });
+
+  it('throws on circular references', () => {
+    const nested: Record<string, unknown> = { a: 1 };
+    nested.self = nested;
+    expect(() => FormDataHelper.toFormData({ nested })).toThrow(TypeError);
+  });
+
+  it('throws on Map, Set, class instance, function', () => {
+    class Foo {
+      x = 1;
+    }
+
+    expect(() => FormDataHelper.toFormData({ m: new Map() })).toThrow(/Map/);
+    expect(() => FormDataHelper.toFormData({ s: new Set() })).toThrow(/Set/);
+    expect(() => FormDataHelper.toFormData({ foo: new Foo() })).toThrow(/Foo/);
+    expect(() => FormDataHelper.toFormData({ fn: () => 1 })).toThrow(
+      TypeError,
+    );
+  });
+
+  it('does not send nested undefined keys', () => {
+    const formData = FormDataHelper.toFormData({
+      a: { b: undefined, c: 1 },
+    });
+
+    expect(entriesOf(formData)).toEqual([['a[c]', '1']]);
+  });
+});

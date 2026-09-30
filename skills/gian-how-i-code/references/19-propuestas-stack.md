@@ -57,22 +57,25 @@ No es obligatorio producir una propuesta en cada tarea. Si el stack actual ya re
 
 ## Dependencias FE canónicas esperadas
 
-Contrastar siempre con el inventario de `02`. Ausente → PROP; presente pero mal usado → Hallazgo (subutilización), no reinstalar.
+Contrastar con el inventario por capacidad de `02`. Presente pero mal usado → Hallazgo (subutilización), no reinstalar.
 
-| Capacidad | Esperado |
-|-----------|----------|
-| TanStack Query + store de keys | RQ + `query-key-factory` / `mergeQueryKeys` (o híbrido documentado) |
-| RHF + Zod + i18n + MUI/Tailwind/`cn` | Stack UI canónico (`04`, `10`, `15`) |
-| **dayjs** + módulo configurado | Fechas de negocio (`23`) |
-| `apiFetcher` + `SharedService` | HTTP único (`14`) |
-| `CustomError` + `ErrorMapper` | Errores traducidos (`14`) |
-| `QueryClient` central | Defaults compartidos (`13`) |
+El adaptador React de abajo es el esperado **cuando el repo es React**. En Vue, Angular u otro stack, la ausencia de TanStack Query, RHF, MUI o `cn()` no es PROP de instalarlos. Se pide el equivalente de esa capacidad en el stack (`01`). dayjs y el mapper de errores sí se esperan en cualquier cliente. El cliente HTTP es uno compartido más `SharedService`: `apiFetcher` donde el repo lo elige. En Angular es `HttpClient` más un interceptor, porque el framework lo impone (`LIBRARY_OWNED`). No se pide axios ahí.
+
+| Capacidad | Adaptador React |
+|-----------|-----------------|
+| Server state + keys | TanStack Query + `query-key-factory` / `mergeQueryKeys` (o híbrido documentado) |
+| Forms + UI | RHF + Zod + i18n + MUI/Tailwind/`cn` (`04`, `10`, `15`) |
+| **dayjs** + módulo configurado | Fechas de negocio (`23`). Cualquier cliente |
+| Cliente HTTP compartido + `SharedService` | HTTP único (`14`). `apiFetcher` en el adaptador React. En Angular, `HttpClient` + interceptor; no pedir axios |
+| `CustomError` + `ErrorMapper` | Errores traducidos (`14`). Cualquier cliente |
+| `QueryClient` central | Defaults compartidos (`13`). Solo si el server state es React Query |
 | Realtime (Echo/Reverb) | **Solo si** el producto lo necesita — no stack mínimo |
 
-- dayjs ausente → PROP **Librería faltante** (Alta) + hallazgo `new Date` si aplica.
+- dayjs ausente en un cliente → PROP **Librería faltante** (Alta) + hallazgo `new Date` si aplica.
 - dayjs presente, imports crudos / sin módulo → PROP **Abstracción interna** o Hallazgo.
-- RQ sin store de keys / invalidaciones con arrays sueltos → subutilización o abstracción interna.
+- React Query sin store de keys / invalidaciones con arrays sueltos → subutilización o abstracción interna.
 - axios ad-hoc / sin ErrorMapper → Hallazgo + PROP de abstracción.
+- Repo Vue/Angular sin React Query, RHF o MUI → no PROP. Cumplir la responsabilidad con el equivalente del stack.
 ## Contrato PROP-NNN
 
 ```markdown
@@ -112,18 +115,19 @@ Contrastar siempre con el inventario de `02`. Ausente → PROP; presente pero ma
 - El repo ya resuelve bien con SharedService + Query.
 - Sustituir MUI por otra UI lib por preferencia.
 - Instalar “la última moda” sin evidencia de dolor.
+- Instalar TanStack Query, RHF o MUI en un repo que no es React. Cumplir la capacidad con el equivalente del stack (`01`).
 
 ## Preferencias canónicas (sin pin de versión)
 
 | Caso | Preferir |
 |------|----------|
-| Server state | TanStack Query |
+| Server state (React) | TanStack Query |
 | Query key factory | `@lukemorales/query-key-factory` si ya es el patrón; si no, evaluar |
-| Lint Query | `@tanstack/eslint-plugin-query` con evidencia |
-| Forms | RHF + Zod |
+| Lint Query | `@tanstack/eslint-plugin-query` con evidencia, solo si hay React Query |
+| Forms (React) | RHF + Zod. En otro stack, el form del stack. Un schema nombrado es la fuente del DTO; Zod es ese schema en TypeScript |
 | Query HTTP Laravel | Spatie QueryBuilder |
 | SM | paquete de state machines ya en repo o el canónico del estándar |
-| UI | MUI + Tailwind |
+| UI (React) | MUI + Tailwind |
 | Tenancy multi-DB | stancl/tenancy si el producto lo requiere |
 
 Si el repo ya eligió otra lib equivalente → variante, no reinstall.

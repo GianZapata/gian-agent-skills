@@ -49,7 +49,7 @@ Matriz:
 | Regla del molde | Aplica | No aplica | Adaptación equivalente | Evidencia |
 |-----------------|--------|-----------|------------------------|-----------|
 
-“No aplica” no cierra el tema: definir responsabilidad equivalente (p. ej. HTTP service → Firestore service; AbortSignal → unsubscribe; ErrorMapper HTTP → clasificación Firebase).
+“No aplica” no cierra el tema: definir responsabilidad equivalente (p. ej. HTTP service → Firestore service; AbortSignal → unsubscribe; ErrorMapper HTTP → clasificación Firebase). La matriz de núcleo y adaptador vive en `01` y aplica en todo modo, no solo en este protocolo.
 
 ## 4. Barrido obligatorio (textual + estructural + símbolos)
 
@@ -76,7 +76,7 @@ Categorías mínimas a cubrir (contrastar con references vigentes):
 La verdad es cada `references/NN`. Ejemplos de búsqueda:
 
 - Fechas: `new Date(`, `Date.now(`, `import dayjs from`, `@/lib/dayjs`, `formatDate`, `toLocaleDateString`
-- Mutations: `useMutation`, `UseMutationOptions`, `mutationFn`, `onSuccess`, `invalidateQueries`
+- Mutations: `useMutation`, `UseMutationOptions`, `mutationFn`, `onSuccess`, `invalidateQueries`, tipos híbridos (`contractId` junto a `body`), `new FormData(`
 - Queries: `useQuery`, `UseQueryOptions`, `queryKey`, `onSnapshot`, `getDocs`
 - Forms: `useForm`, `z.object`, `z.infer`, `interface *Input`, `zodResolver`
 - Display: `ColorHelper`, `getPrimaryLabel`, ternarios anidados

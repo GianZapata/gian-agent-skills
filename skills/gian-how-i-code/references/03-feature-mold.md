@@ -17,6 +17,8 @@ features/<feature>/
 
 Custom 1:1: `useThing.ts` (nunca `use-thing.ts`). Barrels no se renombran a `useEntitiesQuery.ts`. Naming: `04`.
 
+Vue: `composables/` reemplaza `hooks/`. SFC, `Props` / `Emits` y lo que no se copia de un repo de referencia: `25`.
+
 Ver `23-ts-style-helpers` para estilo TS, dayjs, `cn()`, y cuándo utils vs helpers.
 
 Query keys: store central del proyecto (p. ej. `lib/query-keys.ts`), no `*.keys.ts` sueltos por feature salvo variante documentada.
@@ -26,10 +28,10 @@ Query keys: store central del proyecto (p. ej. `lib/query-keys.ts`), no `*.keys.
 | Pieza | Rol |
 |-------|-----|
 | interface | Resource JSON de respuesta (+ params de listado si aplica) |
-| schema Zod | Input/Output mutación (Form Request); tipos con `z.infer` — no `interface Input` paralela |
+| schema Zod | Input/Output mutación (Form Request / body HTTP); tipos con `z.infer` — no `interface Input` paralela; IDs de ruta fuera (`13`) |
 | service | Extiende SharedService (default); static + ErrorMapper |
 | queries | `*QueryProps` = `Omit<UseQueryOptions…, 'queryKey' \| 'queryFn'>` |
-| mutations | `Use*MutationOptions` extends `UseMutationOptions<…>`; hook solo `mutationFn` + `...options` |
+| mutations | `Use*MutationOptions` extends `UseMutationOptions<…>`; hook solo `mutationFn` + `...options`; ruta ≠ body (`13`) |
 | FormContainer | Datos (queries) |
 | Form | Presentational + RHF |
 | Table | Wrapper tipo CustomTable |
@@ -47,8 +49,10 @@ Query keys: store central del proyecto (p. ej. `lib/query-keys.ts`), no `*.keys.
 - [ ] Form RHF+Zod (`z.infer` DTO; sin interface Input); i18n es+en
 - [ ] 422 user-facing: mapear errores por campo con el mensaje del backend (`05`/`10`/`14`); no genérico
 - [ ] Queries `*QueryProps` + mutations solo `mutationFn` + options (`13`)
+- [ ] Mutations `13`: ruta ≠ body; TVariables DTO o envelope `*Variables`; genéricos `<TData, CustomError, TVariables>`
+- [ ] Form/dialog no arma FormData; multipart vía `FormDataHelper` en el service (`23`)
 - [ ] Diálogos §09: `{isOpen && user && (`; props `isOpen` + tipo (no `open`/`entity`/`data`); caller pasa onSuccess/onError
-- [ ] Display §08: Record de enum en el helper con `i18n.t()`; if-chain ad-hoc con `t()`; sin `*.display.config.ts` ni `TFunction` inyectado
+- [ ] Display §08: propiedad pública `static readonly Record<Enum, Meta>` en el helper; getters de label con `i18n.t()`; `getXMeta(Enum | null | undefined)` preferido cuando el consumidor recibe ausencia; acceso directo solo para enum garantizado/iteración; sin `string`, casts ni fallbacks silenciosos; if-chain ad-hoc con `t()`; sin `*.display.config.ts` ni `TFunction` inyectado
 - [ ] Estilo TS / dayjs / utils|helpers §23
 - [ ] Sin `any` en contratos
 

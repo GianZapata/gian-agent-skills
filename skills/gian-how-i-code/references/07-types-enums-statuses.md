@@ -112,7 +112,7 @@ export enum OrderStatus {
 }
 ```
 
-Mappings UI/comportamiento con `Record<Enum, Value>` obligatorio (exhaustividad). Labels/colores fuera del enum de dominio.
+Mappings UI/comportamiento con una propiedad pública `static readonly Record<Enum, Value>` obligatoria (exhaustividad y una sola construcción). Labels/colores fuera del enum de dominio.
 
 ## Membresía (HARD) — TS y PHP
 
@@ -162,21 +162,65 @@ interface StatusMeta {
 }
 
 export class OrderHelper {
-  static statusMeta(): Record<OrderStatus, StatusMeta> {
-    return {
-      [OrderStatus.Pending]: {
-        label: i18n.t('orders:status.pending'),
-        color: 'warning',
+  static readonly statusMeta: Record<OrderStatus, StatusMeta> = {
+    [OrderStatus.Pending]: {
+      get label() {
+        return i18n.t('orders:status.pending');
       },
-      // … todos los miembros
-    };
-  }
+      color: 'warning',
+    },
+    // … todos los miembros
+  };
 }
 ```
 
-Labels con `i18n.t()` al leer (`15`). No inyectar `TFunction`. No `labelKey` diferido.
+La propiedad es pública por default: no usar `private`/`protected` ni envolverla en un método. `Record<OrderStatus, StatusMeta>` hace que agregar un miembro al enum rompa el chequeo hasta completar la metadata. Unir en este mapa todos los campos relacionados (label, color, icon, etc.).
 
-Prohibido: `Record<string, …>` cuando las keys son un enum/conjunto cerrado conocido; índices abiertos; fallback silencioso para miembros conocidos; partir metadata fuertemente relacionada en `STATUS_COLOR` + `STATUS_LABEL` / `humanStatusesKeys` + `statusChipColors` + `statusIcons` paralelos.
+El getter de cada `label` ejecuta `i18n.t()` al leer y evita congelar el locale al inicializar la clase (`15`). No inyectar `TFunction`, no usar `labelKey` diferido y no asignar `label: i18n.t(...)` directamente durante la inicialización.
+
+Consumo de metadata:
+
+```ts
+const meta = OrderHelper.getStatusMeta(status);
+
+<Chip {...OrderHelper.getStatusMeta(status)} />
+```
+
+Cuando el valor ya está garantizado como `OrderStatus` o se necesita iterar el catálogo, se permite el acceso directo:
+
+```ts
+const meta = OrderHelper.statusMeta[status];
+```
+
+El resolver canónico para ausencia legítima vive en el mismo helper:
+
+```ts
+private static readonly unknownMeta: StatusMeta = {
+  color: 'default',
+  get label() {
+    return i18n.t('common:unknown');
+  },
+};
+
+private static getMeta<T extends PropertyKey>(
+  meta: Record<T, StatusMeta>,
+  value: T | null | undefined
+): StatusMeta {
+  if (value == null) {
+    return this.unknownMeta;
+  }
+
+  return meta[value];
+}
+
+static getStatusMeta(status: OrderStatus | null | undefined): StatusMeta {
+  return this.getMeta(this.statusMeta, status);
+}
+```
+
+`getXMeta()` es la API preferida en componentes que reciben valores opcionales. Para `EXTERNAL_GENERATED` o legacy no normalizado, validar/normalizar primero o definir el resolver explícito de esa frontera; no debilitar el Record canónico.
+
+Prohibido: métodos que reconstruyen el `Record`; `Record<string, …>` cuando las keys son un enum/conjunto cerrado conocido; índices abiertos; `string` o casts para ampliar/ocultar el contrato; `?? unknownMeta` en cada consumidor; traducciones congeladas al inicializar la clase; partir metadata fuertemente relacionada en `STATUS_COLOR` + `STATUS_LABEL` / `humanStatusesKeys` + `statusChipColors` + `statusIcons` paralelos.
 
 Los campos de meta reutilizan tipos `LIBRARY_OWNED` cuando corresponda (`ChipProps['color']`, no union de tonos).
 
@@ -272,6 +316,9 @@ No mantener a la vez: constantes SM + backed Enum + strings literales para los *
 | Shadow `StatusTone` / `tone` alimentando `Chip.color` | Mejora / Mala práctica |
 | `enum StatusTone` sustituyendo el shadow | Mala práctica (el shadow debe desaparecer) |
 | `Record<string, …>` con keys de enum conocido | Medio |
+| Método que reconstruye el `Record` / propiedad no `static readonly` | Medio |
+| `label: i18n.t(...)` inicializado una vez (locale congelado) | Medio |
+| Lookup normal con `?.` / `??` para enum cerrado | Medio |
 | `STATUS_COLOR` + `STATUS_LABEL` / `labelKey` paralelos | Mejora |
 | `*.display.config.ts` o `getXConfig(t: TFunction)` | Medio |
 | Array MUI sin `satisfies` el tipo de la lib | Baja / Mejora |

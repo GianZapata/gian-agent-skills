@@ -1,6 +1,11 @@
 # 10 — Forms y validación
 
-Cargar cuando: formularios, RHF, Zod, campos condicionales, UX de captura (patrón, no audit A/B+/C legacy).
+Cargar cuando: formularios, RHF, Zod, DTOs de mutation (body HTTP), campos condicionales, UX de captura (patrón, no audit A/B+/C legacy).
+
+## Alcance
+
+- **Núcleo:** el body sale del schema Zod nombrado (`z.infer`); prohibido `interface *Input` y el payload anónimo; los IDs de ruta no entran al schema; fuera del componente, `i18n.t()`; 422 por campo con el mensaje del backend.
+- **Adaptador React:** RHF, `Controller`, `useFieldArray`, `zodResolver`, Container/Form. En otro stack, el form de ese stack enlaza el mismo schema.
 
 ## Stack
 
@@ -8,11 +13,27 @@ RHF + Zod + zodResolver. Schemas fuera del componente. Tipos con `z.infer` / `z.
 
 ## Input / DTO (regla)
 
-- El shape de form y de `TVariables` de mutation sale del **schema Zod** (`schemas/`).
-- Exportar el tipo: `export type EntityDto = z.infer<typeof entitySchema>` (o `z.input` / `z.output` según el caso).
-- Ese tipo alimenta `UseMutationOptions<…, EntityDto>` (`13`).
-- **Prohibido** crear `interface EntityCreateInput` / `interface XxxDto` a mano que duplique el schema.
+- El shape de form y el **body HTTP** salen del **schema Zod nombrado** (`schemas/`).
+- Exportar: `export type EntityDto = z.infer<typeof entitySchema>` (o `z.input` / `z.output`).
+- Ese tipo es `data` en el service y, cuando aplica, `TVariables` o `TVariables['data']` (`13`).
+- **Prohibido** `interface EntityCreateInput` / `interface XxxDto` a mano que duplique el schema.
+- **Prohibido** payloads anónimos (`{ body: string }`, `{ contract_template_id: number }`) como contrato de mutation. Aunque sea un campo: schema + `type XxxDto`.
+- El schema **no** incluye IDs de ruta (`contractId`, `documentId`, `id` de URL). Esos van en la firma / envelope (`13`).
 - `interfaces/` = Resource/JSON de **respuesta** (y params de listado si aplica), no input de form.
+
+```ts
+export const updateNestedSchema = z.object({
+  body: z.string().min(1, i18n.t('…')),
+});
+
+export type UpdateNestedDto = z.infer<typeof updateNestedSchema>;
+
+export const prepareChildSchema = z.object({
+  template_id: z.number().int().positive(i18n.t('…')),
+});
+
+export type PrepareChildDto = z.infer<typeof prepareChildSchema>;
+```
 
 ## Patrones
 

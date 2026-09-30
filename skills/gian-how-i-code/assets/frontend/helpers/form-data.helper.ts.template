@@ -1,0 +1,152 @@
+/**
+ * ADAPTAR:
+ * - path del módulo dayjs del repo (`@/lib/dayjs` o equivalente)
+ * - materializar en `src/shared/helpers/form-data.helper.ts` (una vez; no por feature)
+ * - tests: `form-data.helper.test.ts.template`
+ * - eliminar este bloque ADAPTAR al materializar código productivo
+ */
+import type { Dayjs } from 'dayjs';
+
+import { dayjs } from '@/lib/dayjs';
+
+export interface FormDataHelperOptions {
+  formatDayjs?: (date: Dayjs) => string;
+  formatDate?: (date: Date) => string;
+}
+
+const isPlainObject = (value: unknown): value is Record<string, unknown> => {
+  if (value === null || typeof value !== 'object') return false;
+  const proto = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
+};
+
+export class FormDataHelper {
+  static toFormData<T extends object>(
+    data: T,
+    options?: FormDataHelperOptions,
+  ): FormData {
+    if (data === null || typeof data !== 'object' || Array.isArray(data))
+      throw new TypeError(
+        'FormDataHelper.toFormData requires a plain object as root data',
+      );
+
+    const formData = new FormData();
+    const visited = new WeakSet<object>();
+
+    const appendData = (key: string, value: unknown): void => {
+      if (value === undefined) return;
+
+      if (value === null) {
+        formData.append(key, '');
+        return;
+      }
+
+      if (typeof Blob !== 'undefined' && value instanceof Blob) {
+        formData.append(key, value);
+        return;
+      }
+
+      if (typeof FileList !== 'undefined' && value instanceof FileList) {
+        Array.from(value).forEach((file, index) => {
+          appendData(`${key}[${index}]`, file);
+        });
+        return;
+      }
+
+      if (dayjs.isDayjs(value)) {
+        if (!value.isValid())
+          throw new TypeError(`Invalid Dayjs instance at "${key}"`);
+
+        if (options?.formatDayjs) {
+          formData.append(key, options.formatDayjs(value));
+          return;
+        }
+
+        const isCalendarDate =
+          value.hour() === 0 &&
+          value.minute() === 0 &&
+          value.second() === 0 &&
+          value.millisecond() === 0;
+
+        formData.append(
+          key,
+          isCalendarDate ? value.format('YYYY-MM-DD') : value.toISOString(),
+        );
+        return;
+      }
+
+      if (value instanceof Date) {
+        if (Number.isNaN(value.getTime()))
+          throw new TypeError(`Invalid Date at "${key}"`);
+
+        if (options?.formatDate) {
+          formData.append(key, options.formatDate(value));
+          return;
+        }
+
+        formData.append(key, value.toISOString());
+        return;
+      }
+
+      if (Array.isArray(value)) {
+        value.forEach((item, index) => {
+          appendData(`${key}[${index}]`, item);
+        });
+        return;
+      }
+
+      if (typeof value === 'boolean') {
+        formData.append(key, value ? '1' : '0');
+        return;
+      }
+
+      if (typeof value === 'number') {
+        if (!Number.isFinite(value))
+          throw new TypeError(`Invalid number at "${key}": ${String(value)}`);
+
+        formData.append(key, String(value));
+        return;
+      }
+
+      if (typeof value === 'bigint') {
+        formData.append(key, value.toString());
+        return;
+      }
+
+      if (typeof value === 'string') {
+        formData.append(key, value);
+        return;
+      }
+
+      if (isPlainObject(value)) {
+        if (visited.has(value))
+          throw new TypeError(`Circular reference detected at "${key}"`);
+
+        visited.add(value);
+        try {
+          Object.entries(value).forEach(([subKey, subValue]) => {
+            appendData(`${key}[${subKey}]`, subValue);
+          });
+        } finally {
+          visited.delete(value);
+        }
+        return;
+      }
+
+      const typeName =
+        value !== null && typeof value === 'object'
+          ? (value as object).constructor?.name ?? 'object'
+          : typeof value;
+
+      throw new TypeError(
+        `Unsupported FormData value at "${key}": ${typeName}`,
+      );
+    };
+
+    Object.entries(data).forEach(([key, value]) => {
+      appendData(key, value);
+    });
+
+    return formData;
+  }
+}

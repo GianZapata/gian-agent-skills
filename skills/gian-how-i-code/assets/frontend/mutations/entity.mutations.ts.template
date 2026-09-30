@@ -1,12 +1,13 @@
 /**
  * ADAPTAR:
- * - TData / TError / TVariables (Dto = z.infer del schema)
- * - Service method
+ * - TData / TError / TVariables (Dto = z.infer del schema = body HTTP)
+ * - Service method y firmas de ruta (`13`: (id, data) | (params, data) | (id))
  * - NO hardcodear onSuccess/onError/invalidate aquí — van en el caller vía options
+ * - Envelope `*Variables` NO es un DTO; no aplanar IDs de ruta con el body
  * - eliminar este bloque ADAPTAR al materializar
  */
 // import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
-// import type { EntityDto } from '../schemas/entity.schema';
+// import type { EntityDto, PrepareChildDto, UpdateNestedDto } from '../schemas/entity.schema';
 
 interface UseCreateEntityMutationOptions extends /* UseMutationOptions<
   MutationResponse<Entity>,
@@ -17,7 +18,72 @@ interface UseCreateEntityMutationOptions extends /* UseMutationOptions<
 export const useCreateEntity = (
   options?: UseCreateEntityMutationOptions,
 ) =>
-  /* useMutation({
+  /* useMutation<MutationResponse<Entity>, CustomError, EntityDto>({
     mutationFn: EntityService.create,
+    ...options,
+  }) */ null;
+
+interface UseDeleteEntityMutationOptions extends /* UseMutationOptions<
+  MutationResponse<void>,
+  CustomError,
+  number
+> */ object {}
+
+export const useDeleteEntity = (
+  options?: UseDeleteEntityMutationOptions,
+) =>
+  /* useMutation<MutationResponse<void>, CustomError, number>({
+    mutationFn: EntityService.delete,
+    ...options,
+  }) */ null;
+
+export interface PrepareChildVariables {
+  parentId: number;
+  data: /* PrepareChildDto */ unknown;
+}
+
+interface UsePrepareChildMutationOptions extends /* UseMutationOptions<
+  MutationResponse<Entity>,
+  CustomError,
+  PrepareChildVariables
+> */ object {}
+
+export const usePrepareChild = (
+  options?: UsePrepareChildMutationOptions,
+) =>
+  /* useMutation<MutationResponse<Entity>, CustomError, PrepareChildVariables>({
+    mutationFn: ({ parentId, data }) => EntityService.prepareChild(parentId, data),
+    ...options,
+  }) */ null;
+
+export interface UpdateNestedVariables {
+  params: { parentId: number; id: number };
+  data: /* UpdateNestedDto */ unknown;
+}
+
+interface UseUpdateNestedMutationOptions extends /* UseMutationOptions<
+  MutationResponse<Entity>,
+  CustomError,
+  UpdateNestedVariables
+> */ object {}
+
+export const useUpdateNested = (
+  options?: UseUpdateNestedMutationOptions,
+) =>
+  /* useMutation<MutationResponse<Entity>, CustomError, UpdateNestedVariables>({
+    mutationFn: ({ params, data }) => EntityService.updateNested(params, data),
+    ...options,
+  }) */ null;
+
+export const useRegisterPayment = (
+  paymentId: number,
+  options?: /* UseMutationOptions<
+    MutationResponse<Payment>,
+    CustomError,
+    RegisterPaymentDto
+  > */ object,
+) =>
+  /* useMutation<MutationResponse<Payment>, CustomError, RegisterPaymentDto>({
+    mutationFn: (data) => EntityService.registerPayment(paymentId, data),
     ...options,
   }) */ null;

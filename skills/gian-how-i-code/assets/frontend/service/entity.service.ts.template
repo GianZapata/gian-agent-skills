@@ -1,31 +1,76 @@
 /**
  * ADAPTAR:
- * - path del ErrorMapper / apiFetcher / SharedService del repo
- * - tipos Entity, EntityParams, EntityOutput, EntityId
+ * - path del ErrorMapper / apiFetcher / SharedService / FormDataHelper del repo
+ * - tipos Entity, EntityParams, EntityDto, EntityId
  * - URL del recurso
  * - firma real de SharedService/fetcher para AbortSignal (p. ej. 4º arg o config `{ signal }`)
+ * - mutaciones: (data) | (id, data) | (params, data) | (id) — ver `13`; nunca aplanar ruta+body
+ * - multipart: FormDataHelper.toFormData(data) en el service, no en la UI
  * - si no hay SharedService: ver variante static + fetcher (20-variants)
  * - eliminar este bloque ADAPTAR al materializar código productivo
  */
 // import { SharedService } from '@/…';
 // import { apiFetcher } from '@/…';
 // import { ErrorMapper } from '@/…';
+// import { FormDataHelper } from '@/shared/helpers/form-data.helper';
 
 export class EntityService /* extends SharedService */ {
   static findAll = async (
     options: /* EntityParams */ unknown,
-    signal?: AbortSignal
+    signal?: AbortSignal,
   ): Promise<unknown> => {
     // return SharedService.findAll(apiFetcher, '/entities', options, { signal });
     throw new Error('ADAPTAR: findAll — reenviar signal al fetcher');
   };
 
-  static create = async (dto: /* EntityOutput */ unknown): Promise<unknown> => {
+  static create = async (data: /* EntityDto */ unknown): Promise<unknown> => {
     try {
-      // return await SharedService.create(apiFetcher, '/entities', dto);
+      // return await SharedService.create(apiFetcher, '/entities', data);
       throw new Error('ADAPTAR: create');
     } catch (error) {
       // ErrorMapper.throwMappedError(error);
+      throw error;
+    }
+  };
+
+  static update = async (
+    id: /* EntityId */ number,
+    data: /* EntityDto */ unknown,
+  ): Promise<unknown> => {
+    try {
+      throw new Error('ADAPTAR: update (id, data)');
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  static updateNested = async (
+    params: { parentId: number; id: number },
+    data: /* UpdateNestedDto */ unknown,
+  ): Promise<unknown> => {
+    try {
+      throw new Error('ADAPTAR: updateNested (params, data)');
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  static registerPayment = async (
+    id: number,
+    data: /* RegisterPaymentDto */ unknown,
+  ): Promise<unknown> => {
+    try {
+      // FormDataHelper.toFormData(data) si el endpoint es multipart
+      throw new Error('ADAPTAR: registerPayment + FormDataHelper si multipart');
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  static delete = async (id: number): Promise<unknown> => {
+    try {
+      throw new Error('ADAPTAR: delete (id)');
+    } catch (error) {
       throw error;
     }
   };

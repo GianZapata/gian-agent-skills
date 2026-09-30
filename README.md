@@ -1,6 +1,6 @@
 # gian-agent-skills
 
-Personal coding skills for Laravel, React, and TypeScript agents.
+Personal coding skills. The how-i-code core applies to any stack; Laravel, React, and Vue are documented adapters.
 
 This repository is **code-only**. It does not include daily work reports, email drafts, CV, LinkedIn, or resume skills.
 
@@ -11,7 +11,7 @@ Installed copies and this clone must stay the **same wording**. Do not put host 
 | Skill | Role |
 | --- | --- |
 | `gian-development-workflow` | Process router (how to approach a task) |
-| `gian-how-i-code` | Laravel / React / TypeScript implementation policy |
+| `gian-how-i-code` | Implementation policy. The core applies to any stack; Laravel, React, and Vue are documented adapters |
 | `gian-php-style` | Visual PHP formatting (not architecture) |
 | `gian-react-ts-style` | Visual TypeScript / TSX formatting (not architecture) |
 

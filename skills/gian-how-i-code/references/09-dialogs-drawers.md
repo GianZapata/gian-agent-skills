@@ -2,6 +2,11 @@
 
 Cargar cuando: modales, drawers, overlays.
 
+## Alcance
+
+- **Núcleo:** componente aparte; el overlay es dueño de la mutación; props `isOpen` + entidad por tipo + `onClose`; prohibido `open`, `entity=` y `data=`; la UI no arma `FormData`.
+- **Adaptador React:** montaje `{isOpen && user && (`, `invalidateQueries` y el hook de mutation. En otro stack, el primitivo de overlay equivalente cumple las mismas props y la misma propiedad.
+
 ## Default canónico
 
 1. Componente aparte.
@@ -22,6 +27,7 @@ Cargar cuando: modales, drawers, overlays.
 5. Diálogo es **dueño** de form interno, mutación e `invalidateQueries`.
 6. Pasa `onSuccess` / `onError` (y demás) como **options** al hook de mutation (`13`): el hook solo fija `mutationFn`.
 7. Dato de otro endpoint (no include) → prop hermano; verificar Query allowlist.
+8. El overlay solo envía **DTO**. Prohibido `new FormData()`, formatear Dayjs/Date a string o armar multipart en el dialog. `mutate(data)` o `mutate({ params, data })` según `13`. Serialización en el service (`23`).
 
 ### Anti-patrones
 
@@ -34,6 +40,7 @@ Cargar cuando: modales, drawers, overlays.
 | Aplanar 8 props de relaciones | Pasar entidad con includes |
 | `open={…}` | `isOpen={…}` |
 | `entity={…}` / `data={…}` | Prop del tipo: `user={user}` |
+| `new FormData()` / `append` en el dialog | `mutate(data)` y el service serializa |
 
 Verificación sugerida: ≤5 props en call-site de dialog (señal de aplanado).
 

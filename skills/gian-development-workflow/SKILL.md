@@ -17,7 +17,9 @@ Router de proceso: decide CÓMO resolver la tarea (qué skills de proceso, en qu
 
 ## Activación
 
-Cargar cuando la tarea sea de desarrollo dentro del scope de `gian-how-i-code` (PHP, Laravel, React, TypeScript, features, refactors, migraciones, auditorías, contratos API, forms, queries/mutations, tablas, dialogs/drawers, arquitectura) o haya duda sobre qué proceso seguir.
+Cargar cuando la tarea sea de desarrollo dentro del scope de `gian-how-i-code` (PHP, Laravel, React, Vue, Angular, Node, TypeScript, features, refactors, migraciones, auditorías, contratos API, forms, queries/mutations, tablas, dialogs/drawers, arquitectura) o haya duda sobre qué proceso seguir.
+
+La policy entera aplica en cualquier stack. Un capítulo de stack (`25` en Vue, y los que existan después) solo agrega el delta. No copiar reglas de SFC ni de núcleo aquí.
 
 Si la tarea crea, edita, audita o corrige PHP: cargar también `gian-php-style` (formato visual; no duplicar esas reglas aquí). WRITE del hunk. **No correr Pint.** Laravel Boost `pint/core` queda anulado. Los planes no dicen “Pint al final”.
 
@@ -58,7 +60,7 @@ Este router DELEGA: no reescribe contenido de las process skills ni de la policy
 
 ## Caveman
 
-Activación manual por trigger del usuario ("caveman", "be brief", "menos tokens"). Aplica a conversación, progress updates, explicaciones y cierres. NO aplica a artefactos: implementation plans, specs, auditorías, reportes técnicos, ADRs, código, errores o temas de seguridad.
+Activación manual por trigger del usuario ("caveman", "be brief", "menos tokens"). Aplica a conversación, progress updates, explicaciones y cierres. NO aplica a artefactos: implementation plans, specs, auditorías, reportes técnicos, ADRs, código, errores o temas de seguridad. Caveman no elige herramientas; el bootstrap y el routing viven en la policy global de herramientas del host.
 
 ## Capacidades futuras (no default)
 
@@ -78,3 +80,4 @@ Si el turno crea o edita `gian-development-workflow`, `gian-how-i-code`, `gian-p
 ## References
 
 - `references/style-activation.md`
+- Tool choice follows la policy global de herramientas del host. Do not add a second routing skill.

@@ -4,7 +4,7 @@ Cargar cuando: Resource↔TS, envelopes, QueryBuilder, Form Requests, anti-patro
 
 ## Principio
 
-El frontend **refleja** el contrato; no lo adivina. Interfaces = JSON del Resource. DTOs mutación = Form Requests.
+El frontend **refleja** el contrato; no lo adivina. Interfaces = JSON del Resource. DTOs mutación = Form Requests. Path params de la ruta Laravel **no** entran al FormRequest ni al DTO FE. El DTO refleja solo el body (`10`/`13`).
 
 ## Shapes conceptuales
 

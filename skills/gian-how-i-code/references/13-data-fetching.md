@@ -1,6 +1,11 @@
 # 13 — Data fetching (TanStack React Query)
 
-Cargar cuando: services, hooks query/mutation, query keys, invalidación, opciones de caché.
+Cargar cuando: services, hooks query/mutation, query keys, invalidación, opciones de caché, IDs de ruta vs DTO, `TVariables`.
+
+## Alcance
+
+- **Núcleo:** ruta ≠ body, firmas del service `(id, data)` o `(params, data)`, y el DTO sale de un schema nombrado. No invalidar sin filtro. La UI no arma `FormData`. Vale aunque el cliente de datos no sea React Query.
+- **Adaptador React:** QueryClient, query-key-factory, `useQuery` / `useMutation`, el envelope `*Variables` (§4) y el resto de este archivo. El envelope existe en React Query o Vue Query; no es núcleo.
 
 ## 1. Responsabilidad
 
@@ -135,10 +140,72 @@ No imponer todas las opciones en cada query.
 
 ## 4. Mutations e invalidación
 
+### Separación ruta vs DTO (HARD)
+
+Los identificadores de la URL no se mezclan con el payload. Un objeto plano `{ parentId, id, body }` contamina capas: `parentId`/`id` son contexto de ruta; `body` es el DTO.
+
+**Service**
+
+| IDs de ruta | Firma |
+|-------------|--------|
+| 0 (colección, create raíz) | `(data: TDto)` |
+| 1 | `(id: EntityId, data: TDto)` |
+| 2+ | `(params: { parentId: EntityId; id: EntityId }, data: TDto)` |
+| Acción sin body (delete / cancel / send) | `(id: EntityId)` |
+
+```ts
+static updateNested = async (
+  params: { parentId: EntityId; id: EntityId },
+  data: UpdateNestedDto,
+): Promise<MutationResponse<Entity>> => {
+  try {
+    const response = await apiFetcher.patch<MutationResponse<Entity>>(
+      `/parents/${params.parentId}/entities/${params.id}`,
+      data,
+    );
+
+    return response.data;
+  } catch (error) {
+    ErrorMapper.throwMappedError(error);
+  }
+};
+
+static registerPayment = async (
+  paymentId: EntityId,
+  data: RegisterPaymentDto,
+): Promise<MutationResponse<Payment>> => {
+  try {
+    const response = await apiFetcher.post(
+      `/payments/${paymentId}/register`,
+      FormDataHelper.toFormData(data),
+    );
+
+    return response.data;
+  } catch (error) {
+    ErrorMapper.throwMappedError(error);
+  }
+};
+```
+
+`FormDataHelper` solo si el endpoint es multipart (`23`). JSON usa el objeto `data` tal cual.
+
+**`TVariables` (React Query)** — el DTO sigue saliendo de Zod (`10`). El envelope **no** es un DTO: se nombra `*Variables`, no `*Dto` / `*Input`.
+
+| Cuándo se conocen los IDs | Hook | `TVariables` | `mutate` |
+|---------------------------|------|--------------|----------|
+| Acción sin body | `useDeleteEntity()` | `EntityId` | `mutate(id)` |
+| 1 ID conocido al llamar el hook (dialog de un registro) | `useRegisterPayment(paymentId)` | `RegisterPaymentDto` | `mutate(data)` |
+| 1 ID solo en mutate-time (p. ej. tras un create) | `usePrepareChild()` | `{ parentId: EntityId; data: PrepareChildDto }` | `mutate({ parentId, data })` |
+| 2+ IDs | `useUpdateNested()` | `{ params: { parentId: EntityId; id: EntityId }; data: UpdateNestedDto }` | `mutate({ params, data })` |
+
+Prohibido: `{ parentId, id, body }` / meter path params dentro del schema Zod. `params` en el envelope **solo** si hay 2+ IDs.
+
+**Genéricos:** declarar siempre `useMutation<TData, CustomError, TVariables>`. `TError` = `CustomError` (o el del repo).
+
 ### Hook de mutation (regla)
 
 1. Crear **siempre** una interface que extiende `UseMutationOptions<TData, TError, TVariables>` (genéricos ahí).
-2. `TVariables` / DTO = tipo inferido del Zod schema (`10`), no una `interface XxxInput` paralela.
+2. El **DTO** (`data`) = `z.infer` del schema (`10`). `TVariables` es ese DTO **o** el envelope de la tabla de §4 (nunca un `*Input` paralelo ni un híbrido ruta+body).
 3. El hook recibe `options?: ThatInterface`.
 4. Dentro: **solo** `mutationFn` + `...options`. No hardcodear `onSuccess` / `onError` / invalidate en el hook.
 
@@ -146,14 +213,46 @@ No imponer todas las opciones en cada query.
 interface UseCreateEntityMutationOptions extends UseMutationOptions<
   MutationResponse<Entity>,
   CustomError,
-  EntityDto // z.infer<typeof entitySchema>
+  EntityDto
 > {}
 
 export const useCreateEntity = (
   options?: UseCreateEntityMutationOptions,
 ) =>
-  useMutation({
+  useMutation<MutationResponse<Entity>, CustomError, EntityDto>({
     mutationFn: EntityService.create,
+    ...options,
+  });
+
+export interface UpdateNestedVariables {
+  params: { parentId: EntityId; id: EntityId };
+  data: UpdateNestedDto;
+}
+
+interface UseUpdateNestedMutationOptions extends UseMutationOptions<
+  MutationResponse<Entity>,
+  CustomError,
+  UpdateNestedVariables
+> {}
+
+export const useUpdateNested = (
+  options?: UseUpdateNestedMutationOptions,
+) =>
+  useMutation<MutationResponse<Entity>, CustomError, UpdateNestedVariables>({
+    mutationFn: ({ params, data }) => EntityService.updateNested(params, data),
+    ...options,
+  });
+
+export const useRegisterPayment = (
+  paymentId: EntityId,
+  options?: UseMutationOptions<
+    MutationResponse<Payment>,
+    CustomError,
+    RegisterPaymentDto
+  >,
+) =>
+  useMutation<MutationResponse<Payment>, CustomError, RegisterPaymentDto>({
+    mutationFn: (data) => EntityService.registerPayment(paymentId, data),
     ...options,
   });
 ```
@@ -190,7 +289,7 @@ queryClient.invalidateQueries({ queryKey: queries.entities.detail(id).queryKey }
 
 **`setQueryData` / optimistic:** solo cuando UX lo exige y hay rollback claro; no convertir toda mutation en optimistic.
 
-**Anti-patrones del hook:** meter `onSuccess`/`onError` fijos dentro del hook; tipar la mutation solo con un `Props` genérico sin extender `UseMutationOptions<…>`.
+**Anti-patrones del hook:** meter `onSuccess`/`onError` fijos dentro del hook; tipar la mutation solo con un `Props` genérico sin extender `UseMutationOptions<…>`; aplanar IDs de ruta con campos del body; `TVariables` anónimo `{ body: string }`.
 
 ## 5. Services
 
@@ -202,7 +301,7 @@ export class EntityService extends SharedService {
   ) =>
     SharedService.findAll(apiFetcher, '/entities', options, { signal });
   // ADAPTAR: si SharedService/fetcher usa otra firma, reenviar signal igual
-  // mutaciones: try/catch + ErrorMapper.throwMappedError
+  // mutaciones: try/catch + ErrorMapper.throwMappedError; firmas §4
 }
 ```
 
@@ -226,7 +325,10 @@ Devtools: útil en dev; no es dependencia de producción obligatoria.
 - [ ] QueryClient central reutilizado (no uno por feature)
 - [ ] Query: interface `*QueryProps` con `Omit<UseQueryOptions…, 'queryKey' | 'queryFn'>`
 - [ ] Mutation: interface `Use*MutationOptions` + solo `mutationFn` en el hook; toast/invalidate en el caller
-- [ ] `TVariables` desde Zod (`z.infer`), no interface Input paralela
+- [ ] DTO desde Zod (`z.infer`); `TVariables` = DTO o envelope `*Variables` (§4), no interface Input paralela
+- [ ] Ruta ≠ body: service `(id, data)` o `(params, data)`; TVariables según tabla §4
+- [ ] `useMutation<TData, CustomError, TVariables>` con los 3 genéricos
+- [ ] Multipart: service llama `FormDataHelper`; UI no arma FormData (`23`/`09`)
 - [ ] Invalidación vía store (`_def` / `queryKey`), no strings
 - [ ] Params tipados y normalizados
 - [ ] Sin duplicar server state fuera de Query

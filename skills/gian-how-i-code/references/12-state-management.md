@@ -2,6 +2,11 @@
 
 Cargar cuando: estado cliente, drawers store, filters locales.
 
+## Alcance
+
+- **Núcleo:** el server state no se duplica en un store de UI; el estado del form no se hoistea al padre; lo derivado se calcula, no se copia.
+- **Adaptador React:** TanStack Query, RHF, `useState`, Zustand. En otro stack, el cliente de datos y el primitivo de estado de ese stack.
+
 ## Separación de responsabilidades
 
 | Tipo | Dónde vive |

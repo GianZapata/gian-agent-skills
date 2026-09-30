@@ -2,6 +2,11 @@
 
 Cargar cuando: estructura FE, MUI+Tailwind, organización de componentes, styling (`className` / `cn()` / `sx` / theme).
 
+## Alcance
+
+- **Adaptador React:** stack canónico y styling MUI/Tailwind de este archivo.
+- **Núcleo:** §Naming. Vale en cualquier stack. En Vue la carpeta es `composables/` (`25`); el archivo sigue `useThing.ts`.
+
 ## Stack canónico
 
 - React + TypeScript
@@ -11,7 +16,9 @@ Cargar cuando: estructura FE, MUI+Tailwind, organización de componentes, stylin
 - i18n react-i18next (JSON flat)
 - **dayjs** (fechas; ver `23`)
 
-Sintaxis TS/TSX: `gian-react-ts-style` (no decide Tailwind/MUI/`sx`). Mecánica de `cn()` y anti-patrones: `23`. Contratos de props de librería (MUI/RHF/TanStack): tipo oficial, no shadow — `07`. Labels/colores de **display de estado**: `08` (no helpers); tokens MUI: `theme.palette` aquí.
+Este stack es el adaptador React. Otro stack no hereda MUI, RHF ni React Query. El núcleo sigue (`01`); el delta de vista, si existe, se suma (`25` en Vue).
+
+Sintaxis TS/TSX: `gian-react-ts-style` (no decide Tailwind/MUI/`sx`). Mecánica de `cn()` y anti-patrones: `23`. Contratos de props de librería (MUI/RHF/TanStack): tipo oficial, no shadow — `07`. Labels/colores de **display de estado**: `08` (metadata del enum en el entity helper; ad-hoc inline). Tokens MUI: `theme.palette` aquí.
 
 ## Styling ownership — MUI + Tailwind
 
@@ -185,6 +192,8 @@ Selectores `'& .Mui…'` son fallback, no default. No inventar nombres de slot: 
 - No meter dialogs compartidos solo dentro de `Form/**` si la tabla también los usa
 
 ## Naming
+
+**Núcleo.** No depende del framework.
 
 - Componentes PascalCase
 - Callbacks `on*` / verbos; **prohibido `handle*`**

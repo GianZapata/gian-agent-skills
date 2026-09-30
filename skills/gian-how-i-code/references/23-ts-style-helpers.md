@@ -1,6 +1,11 @@
 # 23 — Memoización, cn, dayjs, utils y helpers
 
-Cargar cuando: Implementar FE, crear util/helper, fechas en frontend, consultar memoización/`cn`/dayjs, constantes `*_SX` / concat de `className`.
+Cargar cuando: Implementar FE, crear util/helper, fechas en frontend, multipart/`FormDataHelper`, consultar memoización/`cn`/dayjs, constantes `*_SX` / concat de `className`.
+
+## Alcance
+
+- **Núcleo:** renombres explícitos, dayjs, utils vs helpers, `FormDataHelper` y la sección de duplicación. Un área es `export class XxxHelper`. Una función suelta de área (fecha, número, etiqueta, dinero) es hallazgo.
+- **Adaptador React:** memoización A–E y `cn()` / `className`. Sin `cn()`, las clases condicionales no se resuelven inventando la utilidad: se componen en el mecanismo del stack, sin concatenar nombres Tailwind dinámicos.
 
 **Formato visual TS/TSX** (arrows, braces, JSX, imports type, comments): skill `gian-react-ts-style`. Esta reference no duplica esas reglas. **Autoridad de styling** (Tailwind vs `sx` vs theme): `04`. Forma de `export const` utils: la style skill; **cuándo** crear util vs helper: aquí.
 
@@ -143,7 +148,7 @@ Excepción: APIs del runtime que exigen `Date` (p. ej. firma de librería extern
 | `utils/` | Cosas **pequeñas** y genéricas (pocas líneas, sin dominio rico) | `export const … = () =>` (sintaxis: `gian-react-ts-style`) | `.util.ts` |
 | `helpers/` | Agrupan un **área** (fechas, números, usuario, formatos humanos, reglas de dominio, **Record de meta de enum**) | `export class XxxHelper` | `.helper.ts` |
 
-Ejemplos de helpers de área: `DateHelper`, `HumanFormatsHelper`, `NumberHelper`, `UserHelper`.
+Ejemplos de helpers de área: `DateHelper`, `HumanFormatsHelper`, `NumberHelper`, `UserHelper`, `FormDataHelper`.
 
 ```ts
 export const clamp = (n: number, min: number, max: number) =>
@@ -156,7 +161,21 @@ export class DateHelper {
 }
 ```
 
-**Prohibido:** `*.display.config.ts`, inyectar `TFunction`, `labelKey` diferido, clase *solo* de UI (`ColorHelper.statusColor`, `FooDisplayHelper`). El Record de enum **sí** vive en el entity helper con `i18n.t()` — `08` / `15`.
+### FormDataHelper (multipart)
+
+Área: serializar un DTO plano/anidado a `FormData` para Laravel.
+
+- Crear **una vez** en `shared/helpers/form-data.helper.ts` (materializar `assets/frontend/helpers/form-data.helper.ts.template`). No un helper por feature.
+- Usar **solo** si el endpoint es multipart (`File` / `Blob` / `FileList` / evidencia). JSON: pasar el DTO.
+- UI no llama a `toFormData`. Solo el service.
+- `undefined` → omitir. `null` → `""` (`ConvertEmptyStringsToNull`).
+- Booleanos `'1'` / `'0'`. Dayjs fecha-calendario (`00:00:00.000`) → `YYYY-MM-DD`; con hora → ISO. `Date` nativo solo en este borde (el resto del FE sigue dayjs, esta misma reference).
+- Throw `TypeError` en raíz no-objeto, número no finito, Date/Dayjs inválido, ciclo, `Map`/`Set`/clase no soportada.
+- Tests: materializar `form-data.helper.test.ts.template` junto al helper.
+
+Si el repo ya tiene un serializador equivalente y cubre estas convenciones → reutilizar (`Antes de crear helper/util`). Si serializa mal `null`/fechas/files → Hallazgo Media: extender o reemplazar por este helper.
+
+**Prohibido:** `*.display.config.ts`, inyectar `TFunction`, `labelKey` diferido, clase *solo* de UI (`ColorHelper.statusColor`, `FooDisplayHelper`). La metadata de enum **sí** vive en el entity helper como propiedad pública `static readonly Record<Enum, Meta>`, con getters de label que llaman `i18n.t()`. Si el consumidor recibe ausencia, el helper expone `getXMeta(Enum | null | undefined)` con resolver privado y `unknownMeta` — `08` / `15`.
 
 `*Helper` **cohesivo** (un solo eje) está permitido. Clase cajón multi-dominio (`FooHelper` con fechas + user + money + UI) = hallazgo (`22`).
 
@@ -165,7 +184,7 @@ export class DateHelper {
 1. Buscar en la feature (`helpers/`, `utils/`) y en `shared/helpers`, `shared/utils`.
 2. Si existe el área → **reutilizar o extender** la clase/función.
 3. Si no existe → elegir `util` (pequeño) o `helper` clase (área).
-4. Mapping exhaustivo de enum → Record en el entity helper con `i18n.t()` (`08`). If-chain ad-hoc → inline con `t()`. No `*.display.config.ts`. `useMemo` según A–E de esta reference.
+4. Mapping exhaustivo de enum → propiedad pública `static readonly Record<Enum, Meta>` en el entity helper, getter de label con `i18n.t()` y `getXMeta()` cuando el valor sea nullable (`08`). Acceso directo para enum garantizado o iteración. No aceptar `string`, casts ni fallback por consumidor; no método que reconstruya el mapa ni `*.display.config.ts`. `useMemo` según A–E de esta reference.
 
 ## Duplicación vs helper/util existente (Auditar + Implementar)
 
@@ -196,6 +215,9 @@ Tooling: Serena/codegraph para localizar `DateHelper` / `NumberHelper`; ast-grep
 | `sx` usado para layout/spacing/sizing ordinario pudiendo usar Tailwind | Media |
 | `useTheme()` solo para alimentar `sx` (preferir `sx={theme => …}`) | Media |
 | Clase estática sin `cn()` | — permitido |
+| UI construye `FormData` / formatea fechas para el payload | Media |
+| Multipart a mano en el service pese a existir `FormDataHelper` | Media |
+| Falta `FormDataHelper` y la feature **necesita** multipart | Media (crear shared; no PROP de lib) |
 | Util que debería ser helper de área (o al revés) | Baja |
 | Duplicación mínima solo dentro del mismo feature | Baja |
 | Nombre opaco en alias frecuente | Baja |
