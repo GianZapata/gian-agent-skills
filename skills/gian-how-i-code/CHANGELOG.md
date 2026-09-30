@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.1 — 2026-09-30
+
+- Vue (`25`): `<script setup lang="ts">` inline en el `.vue`. Sin `src`. Las macros no se mueven a un `.ts`. La lógica extraída va a `composables/useThing.ts`.
+- Supersede el SFC partido `<script setup lang="ts" src="./Nombre.ts">` de 1.3.0.
+
 ## 1.4.0 — 2026-09-30
 
 - Hard rules del núcleo partidas: styling, validación user-facing y contrato de lectura son adaptadores. El schema nombrado es el núcleo; Zod lo es solo en TypeScript.
@@ -26,7 +31,7 @@
 
 ## 1.3.0 — 2026-09-30
 
-- Vue (`25`): SFC con lógica en `<script setup lang="ts" src="./Nombre.ts">`; `interface Props` / `interface Emits` locales; `composables/` en lugar de `hooks/`. Prohibido `defineComponent` y el genérico anónimo de `defineProps`.
+- Vue (`25`): SFC con lógica en `<script setup lang="ts" src="./Nombre.ts">`; `interface Props` / `interface Emits` locales; `composables/` en lugar de `hooks/`. Prohibido `defineComponent` y el genérico anónimo de `defineProps`. Reemplazado en 1.4.1: el script setup va inline, sin `src`.
 - El stack React de `04`/`13` no se hereda. Naming sigue en esta skill; el formato del `.ts` hermano sigue en `gian-react-ts-style`.
 
 ## 1.2.14 — 2026-09-17

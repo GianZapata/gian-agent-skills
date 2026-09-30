@@ -1,34 +1,42 @@
 # 25 — Vue SFC
 
-Cargar cuando: el repo es Vue, o se crea, edita, audita o consulta un `.vue` o su `.ts` hermano.
+Cargar cuando: el repo es Vue, o se crea, edita, audita o consulta un `.vue`.
 
 Este archivo es el **adaptador**. El núcleo sigue vigente (`01`): nombres, helpers de área, enums, contratos, errores, display. No heredar MUI, RHF, `hooks/` ni React Query. Eso no apaga el núcleo.
 
 Los nombres los elige el núcleo (`04` Naming, `23`). La forma del binding (no destructurar por rutina, `import type`, flechas, llaves) es `gian-react-ts-style`. Una forma de objeto propia es `interface` ahí (`interface-object-shape`), no una regla de este archivo. Conjuntos cerrados y uniones: `07`.
 
-## SFC partido
+## Script en el .vue
 
-SFC con lógica: el `.vue` conserva el template y el style. El script vive en un hermano con el mismo basename PascalCase.
+`<script setup lang="ts">` vive en el `.vue`, junto al template y al `<style scoped>`. Sin `src`. El compilador lee ese bloque en el SFC: `defineProps`, `defineEmits` y `defineModel` son macros y no se mueven a un `.ts`.
 
 ```vue
-<script setup lang="ts" src="./EntityPage.ts"></script>
+<script setup lang="ts">
+interface Props {
+  entityId: string;
+}
+
+const props = defineProps<Props>();
+</script>
 
 <template>
   ...
 </template>
 ```
 
-El `.ts` es el cuerpo de `script setup`: imports, `defineProps` / `defineEmits`, composables y computeds. Esos bindings quedan visibles en el template. Sin `export default` y sin `return`.
+Imports, composables y computeds van en ese mismo bloque. Esos bindings quedan visibles en el template. Sin `export default` y sin `return`.
 
-El atributo `setup` es obligatorio. Prohibido el hermano como `export default defineComponent({ setup() { return {} } })`.
+Prohibido `<script setup src="...">` y `export default defineComponent({ setup() { return {} } })`.
 
-Script vacío, sin imports ni bindings: no gana archivo.
+Script vacío, sin imports ni bindings: el bloque no se agrega solo para existir.
 
-Los componentes que usa el template se importan en el `.ts`.
+Los componentes que usa el template se importan en ese bloque.
+
+Si la lógica crece o se reutiliza, sale a `composables/useThing.ts` y se importa desde el script. El composable recibe valores ya declarados. No llama a `defineProps`, `defineEmits` ni `defineModel`.
 
 ## Props y emits
 
-`interface Props` e `interface Emits` viven en el `.ts` del componente. No se exportan a `features/*/interfaces`. El JSON de la API sigue en `<entity>.interface.ts`.
+`interface Props` e `interface Emits` viven en el `<script setup>` del `.vue`. No se exportan a `features/*/interfaces`. El JSON de la API sigue en `<entity>.interface.ts`.
 
 ```ts
 interface Props {
@@ -102,7 +110,7 @@ Solo cambia la carpeta. El resto es `03` y `04`.
 | Pieza | Vue |
 |---|---|
 | Composables | `composables/useThing.ts` (camelCase). Nunca `use-thing.ts` ni `hooks/` |
-| SFC | `EntityPage.vue` + `EntityPage.ts` |
+| SFC | `EntityPage.vue`. El script setup va dentro |
 | Props / emits | `interface Props` / `interface Emits`, locales |
 
 El call site llama al método de la clase de área (`DateHelper.formatCalendarDate`). Sin función local que arme fecha, número, dinero o etiqueta. Sin una segunda función al lado de la clase para la misma área.
@@ -119,7 +127,7 @@ No instalar Vue Router, Pinia ni TanStack Vue Query porque un ejemplo los use. E
 
 ## No copiar de un repo de referencia Vue
 
-- `defineComponent` + `return` en el hermano
+- `defineComponent` + `return`
 - un archivo por función (`get-thing-by-id.ts`). El área sigue en `<entity>.helper.ts`
 - `*.response.ts` en lugar de `<entity>.interface.ts`
 - barrel `interfaces/index.ts`
@@ -129,7 +137,7 @@ No instalar Vue Router, Pinia ni TanStack Vue Query porque un ejemplo los use. E
 ## Checklist
 
 - [ ] Núcleo cargado (`01`); este archivo solo suma el delta
-- [ ] `.vue` con `<script setup lang="ts" src="./Nombre.ts">` si hay lógica
+- [ ] `.vue` con `<script setup lang="ts">` inline si hay lógica. Sin `src`
 - [ ] `interface Props` / `interface Emits`; sin genérico anónimo
 - [ ] `const props = defineProps<Props>()` y `const emit = defineEmits<Emits>()`, sin destructurar
 - [ ] `defineModel` solo para un `v-model` real; overlay con `isOpen` + emit, montado con `v-if`
@@ -139,4 +147,4 @@ No instalar Vue Router, Pinia ni TanStack Vue Query porque un ejemplo los use. E
 - [ ] `composables/useThing.ts`
 - [ ] clase de área (`23`); sin wrapper local ni función suelta de la misma área
 - [ ] enums según `07`; forma de objeto según `gian-react-ts-style`
-- [ ] formato del `.ts` según `gian-react-ts-style`
+- [ ] formato del `<script setup>` y de los composables `.ts` según `gian-react-ts-style`

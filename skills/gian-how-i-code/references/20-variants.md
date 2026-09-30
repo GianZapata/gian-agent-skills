@@ -29,7 +29,7 @@ No es una variante que reemplace el estándar. Es el delta de vista (`25`). Dete
 
 | Tema | Adaptador React | Vue (`25`) |
 |------|-----------------|------------|
-| Vista | TSX | `.vue` + script setup hermano |
+| Vista | TSX | `.vue` con script setup inline |
 | Carpeta de estado de UI | `hooks/` | `composables/` |
 | Server state | React Query | El cliente de datos que el repo ya usa |
 | Store de overlays (variante) | Zustand | Pinia o provide/inject si ya existen (12) |
