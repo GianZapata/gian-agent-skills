@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.0 — 2026-09-30
+
+- Hard rules del núcleo partidas: styling, validación user-facing y contrato de lectura son adaptadores. El schema nombrado es el núcleo; Zod lo es solo en TypeScript.
+- `01`: filas de Python sin capítulo (body de Pydantic ≠ path, 422 por campo, `StrEnum`, `in`, datetimes aware, PEP 8 snake_case).
+- Equivalentes Angular y Vue: MatDialog, `v-if`, Pinia, HttpClient, tabla de i18n, `defineModel`, `computed` A–E.
+- `05` y `06` quedan declarados como adaptadores de Laravel.
+
 ## 1.3.2 — 2026-09-30
 
 - `25`: ejemplos genéricos (`EntityPage`, `entityId`, `confirm` / `cancel`). Tailwind solo si el repo lo usa.
@@ -32,6 +39,7 @@
 ## 1.2.13 — 2026-09-15
 
 - Metadata nullable (`07`/`08`/`15`): `getXMeta(Enum | null | undefined)` es el resolver canónico para componentes; `unknownMeta` y `getMeta` son privados.
+- Supersede el consumo directo `Helper.statusMeta[status]` de 1.2.12 cuando el valor puede llegar ausente: ahí manda `getXMeta`.
 - El `Record<Enum, Meta>` público se conserva para valores garantizados e iteración; los resolvers no aceptan `string`, casts ni fallbacks para ocultar drift.
 - `unknownMeta.label` usa getter cuando el copy es dinámico para no congelar el locale.
 

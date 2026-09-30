@@ -12,6 +12,8 @@ Usar **comandos del repo** (AGENTS local de validación). No imponer comandos de
 |------|---------|
 | Frontend con Bun | `bun run lint` desde la app frontend; i18n es↔en si aplica |
 | Backend Laravel | tests focalizados + analyse (PHPStan/Psalm) según política |
+| Backend Python | `ruff check` y `pytest` focalizados, con el runner del repo (`uv run` si existe) |
+| Angular | `ng` o `nx` lint/test del repo |
 | No | Suite completa automática en cada nit; `tsc` si el repo lo prohíbe |
 
 ## Autoría de tests

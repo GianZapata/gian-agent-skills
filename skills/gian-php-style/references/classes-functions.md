@@ -78,21 +78,21 @@ Gana sobre `single-param-signature`.
 
 ```php
 public function __construct(
-    private readonly WhatsAppGateway $gateway,
+    private readonly PaymentGateway $gateway,
 ) {}
 
 public function __construct(
     UserRepository $users,
-    private readonly WhatsAppGateway $gateway,
+    private readonly PaymentGateway $gateway,
 ) {}
 ```
 
 No:
 
 ```php
-public function __construct(private readonly WhatsAppGateway $gateway) {}
+public function __construct(private readonly PaymentGateway $gateway) {}
 
-public function __construct(UserRepository $users, private readonly WhatsAppGateway $gateway) {}
+public function __construct(UserRepository $users, private readonly PaymentGateway $gateway) {}
 ```
 
 No aplica a métodos normales ni constructores sin promotion.

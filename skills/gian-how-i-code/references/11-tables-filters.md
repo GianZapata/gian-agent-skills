@@ -2,6 +2,11 @@
 
 Cargar cuando: listados, MRT/CustomTable, exports, filtros.
 
+## Alcance
+
+- **Núcleo:** la tabla usa el wrapper compartido del repo; filtros y sorts alineados al backend, en la URL o en params tipados; defaults de disponibilidad.
+- **Adaptador React:** MRT / `CustomTable`, `useMemo` de columns (`23` caso E), `Cell`, `useExport`, `useAuth().permissions`. En otro stack, la tabla y los hooks equivalentes.
+
 ## Default
 
 - Tabla sobre wrapper compartido del proyecto (`CustomTable` o equivalente), no MRT crudo si existe wrapper

@@ -5,7 +5,7 @@ Cargar cuando: Implementar FE, crear util/helper, fechas en frontend, multipart/
 ## Alcance
 
 - **Núcleo:** renombres explícitos, dayjs, utils vs helpers, `FormDataHelper` y la sección de duplicación. Un área es `export class XxxHelper`. Una función suelta de área (fecha, número, etiqueta, dinero) es hallazgo.
-- **Adaptador React:** memoización A–E y `cn()` / `className`. Sin `cn()`, las clases condicionales no se resuelven inventando la utilidad: se componen en el mecanismo del stack, sin concatenar nombres Tailwind dinámicos.
+- **Adaptador React:** memoización A–E y `cn()` / `className`. En Vue, los mismos casos A–E deciden `computed` (`25`). Sin `cn()`, las clases condicionales no se resuelven inventando la utilidad: se componen en el mecanismo del stack, sin concatenar nombres Tailwind dinámicos.
 
 **Formato visual TS/TSX** (arrows, braces, JSX, imports type, comments): skill `gian-react-ts-style`. Esta reference no duplica esas reglas. **Autoridad de styling** (Tailwind vs `sx` vs theme): `04`. Forma de `export const` utils: la style skill; **cuándo** crear util vs helper: aquí.
 
@@ -149,6 +149,8 @@ Excepción: APIs del runtime que exigen `Date` (p. ej. firma de librería extern
 | `helpers/` | Agrupan un **área** (fechas, números, usuario, formatos humanos, reglas de dominio, **Record de meta de enum**) | `export class XxxHelper` | `.helper.ts` |
 
 Ejemplos de helpers de área: `DateHelper`, `HumanFormatsHelper`, `NumberHelper`, `UserHelper`, `FormDataHelper`.
+
+Un helper puro es clase estática en cualquier TS. En Angular, se usa un service solo si necesita DI.
 
 ```ts
 export const clamp = (n: number, min: number, max: number) =>

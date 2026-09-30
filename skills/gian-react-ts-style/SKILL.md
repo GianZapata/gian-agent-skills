@@ -1,11 +1,11 @@
 ---
 name: gian-react-ts-style
-description: "Mandatory visual TypeScript/TSX style. Load whenever creating, editing, refactoring, reviewing, auditing, or fixing .ts/.tsx (including a normal feature, not only format/audit). Do not load for consult-only architecture questions. Governs syntax/format only; Prettier owns wrap/quotes/semi."
+description: "Mandatory visual TS/TSX style for any TS stack. Load when creating, editing, refactoring, reviewing, auditing, or fixing .ts/.tsx or a Vue script setup in TS, incl. a normal feature. Not for consult-only architecture questions. Governs syntax/format only; Prettier owns wrap/quotes/semi."
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.0.1"
-when-to-use: "Any .ts/.tsx create/edit/refactor/review/audit/fix; ts-style-audit; ts-style-fix; format TypeScript. Not for PHP, CSS, SQL-only, or architecture-only consults."
+  version: "1.1.0"
+when-to-use: "Any .ts/.tsx create/edit/refactor/review/audit/fix in any TS stack (React, Vue sibling .ts or inline script setup lang=ts, Angular, Node); ts-style-audit; ts-style-fix; format TypeScript. Not for .js/.jsx/.mjs/.cjs, Vue template/style, Angular .html, PHP, CSS, SQL-only, or architecture-only consults."
 ---
 
 # gian-react-ts-style
@@ -15,6 +15,13 @@ Fuente de verdad única del **estilo visual/sintaxis TS/TSX**. No es arquitectur
 ## Activation Contract
 
 Cargar al crear, editar, refactorizar, revisar, auditar o corregir **TypeScript real** (`.ts` / `.tsx`), también en una tarea normal (“agrega un filtro”) — no solo si el usuario pide format/audit. No omitir por extensión.
+
+Aplica en cualquier stack TS:
+
+- Vue (hermano `.ts` y `<script setup lang="ts">` inline): no aplican las reglas de JSX ni `react-component-*`. `<template>` y `<style>` no son de esta skill.
+- Angular: clases, decoradores y DI son GAP o `LIBRARY_OWNED` (`gian-how-i-code` `01`). El `.html` no es de esta skill.
+- Node: las funciones libres siguen `exported-arrow-default`; las clases de Nest/Express son GAP.
+- No aplica a `.js`, `.jsx`, `.mjs` ni `.cjs`.
 
 No reformatear: PHP, CSS, JSON de i18n, SQL, Markdown. Preservar directives (`@ts-expect-error`, `eslint-disable`, `prettier-ignore`).
 

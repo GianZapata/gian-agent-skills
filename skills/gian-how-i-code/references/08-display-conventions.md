@@ -12,7 +12,7 @@ Cargar cuando: labels, colores, textos por estado, copy visible, mappings de chi
 | Situación | Dónde | i18n |
 |-----------|--------|------|
 | Metadata exhaustiva de un enum `APP_OWNED` (tabla + filtros + drawer) | Propiedad pública `static readonly Record<Enum, Meta>` y `getXMeta(Enum | null | undefined)` en `<entity>.helper.ts` (`07`) | Getter de `label` y `unknownMeta.label` con `i18n.t()` (`15`) |
-| Display ad-hoc de **un** componente (stock vs production, loading vs error) | Cadena de `if` + early return **inline** | `t()` de `useTranslation` |
+| Display ad-hoc de **un** componente (stock vs production, loading vs error) | Cadena de `if` + early return **inline** | `t()` de la vista (`15`) |
 | Schema / util / `.ts` no React | No mapping de UI | `i18n.t()` (`10`/`15`) |
 
 Nested ternary: `gian-react-ts-style` (`no-nested-ternary`). Valor multi-rama **ad-hoc** en componente: `useMemo`+if (`23` caso C). JSX multi-rama: if/early return aquí, sin `useMemo` (`23` D).
@@ -27,10 +27,10 @@ import i18n from '@/lib/i18n';
 export class WarehouseHelper {
   static readonly typeMeta: Record<
     WarehouseType,
-    { color: ChipColor; label: string }
+    { tone: ChipTone; label: string }
   > = {
     [WarehouseType.Main]: {
-      color: 'primary',
+      tone: 'primary',
       get label() {
         return i18n.t('warehouses:type.main');
       },
@@ -39,9 +39,9 @@ export class WarehouseHelper {
 }
 ```
 
-Chip color: tipo `LIBRARY_OWNED` (`ChipProps['color']` / `ChipColor` del theme) — `07`.
+`ChipTone` es el tipo `LIBRARY_OWNED` del chip del stack, no una union propia (`07`). Adaptador React/MUI: el campo es `color: NonNullable<ChipProps['color']>` (o el `ChipColor` del theme), para el spread en `<Chip>`.
 
-Consumo preferido en componentes: `WarehouseHelper.getTypeMeta(type)` o `<Chip {...WarehouseHelper.getTypeMeta(type)} />`. El acceso directo `WarehouseHelper.typeMeta[type]` queda para un enum garantizado o para iterar el catálogo. El resolver acepta solo `WarehouseType | null | undefined`, devuelve `unknownMeta` únicamente para ausencia legítima y no usa `string`, casts ni fallback por consumidor. Valores externos y legacy se validan o normalizan en la frontera.
+Consumo preferido en componentes: `WarehouseHelper.getTypeMeta(type)`; en React/MUI, `<Chip {...WarehouseHelper.getTypeMeta(type)} />`. El acceso directo `WarehouseHelper.typeMeta[type]` queda para un enum garantizado o para iterar el catálogo. El resolver acepta solo `WarehouseType | null | undefined`, devuelve `unknownMeta` únicamente para ausencia legítima y no usa `string`, casts ni fallback por consumidor. Valores externos y legacy se validan o normalizan en la frontera.
 
 ## Display ad-hoc — inline (HARD)
 

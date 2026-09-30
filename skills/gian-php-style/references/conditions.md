@@ -82,7 +82,7 @@ if (!$user) return null;
 
 if ($blocked) throw new RuntimeException('Blocked');
 
-if ($searchResult === null) throw new InvalidArgumentException('A complete vacancy search did not produce a result.');
+if ($searchResult === null) throw new InvalidArgumentException('A complete offer search did not produce a result.');
 
 if (!$item->isValid()) continue;
 
@@ -120,7 +120,7 @@ if ($allowPhone) {
 
 if ($searchResult === null) {
     throw new InvalidArgumentException(
-        'A complete vacancy search did not produce a result.'
+        'A complete offer search did not produce a result.'
     );
 }
 ```
@@ -152,7 +152,7 @@ if ($allowPhone) $string = preg_replace(
 );
 
 if ($searchResult === null) throw new InvalidArgumentException(
-    'A complete vacancy search did not produce a result.'
+    'A complete offer search did not produce a result.'
 );
 ```
 

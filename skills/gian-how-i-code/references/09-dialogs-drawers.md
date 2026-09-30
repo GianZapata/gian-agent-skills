@@ -6,6 +6,8 @@ Cargar cuando: modales, drawers, overlays.
 
 - **Núcleo:** componente aparte; el overlay es dueño de la mutación; props `isOpen` + entidad por tipo + `onClose`; prohibido `open`, `entity=` y `data=`; la UI no arma `FormData`.
 - **Adaptador React:** montaje `{isOpen && user && (`, `invalidateQueries` y el hook de mutation. En otro stack, el primitivo de overlay equivalente cumple las mismas props y la misma propiedad.
+- **Angular:** el componente que se abre con `MatDialog` recibe la entidad por `MAT_DIALOG_DATA`, es dueño de la mutación y devuelve el resultado por `afterClosed`.
+- **Vue:** el overlay se monta con `v-if`, no con `v-show`, para que se desmonte (`25`).
 
 ## Default canónico
 

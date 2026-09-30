@@ -23,6 +23,8 @@ GAP / no aplicar:
 - `Cell: ({ row: { original } })` — molde `gian-how-i-code` `11`
 - alias de query (`query-data-alias`)
 
+Vue: `const props = defineProps<Props>()` y `const emit = defineEmits<Emits>()`, sin destructurar. El GAP de params de componente es solo de React.
+
 ## Query data alias (PREFERENCE)
 
 `query-data-alias`.

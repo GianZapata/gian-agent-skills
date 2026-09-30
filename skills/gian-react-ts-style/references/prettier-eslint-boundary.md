@@ -28,6 +28,8 @@ En repos típicos de este stack (no asumir todos):
 
 Si el repo ya FAIL/fixea `self-closing-comp`, no emitir un segundo FAIL por la misma línea. WRITE igual emite self-closing.
 
+Si el repo usa `eslint-plugin-vue` o `@angular-eslint`, no pelear sus reglas ni instalarlas.
+
 ## Equivalents NOT enabled — do not activate in this lote
 
 | Skill rule | ESLint approx | Why not on |
@@ -38,6 +40,6 @@ Si el repo ya FAIL/fixea `self-closing-comp`, no emitir un segundo FAIL por la m
 | `fragment-shorthand` | `react/jsx-fragments: syntax` | Equivalente futuro opcional |
 | `type-only-import` | `@typescript-eslint/consistent-type-imports` | GAP decorators; no instalar |
 | `interface-object-shape` | `@typescript-eslint/consistent-type-definitions: interface` | Verificar `z.infer`; no instalar |
-| `no-nested-ternary` | `no-nested-ternary` | Lint ≠ FIX useMemo; no instalar |
+| `no-nested-ternary` | `no-nested-ternary` | Lint ≠ FIX `derived-multi-branch`; no instalar |
 
 `direct-handler-reference` no usar `jsx-no-bind` (empuja lo contrario).

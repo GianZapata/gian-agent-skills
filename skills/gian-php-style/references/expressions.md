@@ -79,7 +79,9 @@ $value = $active
     : $this->inactive();
 ```
 
-## Null coalescing `??` (PREFERENCE)
+## Null coalescing `??`
+
+Inline o partido: PREFERENCE. Cuando se parte, `??` termina la línea anterior: HARD (`null-coalesce-break`).
 
 Inline cuando limpia:
 

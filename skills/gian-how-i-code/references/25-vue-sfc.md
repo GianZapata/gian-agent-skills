@@ -49,9 +49,51 @@ const emit = defineEmits<Emits>();
 
 Prohibido `defineProps<{ entityId: string }>()` y `defineEmits<{ confirm: [] }>()`.
 
+Sin destructurar: se lee `props.entityId` y se llama `emit('confirm')`. El destructurado reactivo de Vue 3.5 no se usa por rutina: pasar la variable a `watch` o a un composable pide un getter.
+
 Defaults: `withDefaults(defineProps<Props>(), { ... })`.
 
 El template usa los nombres que expone `defineProps`. `$props` solo si hay colisión de nombre.
+
+## v-model, overlays y computed
+
+- `defineModel` solo para un `v-model` real (Vue 3.4+). Un overlay sigue con `isOpen` más emit (`09`).
+- El overlay dueño de su mutación se monta con `v-if`, no con `v-show` (`09`).
+- `computed` sigue los casos A–E de `23`. Una `const` derivada de props en `script setup` no es reactiva. A: la expresión va en el template, o en un `computed` si el script la usa. C: `computed` con `if` y early return. D: `v-if` / `v-else-if` en el template.
+- `<style scoped>` se queda en el `.vue`, con el template.
+- Componentes en PascalCase en el template. Emits en camelCase en `interface Emits`.
+- `defineSlots`, `defineExpose` y `generic="T"` cuando hagan falta. Sus tipos (`interface Slots`, la forma de `T`) son locales, igual que `Props`. `generic="T"` va en la etiqueta `<script setup>` del `.vue`.
+
+```ts
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+interface Props {
+  isLoading: boolean;
+}
+
+interface Emits {
+  searchCleared: [];
+}
+
+const props = defineProps<Props>();
+const emit = defineEmits<Emits>();
+
+const search = defineModel<string>('search', { required: true });
+
+const { t } = useI18n();
+
+const summary = computed(() => {
+  if (props.isLoading) return t('orders.summary.loading');
+  if (search.value) return t('orders.summary.filtered', { search: search.value });
+  return t('orders.summary.all');
+});
+
+const onClear = () => {
+  search.value = '';
+  emit('searchCleared');
+};
+```
 
 ## Delta de nombres
 
@@ -67,7 +109,7 @@ El call site llama al método de la clase de área (`DateHelper.formatCalendarDa
 
 ## i18n
 
-En la vista, el helper de `vue-i18n`. Fuera de la vista, `i18n.t()` (`15`). No inyectar la función de traducción.
+En la vista, `t()` de `useI18n` o `$t`. Fuera de la vista, `i18n.t()` (`15`). No inyectar la función de traducción.
 
 ## Styling y datos
 
@@ -89,6 +131,11 @@ No instalar Vue Router, Pinia ni TanStack Vue Query porque un ejemplo los use. E
 - [ ] Núcleo cargado (`01`); este archivo solo suma el delta
 - [ ] `.vue` con `<script setup lang="ts" src="./Nombre.ts">` si hay lógica
 - [ ] `interface Props` / `interface Emits`; sin genérico anónimo
+- [ ] `const props = defineProps<Props>()` y `const emit = defineEmits<Emits>()`, sin destructurar
+- [ ] `defineModel` solo para un `v-model` real; overlay con `isOpen` + emit, montado con `v-if`
+- [ ] `computed` según A–E de `23`
+- [ ] `<style scoped>` en el `.vue`; componentes PascalCase en el template; emits camelCase
+- [ ] `defineSlots` / `defineExpose` / `generic="T"` con `interface` local si hacen falta
 - [ ] `composables/useThing.ts`
 - [ ] clase de área (`23`); sin wrapper local ni función suelta de la misma área
 - [ ] enums según `07`; forma de objeto según `gian-react-ts-style`

@@ -2,6 +2,11 @@
 
 Cargar cuando: Resource↔TS, envelopes, QueryBuilder, Form Requests, anti-patrones de contrato.
 
+## Alcance
+
+- **Núcleo:** el cliente refleja el contrato; ruta ≠ body; el serializer no dispara queries. La responsabilidad vive en la matriz de `01`.
+- **Adaptador Laravel:** Resource, FormRequest, QueryBuilder y `whenLoaded` de este archivo. En otro backend, la fila de su stack en `01`.
+
 ## Principio
 
 El frontend **refleja** el contrato; no lo adivina. Interfaces = JSON del Resource. DTOs mutación = Form Requests. Path params de la ruta Laravel **no** entran al FormRequest ni al DTO FE. El DTO refleja solo el body (`10`/`13`).

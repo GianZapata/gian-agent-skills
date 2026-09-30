@@ -33,9 +33,9 @@ Forma preferida cuando se agrupa:
 
 ```php
 use App\Models\{
+    Invoice,
     Offer,
-    User,
-    Vacancy
+    User
 };
 ```
 

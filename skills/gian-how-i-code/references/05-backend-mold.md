@@ -2,6 +2,11 @@
 
 Cargar cuando: endpoints, Actions, Queries, Resources, Form Requests, state machines.
 
+## Alcance
+
+- **Núcleo:** la responsabilidad de cada capa (validación en el borde, caso de uso, contrato de lectura, enum y estado) vive en la matriz de `01`.
+- **Adaptador Laravel:** este archivo. En Python o Node, la fila de su stack en `01`.
+
 Formato visual PHP (indent, braces, `=>`, guards): `gian-php-style`. Esta reference no duplica esas reglas.
 
 ## Flujo HTTP

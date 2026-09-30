@@ -18,7 +18,7 @@ No es obligatorio producir una propuesta en cada tarea. Si el stack actual ya re
 
 1. Detectar una necesidad concreta.  
 2. Demostrarla con evidencia del código.  
-3. Verificar dependencias y versiones actuales (`package.json` / `composer.json` / lockfiles).  
+3. Verificar dependencias y versiones actuales (`package.json` / `composer.json` / `pyproject.toml` / lockfiles, `uv.lock` incluido).  
 4. Buscar una capacidad equivalente ya instalada o wrapper local.  
 5. Comparar: solución con stack actual | mejora interna sin dependencia | librería/herramienta externa.  
 6. Consultar documentación oficial (no versiones de memoria).  
@@ -59,19 +59,19 @@ No es obligatorio producir una propuesta en cada tarea. Si el stack actual ya re
 
 Contrastar con el inventario por capacidad de `02`. Presente pero mal usado → Hallazgo (subutilización), no reinstalar.
 
-El adaptador React de abajo es el esperado **cuando el repo es React**. En Vue, Angular u otro stack, la ausencia de TanStack Query, RHF, MUI o `cn()` no es PROP de instalarlos. Se pide el equivalente de esa capacidad en el stack (`01`). dayjs y el mapper de errores sí se esperan en cualquier cliente. El cliente HTTP es uno compartido más `SharedService`: `apiFetcher` donde el repo lo elige. En Angular es `HttpClient` más un interceptor, porque el framework lo impone (`LIBRARY_OWNED`). No se pide axios ahí.
+El adaptador React de abajo es el esperado **cuando el repo es React**. En Vue, Angular u otro stack, la ausencia de TanStack Query, RHF, MUI o `cn()` no es PROP de instalarlos. Se pide el equivalente de esa capacidad en el stack (`01`). dayjs y el mapper de errores sí se esperan en cualquier cliente TS. En un backend Python no se proponen libs JS: las fechas van en un módulo con datetimes aware (`01`). El cliente HTTP es uno compartido más `SharedService`: `apiFetcher` donde el repo lo elige. En Angular es `HttpClient` más un interceptor, porque el framework lo impone (`LIBRARY_OWNED`). No se pide axios ahí.
 
 | Capacidad | Adaptador React |
 |-----------|-----------------|
 | Server state + keys | TanStack Query + `query-key-factory` / `mergeQueryKeys` (o híbrido documentado) |
 | Forms + UI | RHF + Zod + i18n + MUI/Tailwind/`cn` (`04`, `10`, `15`) |
-| **dayjs** + módulo configurado | Fechas de negocio (`23`). Cualquier cliente |
+| **dayjs** + módulo configurado | Fechas de negocio (`23`). Cualquier cliente TS |
 | Cliente HTTP compartido + `SharedService` | HTTP único (`14`). `apiFetcher` en el adaptador React. En Angular, `HttpClient` + interceptor; no pedir axios |
-| `CustomError` + `ErrorMapper` | Errores traducidos (`14`). Cualquier cliente |
+| `CustomError` + `ErrorMapper` | Errores traducidos (`14`). Cualquier cliente TS |
 | `QueryClient` central | Defaults compartidos (`13`). Solo si el server state es React Query |
 | Realtime (Echo/Reverb) | **Solo si** el producto lo necesita — no stack mínimo |
 
-- dayjs ausente en un cliente → PROP **Librería faltante** (Alta) + hallazgo `new Date` si aplica.
+- dayjs ausente en un cliente TS → PROP **Librería faltante** (Alta) + hallazgo `new Date` si aplica.
 - dayjs presente, imports crudos / sin módulo → PROP **Abstracción interna** o Hallazgo.
 - React Query sin store de keys / invalidaciones con arrays sueltos → subutilización o abstracción interna.
 - axios ad-hoc / sin ErrorMapper → Hallazgo + PROP de abstracción.
@@ -116,6 +116,7 @@ El adaptador React de abajo es el esperado **cuando el repo es React**. En Vue, 
 - Sustituir MUI por otra UI lib por preferencia.
 - Instalar “la última moda” sin evidencia de dolor.
 - Instalar TanStack Query, RHF o MUI en un repo que no es React. Cumplir la capacidad con el equivalente del stack (`01`).
+- Proponer dayjs, Zod u otra lib JS en un backend Python.
 
 ## Preferencias canónicas (sin pin de versión)
 

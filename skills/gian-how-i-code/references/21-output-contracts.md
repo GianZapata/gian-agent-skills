@@ -31,7 +31,7 @@ Cargar cuando: cerrar un modo; formato de reportes.
 
 - El **mismo** archivo, actualizado
 - Secciones Checklist de aplicación + Registro de implementación dentro del archivo
-- Validación por lote documentada en §6
+- Validación por lote documentada en `18` §6
 
 ## Consultar estándar
 

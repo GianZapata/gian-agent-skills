@@ -4,7 +4,7 @@ description: "Mandatory visual PHP/Laravel style. Load whenever creating, editin
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.2.0"
+  version: "1.2.1"
 when-to-use: "Any PHP create/edit/refactor/review/audit/fix; Laravel Boost pint; format PHP; php-style-audit; php-style-fix. Not for CSS, TypeScript, SQL-only, or conversation without PHP."
 ---
 
@@ -42,12 +42,12 @@ Overrides y enforcement (`AUTOFIXABLE` / `AGENT-ENFORCED` / `DELIBERATE-OVERRIDE
 - Booleanos multilínea: `&&` / `||` terminan la línea anterior, toda expresión. OVERRIDE. `references/conditions.md`
 - Condición de control multilínea: primer operando en la línea siguiente; `)` al nivel de la keyword; luego `{` o la statement compacta. `references/conditions.md`
 - Continuación: `} elseif (` / `} else {` / `} catch (` / `} finally {` en la misma línea. `references/conditions.md`
-- Braces de clase/método/control/anonymous class en la misma línea; método/clase/ctor vacío `{}` compacto. OVERRIDE. `references/classes-functions.md`
+- Braces de clase/método/control/anonymous class en la misma línea; ctor promovido vacío `) {}`. OVERRIDE. `references/classes-functions.md`
 - Delimitadores multilínea: contenido +1; cierre al nivel de quien abrió. Un param sin promotion → una línea (`single-param-signature`). 2+ y ya multilínea → uno por línea. `references/calls-arguments.md` `references/classes-functions.md`
 - Promoted constructor: si `__construct` tiene ≥ 1 param promovido → multilínea (`promoted-constructor-multiline`). OVERRIDE sobre `single-param-signature`. `references/classes-functions.md`
 - Multiline trailing comma: obligatoria en listas multilínea; no decide single-line. `references/principles.md`
 - Modifier order: orden canónico PER-CS. `references/modifiers.md`
-- Attributes sin args: `#[Foo]` no `#[Foo()]`. `references/attributes.md`
+- Attributes sin args: `#[Foo]` no `#[Foo()]`. Attribute de parámetro en la misma línea que el parámetro (`parameter-attribute-inline`). OVERRIDE. `references/attributes.md`
 - Una property/const por sentencia. `references/classes-functions.md`
 - Entre métodos de clase: exactamente una línea vacía (metadata del siguiente método incluido). `references/vertical-spacing.md`
 - Arrays multilínea: alinear `=>` entre hermanos del mismo nivel. Match: región propia. `references/delimiters-arrays.md`
@@ -55,11 +55,19 @@ Overrides y enforcement (`AUTOFIXABLE` / `AGENT-ENFORCED` / `DELIBERATE-OVERRIDE
 - Comentarios / PHPDoc: no emitir; strip PHPDoc y comentarios fuera de cuerpo; intra-cuerpo útil se conserva. `references/principles.md`
 - Named args: `name: $value` sin pad de `:`. `references/calls-arguments.md`
 - Chains largas: `->` inicia continuación. `references/chains.md`
-- Concat: espacios alrededor de `.`. Ternario: `?` / `:` inician línea. `??` y union/intersection `|` `&`: operador termina la línea anterior. `references/expressions.md`
-- Arrow: `fn($x)` no `fn ($x)`; `=>` multilínea termina la firma. `references/expressions.md`
-- Bloques lógicos / switch cases: una línea en blanco. `references/vertical-spacing.md`
+- Concat: espacios alrededor de `.`. `references/expressions.md`
+- `??` partido (`null-coalesce-break`) y union/intersection `|` `&`: el operador termina la línea anterior. OVERRIDE. `references/expressions.md`
 - Heredoc/nowdoc, `declare(strict_types=1)` (no añadir), sintaxis alternativa PHP: preservar. `references/principles.md`
 - Corto y legible → inline. Largo → multilínea geométrica. Sin límite rígido 80/100/120 salvo el proyecto.
+
+## Preferencias
+
+PREFERENCE: WRITE las aplica; AUDIT FAIL solo si es objetivamente determinable.
+
+- Ternario multilínea: `?` / `:` inician la línea. `references/expressions.md`
+- Arrow: `fn($x)` no `fn ($x)`; `=>` multilínea termina la firma. `references/expressions.md`
+- Clase o método vacío: `{}` compacto. `references/classes-functions.md`
+- Bloques lógicos / switch cases: una línea en blanco. `references/vertical-spacing.md` `references/conditions.md`
 
 ## Decision Gates
 

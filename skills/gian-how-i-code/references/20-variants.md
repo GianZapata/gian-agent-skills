@@ -32,6 +32,7 @@ No es una variante que reemplace el estándar. Es el delta de vista (`25`). Dete
 | Vista | TSX | `.vue` + script setup hermano |
 | Carpeta de estado de UI | `hooks/` | `composables/` |
 | Server state | React Query | El cliente de datos que el repo ya usa |
+| Store de overlays (variante) | Zustand | Pinia o provide/inject si ya existen (12) |
 
 El núcleo no se sustituye: naming (`04`), helpers de área (`23`), enums (`07`), contratos, errores y display.
 

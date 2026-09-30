@@ -1,10 +1,10 @@
-# 13 — Data fetching (TanStack React Query)
+# 13 — Data fetching: núcleo ruta ≠ body; adaptador TanStack Query
 
 Cargar cuando: services, hooks query/mutation, query keys, invalidación, opciones de caché, IDs de ruta vs DTO, `TVariables`.
 
 ## Alcance
 
-- **Núcleo:** ruta ≠ body, firmas del service `(id, data)` o `(params, data)`, y el DTO sale de un schema nombrado. No invalidar sin filtro. La UI no arma `FormData`. Vale aunque el cliente de datos no sea React Query.
+- **Núcleo:** ruta ≠ body, firmas del service `(id, data)` o `(params, data)`, y el DTO sale de un schema nombrado. No invalidar sin filtro. La UI no arma `FormData`. La cancelación es la del stack: `AbortSignal`, o `takeUntilDestroyed`/unsubscribe en RxJS. Vale aunque el cliente de datos no sea React Query.
 - **Adaptador React:** QueryClient, query-key-factory, `useQuery` / `useMutation`, el envelope `*Variables` (§4) y el resto de este archivo. El envelope existe en React Query o Vue Query; no es núcleo.
 
 ## 1. Responsabilidad
@@ -321,15 +321,23 @@ Devtools: útil en dev; no es dependencia de producción obligatoria.
 
 ## 7. Checklist rápido
 
+### Núcleo (cualquier stack)
+
+- [ ] DTO desde un schema nombrado; no interface Input paralela (`10`)
+- [ ] Ruta ≠ body: service `(id, data)` o `(params, data)` (§4)
+- [ ] Multipart: service llama `FormDataHelper`; UI no arma FormData (`23`/`09`)
+- [ ] Invalidación dirigida; nunca sin filtro
+- [ ] Params tipados y normalizados
+- [ ] Sin duplicar server state en un store de UI
+- [ ] Cancelación del stack reenviada al service (`AbortSignal`, o `takeUntilDestroyed`/unsubscribe)
+
+### Adaptador React
+
 - [ ] Variables del `queryFn` están en la key
 - [ ] QueryClient central reutilizado (no uno por feature)
 - [ ] Query: interface `*QueryProps` con `Omit<UseQueryOptions…, 'queryKey' | 'queryFn'>`
 - [ ] Mutation: interface `Use*MutationOptions` + solo `mutationFn` en el hook; toast/invalidate en el caller
-- [ ] DTO desde Zod (`z.infer`); `TVariables` = DTO o envelope `*Variables` (§4), no interface Input paralela
-- [ ] Ruta ≠ body: service `(id, data)` o `(params, data)`; TVariables según tabla §4
+- [ ] DTO con `z.infer`; `TVariables` = DTO o envelope `*Variables` según la tabla de §4
 - [ ] `useMutation<TData, CustomError, TVariables>` con los 3 genéricos
-- [ ] Multipart: service llama `FormDataHelper`; UI no arma FormData (`23`/`09`)
 - [ ] Invalidación vía store (`_def` / `queryKey`), no strings
-- [ ] Params tipados y normalizados
-- [ ] Sin duplicar server state fuera de Query
 - [ ] PROP de ESLint Query solo con evidencia

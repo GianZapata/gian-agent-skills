@@ -9,13 +9,13 @@ Cargar cuando: estado cliente, drawers store, filters locales.
 
 ## Separación de responsabilidades
 
-| Tipo | Dónde vive |
-|------|------------|
-| Server state (remoto) | TanStack React Query |
-| Estado de formulario | React Hook Form |
-| UI local (isOpen, tab, selección de fila) | `useState` / URL params |
-| Store de overlays (variante) | Zustand / store tipado del repo |
-| Estado derivado | Calcular durante render / `select` de Query; `useMemo` según `23` A–E; no copiar a otro store |
+| Tipo | Adaptador React | Equivalente |
+|------|-----------------|-------------|
+| Server state (remoto) | TanStack React Query | El cliente de datos del stack (`13`) |
+| Estado de formulario | React Hook Form | El form del stack (`10`) |
+| UI local (isOpen, tab, selección de fila) | `useState` / URL params | El primitivo del framework (`ref` en Vue, signal o campo en Angular) / URL params |
+| Store de overlays (variante) | Zustand / store tipado del repo | Pinia o `provide`/`inject` si ya existen. No introducir el otro |
+| Estado derivado | Calcular durante render / `select` de Query; `useMemo` según `23` A–E | `computed` según `23` A–E (`25`). No copiar a otro store |
 
 ## Default
 
@@ -29,5 +29,5 @@ Cargar cuando: estado cliente, drawers store, filters locales.
 
 ## Prohibido
 
-- Duplicar server state en Zustand/Context/Redux “porque sí”
+- Duplicar server state en Zustand/Context/Redux/Pinia “porque sí”
 - Hoistear estado de form de diálogo al padre

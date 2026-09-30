@@ -14,9 +14,9 @@ Cargar cuando: el usuario pide auditar **todo** / el **proyecto** / el **repo** 
 
 ## 2. Alcance e inventario
 
-Incluir (si existen): `app/`, `apps/*/src`, `components/`, `features/`, `hooks/`, `lib/`, `stores/`, `types/`, `resources/` (Laravel), tests, configs que afecten arquitectura/TS/ESLint/Query/Next/Firebase/validación.
+Incluir (si existen): `app/`, `apps/*/src`, `components/`, `features/`, `hooks/`, `lib/`, `stores/`, `types/`, `resources/` (Laravel), routers y schemas `*.py` (Python), tests, configs que afecten arquitectura/TS/ESLint/Query/Next/Firebase/validación (`pyproject.toml` incluido).
 
-Excluir por defecto: `node_modules`, `.next`, `dist`, `build`, `coverage`, artefactos generados, cachés, vendor. **Toda exclusión extra** → declarar y justificar.
+Excluir por defecto: `node_modules`, `.next`, `dist`, `build`, `coverage`, `.venv`, `__pycache__`, artefactos generados, cachés, vendor. **Toda exclusión extra** → declarar y justificar.
 
 Inventario reproducible (`git ls-files` o equivalente). Registrar:
 
@@ -61,7 +61,7 @@ Categorías mínimas a cubrir (contrastar con references vigentes):
 |-----------|------------------|
 | Mutations | `13` |
 | Queries / subscriptions / realtime | `13`, `20` |
-| Forms / Zod | `10` |
+| Validación en el borde | `10`, `01` |
 | Display | `08` |
 | Overlays | `09` |
 | Fechas / helpers / duplicación | `23` |
@@ -78,7 +78,7 @@ La verdad es cada `references/NN`. Ejemplos de búsqueda:
 - Fechas: `new Date(`, `Date.now(`, `import dayjs from`, `@/lib/dayjs`, `formatDate`, `toLocaleDateString`
 - Mutations: `useMutation`, `UseMutationOptions`, `mutationFn`, `onSuccess`, `invalidateQueries`, tipos híbridos (`contractId` junto a `body`), `new FormData(`
 - Queries: `useQuery`, `UseQueryOptions`, `queryKey`, `onSnapshot`, `getDocs`
-- Forms: `useForm`, `z.object`, `z.infer`, `interface *Input`, `zodResolver`
+- Validación en el borde: `useForm`, `z.object`, `z.infer`, `interface *Input`, `zodResolver`; en Python, `BaseModel`, `RequestValidationError`
 - Display: `ColorHelper`, `getPrimaryLabel`, ternarios anidados
 - Overlays: `*Dialog*`, `*Modal*`, `*Drawer*`
 - Naming: `handle[A-Z]`, files `use-*.ts(x)` / `use_*.ts(x)`, `export function`, `className=\``, `as any`

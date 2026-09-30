@@ -1,14 +1,19 @@
 # 14 — Errores, HTTP client y feedback
 
-Cargar cuando: ErrorMapper, CustomError, apiFetcher, toasts, 422, mensajes API.
+Cargar cuando: ErrorMapper, CustomError, apiFetcher, HttpClient/interceptor, toasts, 422, mensajes API.
+
+## Alcance
+
+- **Núcleo:** un cliente compartido, un mapper de errores, 401 → clear session si el producto lo requiere, 422 por campo con el mensaje del backend, toasts humanos.
+- **Adaptador:** React usa `apiFetcher` (axios) + `CustomError` / `ErrorMapper`. Angular usa `HttpClient` + interceptor (`LIBRARY_OWNED`); no se pide axios (`19`). La cancelación es `AbortSignal` o `takeUntilDestroyed`.
 
 ## Cliente HTTP (regla)
 
 - Un **cliente compartido** (`apiFetcher` o equivalente): baseURL API, credentials, headers comunes.
 - Interceptor de auth (p. ej. Bearer desde store) y **401 → clear session** cuando el producto lo requiera.
-- Services / `SharedService` usan ese cliente; **no** `axios.create` ad-hoc por feature.
+- Services / `SharedService` usan ese cliente; **no** un cliente ad-hoc por feature (`axios.create` en React).
 
-Si falta el cliente o hay varios axios sueltos → Hallazgo + PROP de abstracción interna (`19`).
+Si falta el cliente o hay varios clientes sueltos → Hallazgo + PROP de abstracción interna (`19`).
 
 ## CustomError + ErrorMapper (regla)
 
@@ -39,5 +44,5 @@ Mutaciones (caller): `onError` → `ErrorMapper.getTranslatedMessage(error)` —
 
 - Toast con `error.message` crudo cuando existe `getTranslatedMessage`
 - Duplicar lógica de parseo Axios en cada service
-- Crear un segundo axios client “porque es más fácil”
+- Crear un segundo cliente HTTP “porque es más fácil”
 - Toast o copy genérico en lugar del 422 por campo cuando el patrón del repo ya mapea campos

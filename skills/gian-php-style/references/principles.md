@@ -4,7 +4,7 @@
 
 1. **BASELINE / RECOMMENDED** — PHP moderno razonable cuando esta skill no especifica. No vender preferencias de Gian como "best practice universal".
 2. **GIAN PREFERENCES** — estilo deliberado. Audit FAIL sólo si es objetivamente determinable; wrapping/legibilidad dudosa → GAP (no FAIL).
-3. **GIAN DELIBERATE OVERRIDES** — contradicen PSR-12 / PER-CS: single-statement-if sin llaves **cuando el body es una línea física**; booleanos `&&`/`||` al **final** de línea; union/intersection `|`/`&` al final de línea; braces de clase/método/anonymous class same-line; empty class/method/ctor `{}` compacto; validation lists 2+ vertical.
+3. **GIAN DELIBERATE OVERRIDES** — contradicen PSR-12 / PER-CS: single-statement-if sin llaves **cuando el body es una línea física**; booleanos `&&`/`||` al **final** de línea; union/intersection `|`/`&` y `??` partido al final de línea; attribute de parámetro inline; braces de clase/método/anonymous class same-line; ctor promovido vacío `) {}`; validation lists 2+ vertical. Clase o método vacío `{}` es PREFERENCE.
 4. **NEUTRAL / DO NOT AUDIT** — no añadir `declare(strict_types=1)`.
 
 ## Precedence

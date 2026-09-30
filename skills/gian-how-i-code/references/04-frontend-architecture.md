@@ -197,5 +197,4 @@ Selectores `'& .Mui…'` son fallback, no default. No inventar nombres de slot: 
 
 - Componentes PascalCase
 - Callbacks `on*` / verbos; **prohibido `handle*`**
-- Hooks custom (**HARD**): archivo, directorio 1:1, export `use*` e import specifier en camelCase. `use-`/`use_` + segmentos → `use` + PascalCase (`use-dashboard` → `useDashboard`). Nunca kebab/snake. Implementar: rename en alcance (archivo/dir + imports); no barrer el repo. Auditar: Hallazgo. **No** aplica a barrels del molde (`<entity>.queries.ts`, `<entity>.mutations.ts`) ni a `.interface` / `.schema` / `.service` / `.helper` / `.util`.
-- Sin comentarios en código productivo — `gian-react-ts-style` `comments-noise` (conservar directives)
+- Archivos `use*` y composables (**HARD**): archivo, directorio 1:1, export `use*` e import specifier en camelCase. `use-`/`use_` + segmentos → `use` + PascalCase (`use-dashboard` → `useDashboard`). Nunca kebab/snake. Implementar: rename en alcance (archivo/dir + imports); no barrer el repo. Auditar: Hallazgo. **No** aplica a barrels del molde (`<entity>.queries.ts`, `<entity>.mutations.ts`) ni a `.interface` / `.schema` / `.service` / `.helper` / `.util`.

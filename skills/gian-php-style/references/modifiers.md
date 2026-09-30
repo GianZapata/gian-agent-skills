@@ -20,7 +20,7 @@ final public static function execute(): void {
 
 protected private(set) string $name;
 
-private readonly WhatsAppGateway $gateway;
+private readonly PaymentGateway $gateway;
 
 protected static string $name;
 ```

@@ -4,16 +4,16 @@ Cargar cuando: formularios, RHF, Zod, DTOs de mutation (body HTTP), campos condi
 
 ## Alcance
 
-- **Núcleo:** el body sale del schema Zod nombrado (`z.infer`); prohibido `interface *Input` y el payload anónimo; los IDs de ruta no entran al schema; fuera del componente, `i18n.t()`; 422 por campo con el mensaje del backend.
-- **Adaptador React:** RHF, `Controller`, `useFieldArray`, `zodResolver`, Container/Form. En otro stack, el form de ese stack enlaza el mismo schema.
+- **Núcleo:** el body sale de un schema nombrado. Prohibido un `interface *Input` paralelo y el payload anónimo. Los IDs de ruta no entran al schema. Fuera del componente, `i18n.t()`. 422 por campo con el mensaje del backend.
+- **Adaptador:** en TypeScript, ese schema es Zod y el tipo sale de `z.infer`. En Python, es un body model de Pydantic. En React: RHF, `Controller`, `useFieldArray`, `zodResolver`, Container/Form. En otro stack, el form de ese stack enlaza el mismo schema.
 
-## Stack
+## Stack (adaptador React)
 
 RHF + Zod + zodResolver. Schemas fuera del componente. Tipos con `z.infer` / `z.input` / `z.output`. No form state solo con `useState` (salvo micro-forms locales justificados).
 
 ## Input / DTO (regla)
 
-- El shape de form y el **body HTTP** salen del **schema Zod nombrado** (`schemas/`).
+- El shape de form y el **body HTTP** salen del **schema nombrado** (`schemas/`; Zod en TypeScript).
 - Exportar: `export type EntityDto = z.infer<typeof entitySchema>` (o `z.input` / `z.output`).
 - Ese tipo es `data` en el service y, cuando aplica, `TVariables` o `TVariables['data']` (`13`).
 - **Prohibido** `interface EntityCreateInput` / `interface XxxDto` a mano que duplique el schema.

@@ -20,7 +20,7 @@ Preferir **composición** cuando haya dependencias, configuración, estado propi
 
 | Principio | Regla práctica |
 |-----------|----------------|
-| SRP | Controller HTTP; FormRequest valida; Action caso de uso; Query lectura; Resource serializa; SM transiciones; Service/Adapter externo |
+| SRP | Controller HTTP; el schema del borde valida (FormRequest); el service es el caso de uso (Action en Laravel); Query lectura; el serializer serializa (Resource); SM transiciones; Adapter para lo externo (Service en Laravel) |
 | OCP | Sin abstracciones anticipadas; aplicar cuando haya variación real (proveedores, estrategias, central/tenant) |
 | LSP | Evitar herencia que desactiva al padre; preferir composición |
 | ISP | Interfaces pequeñas por capacidad; no contratos enormes |

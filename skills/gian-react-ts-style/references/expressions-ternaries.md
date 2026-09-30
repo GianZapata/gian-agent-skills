@@ -6,26 +6,26 @@
 
 El FIX depende del **resultado**:
 
-- **JSX en render** → if / early return en el componente (`gian-how-i-code` `08`). **No** envolver en `useMemo`.
+- **JSX en render** → if / early return en el componente (`gian-how-i-code` `08`).
 - **Valor derivado** (string/objeto/número) → `derived-multi-branch`.
 
 AST-SENSITIVE. Si el rewrite no es 1:1 → GAP.
 
 ## Derived multi-branch (PREFERENCE, STYLE_GIAN)
 
-`derived-multi-branch`. Valor con varias ramas que produciría nested ternary:
+`derived-multi-branch`. Un valor con varias ramas que sería un ternario anidado se escribe como una cadena de `if` con `return`. Si se envuelve en `useMemo` (React) o `computed` (Vue) lo decide `gian-how-i-code` `23`.
 
 ```ts
-const statusLabel = useMemo(() => {
+const getStatusLabel = (): string => {
   if (isLoading) return 'Cargando';
   if (hasError) return 'Error';
   if (isEmpty) return 'Sin registros';
 
   return 'Listo';
-}, [hasError, isEmpty, isLoading]);
+};
 ```
 
-Esto es **claridad estructural**, no requisito de performance ni de React Compiler. Ver `gian-how-i-code` `23` (A–E).
+Esto es **claridad estructural**, no requisito de performance ni de React Compiler.
 
 No:
 
@@ -41,15 +41,6 @@ const statusLabel = isLoading
 
 Dos ramas → ternario simple (`simple-jsx-ternary` o ternario de valor). No extraer.
 
-## Ceremonial useMemo (prohibido aquí y en `23`)
+## Memoización
 
-No:
-
-```ts
-const fullName = useMemo(
-  () => `${firstName} ${lastName}`,
-  [firstName, lastName],
-);
-```
-
-Una expresión trivial → cálculo directo. `useMemo` de performance (MRT `columns`, identidad referencial) sigue en `23`/`11`.
+Cuándo usar o quitar `useMemo` / `computed` (incluido el ceremonial) lo decide `gian-how-i-code` `23`.
