@@ -35,10 +35,10 @@ Ningún archivo en alcance puede quedar omitido en silencio. Clasificar cada uno
 Auxiliar permitido si el inventario es enorme:
 
 ```text
-pattern-audit/YYYY-MM-DD-<alcance>-coverage-ledger.md
+docs/pattern-audit/YYYY-MM-DD-<alcance>-coverage-ledger.md
 ```
 
-El reporte principal sigue siendo el único `…-auditoria.md` (`18`, `21`).
+El reporte principal sigue siendo el único `docs/pattern-audit/…-auditoria.md` (`18`, `21`). La carpeta se ignora en el `.gitignore` de la raíz git auditada, como dice `18`.
 
 ## 3. Variante del repo
 

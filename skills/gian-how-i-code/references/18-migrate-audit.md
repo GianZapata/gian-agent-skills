@@ -23,15 +23,16 @@ Reglas de molde: leer la **versión instalada** de la skill y sus references —
 ## Salida (un solo archivo)
 
 ```text
-pattern-audit/YYYY-MM-DD-<alcance>-auditoria.md
+docs/pattern-audit/YYYY-MM-DD-<alcance>-auditoria.md
 ```
 
-Ejemplos de `<alcance>`: `machines`, `entities`, `repo`.
+La ruta es relativa a la raíz git del repo auditado, no a un repo padre. Ejemplos de `<alcance>`: `machines`, `entities`, `repo`.
 
 - **Un único** `.md` de auditoría. No carpetas multi-archivo por feature.
 - Si ya existe el archivo del mismo alcance/día, **actualizarlo**; no un segundo reporte paralelo.
 - Numeración `H-` / `PROP-` **global**.
-- Solo en **repo completo**: auxiliar opcional `pattern-audit/YYYY-MM-DD-<alcance>-coverage-ledger.md` si el inventario de archivos es inmanejable (`24`).
+- Solo en **repo completo**: auxiliar opcional `docs/pattern-audit/YYYY-MM-DD-<alcance>-coverage-ledger.md` si el inventario de archivos es inmanejable (`24`).
+- Al escribir, si el `.gitignore` de esa raíz no ignora `docs/pattern-audit/`, se agrega esa línea. Si no hay `.gitignore`, se crea con esa sola línea. Si la entrada ya está, no se duplica. No se ignora `docs/` entero.
 
 Idioma: **español**.
 

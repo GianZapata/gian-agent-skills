@@ -12,7 +12,7 @@ Cargar cuando: cerrar un modo; formato de reportes.
 
 ## Auditar — feature / módulo
 
-- Un solo archivo: `pattern-audit/YYYY-MM-DD-<alcance>-auditoria.md`
+- Un solo archivo: `docs/pattern-audit/YYYY-MM-DD-<alcance>-auditoria.md`, en la raíz git del repo auditado. Si el `.gitignore` de esa raíz no ignora `docs/pattern-audit/`, se agrega esa línea (`18`).
 - Español: Contexto, Resumen, Hallazgos, Propuestas, Lotes
 - Sin cambios de código
 - Sin carpetas multi-archivo por feature
@@ -21,7 +21,7 @@ Cargar cuando: cerrar un modo; formato de reportes.
 
 - Mismo path canónico (`…-repo-auditoria.md` o `<alcance>=repo`)
 - Protocolo `24`: inventario, matriz variante, tabla por feature, categorías sin hallazgos con evidencia, registro de búsquedas, Gate, disposición
-- Auxiliar opcional: `pattern-audit/YYYY-MM-DD-<alcance>-coverage-ledger.md`
+- Auxiliar opcional: `docs/pattern-audit/YYYY-MM-DD-<alcance>-coverage-ledger.md`
 - **Prohibido** concluir “altamente alineado” / cierre completo sin Gate
 - **Prohibido** muestreo de pocas features como auditoría completa
 - Sin cuota mínima de hallazgos
@@ -41,4 +41,4 @@ Cargar cuando: cerrar un modo; formato de reportes.
 
 ## Compatible con writing-plans
 
-El único `pattern-audit/YYYY-MM-DD-<alcance>-auditoria.md` es fuente válida para `writing-plans` (no re-auditar). El coverage-ledger es soporte, no reemplazo del reporte.
+El único `docs/pattern-audit/YYYY-MM-DD-<alcance>-auditoria.md` es fuente válida para `writing-plans` (no re-auditar). El coverage-ledger es soporte, no reemplazo del reporte.

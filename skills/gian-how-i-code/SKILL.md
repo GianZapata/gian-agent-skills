@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.4.2"
+  version: "1.4.3"
 ---
 
 # gian-how-i-code
@@ -90,7 +90,7 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 ### Por modo
 
 **Implementar:** aplicar molde en alcance nuevo; reportar bloqueos; checklist `03`/`05`/`17`; Evaluación de mejoras de stack si hay evidencia.  
-**Auditar (feature):** escanear vs molde; un solo `pattern-audit/YYYY-MM-DD-<alcance>-auditoria.md` (ES); Hallazgos / Propuestas.  
+**Auditar (feature):** escanear vs molde; un solo `docs/pattern-audit/YYYY-MM-DD-<alcance>-auditoria.md` en la raíz git del repo auditado (ES); Hallazgos / Propuestas. Si el `.gitignore` de esa raíz no ignora `docs/pattern-audit/`, se agrega esa línea.  
 **Auditar (repositorio completo):** `18` + **`24`** (inventario, barridos, gate, disposición); mismo path de reporte; ledger auxiliar solo si hace falta; sin “alineado” sin gate.  
 **Auditar + aplicar:** igual + checklist/registro **en el mismo archivo**; solo ítems aprobados; sin installs no aprobados.  
 **Consultar:** responder desde references; distinguir Regla / Default / Variante / Excepción / Propuesta; citar ruta.
@@ -133,7 +133,7 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 ## Output Contract
 
 - Implementar: archivos tocados + checklist + propuestas pendientes.
-- Auditar (feature): un solo `pattern-audit/YYYY-MM-DD-<alcance>-auditoria.md` (Hallazgos + Propuestas).  
+- Auditar (feature): un solo `docs/pattern-audit/YYYY-MM-DD-<alcance>-auditoria.md` en la raíz git del repo auditado (Hallazgos + Propuestas). Si falta, `docs/pattern-audit/` entra al `.gitignore` de esa raíz.  
 - Auditar (repo completo): igual + gate/cobertura `24`; sin muestreo; sin “alineado” prematuro.  
 - Aplicar: actualizar el mismo archivo (checklist + registro) + validación del repo.  
 - Consultar: respuesta con cita `references/<file>.md` §sección.

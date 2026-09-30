@@ -72,4 +72,4 @@ Una tarea de formulario/validación no está terminada sin el completion gate de
 
 ## Qué no hacer aquí
 
-No abrir workflow completo de `ui-audit/` con modos A/B+/C de densidad/layout vivacidad. Si el usuario pide auditoría UX visual profunda, aplicar patrones de esta reference + `08`/`09`/`15`; reportar en `pattern-audit` o, si pide pasada visual Playwright densa, hacerlo como extensión de Auditar bajo este estándar (no reactivar skill shim).
+No abrir workflow completo de `ui-audit/` con modos A/B+/C de densidad/layout vivacidad. Si el usuario pide auditoría UX visual profunda, aplicar patrones de esta reference + `08`/`09`/`15`; reportar en `docs/pattern-audit` o, si pide pasada visual Playwright densa, hacerlo como extensión de Auditar bajo este estándar (no reactivar skill shim).

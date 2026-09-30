@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.3 — 2026-09-30
+
+- Auditoría: el reporte vive en `docs/pattern-audit/` de la raíz git del repo auditado. Si esa carpeta no está en el `.gitignore` de esa raíz, se agrega. No se ignora `docs/` entero.
+
 ## 1.4.2 — 2026-09-30
 
 - Vue (`25`): si hay computed, handler, `watch` o llamada al service, vive en `composables/useThing.ts`. El script inline solo declara macros, imports y la llamada. El `.vue` no acumula esa lógica.
