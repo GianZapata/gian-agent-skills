@@ -12,9 +12,9 @@
 
 ```text
 explicit user instruction
-  > HARD gian-react-ts-style
+  > HARD gian-ts-style
   > repo ESLint/Prettier already active
-  > PREFERENCE gian-react-ts-style
+  > PREFERENCE gian-ts-style
   > recommended baseline
 ```
 

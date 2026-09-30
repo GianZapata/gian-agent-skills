@@ -10,7 +10,7 @@ Cargar cuando: listados, MRT/CustomTable, exports, filtros.
 ## Default
 
 - Tabla sobre wrapper compartido del proyecto (`CustomTable` o equivalente), no MRT crudo si existe wrapper
-- Columnas `useMemo` + `Cell: ({ row: { original } }) => …` (estabilidad MRT; `23` caso E, no display ceremonial). Sintaxis del callback: `gian-react-ts-style`
+- Columnas `useMemo` + `Cell: ({ row: { original } }) => …` (estabilidad MRT; `23` caso E, no display ceremonial). Sintaxis del callback: `gian-ts-style`
 - Celdas compartidas: DateTime, StatusChip, etc.
 - Export: hook tipo `useExport`
 - Fechas: `useDateRangeFilter` o equivalente

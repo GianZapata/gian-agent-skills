@@ -9,7 +9,7 @@ Publish only:
 - `gian-development-workflow`
 - `gian-how-i-code`
 - `gian-php-style`
-- `gian-react-ts-style`
+- `gian-ts-style`
 
 Do not add `gian-daily-work-report`, CV, LinkedIn, or resume skills. Do not commit `evals/`.
 

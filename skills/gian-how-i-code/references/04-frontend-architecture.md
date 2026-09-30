@@ -18,7 +18,7 @@ Cargar cuando: estructura FE, MUI+Tailwind, organización de componentes, stylin
 
 Este stack es el adaptador React. Otro stack no hereda MUI, RHF ni React Query. El núcleo sigue (`01`); el delta de vista, si existe, se suma (`25` en Vue).
 
-Sintaxis TS/TSX: `gian-react-ts-style` (no decide Tailwind/MUI/`sx`). Mecánica de `cn()` y anti-patrones: `23`. Contratos de props de librería (MUI/RHF/TanStack): tipo oficial, no shadow — `07`. Labels/colores de **display de estado**: `08` (metadata del enum en el entity helper; ad-hoc inline). Tokens MUI: `theme.palette` aquí.
+Sintaxis TS/TSX: `gian-ts-style` (no decide Tailwind/MUI/`sx`). Mecánica de `cn()` y anti-patrones: `23`. Contratos de props de librería (MUI/RHF/TanStack): tipo oficial, no shadow — `07`. Labels/colores de **display de estado**: `08` (metadata del enum en el entity helper; ad-hoc inline). Tokens MUI: `theme.palette` aquí.
 
 ## Styling ownership — MUI + Tailwind
 
@@ -198,3 +198,17 @@ Selectores `'& .Mui…'` son fallback, no default. No inventar nombres de slot: 
 - Componentes PascalCase
 - Callbacks `on*` / verbos; **prohibido `handle*`**
 - Archivos `use*` y composables (**HARD**): archivo, directorio 1:1, export `use*` e import specifier en camelCase. `use-`/`use_` + segmentos → `use` + PascalCase (`use-dashboard` → `useDashboard`). Nunca kebab/snake. Implementar: rename en alcance (archivo/dir + imports); no barrer el repo. Auditar: Hallazgo. **No** aplica a barrels del molde (`<entity>.queries.ts`, `<entity>.mutations.ts`) ni a `.interface` / `.schema` / `.service` / `.helper` / `.util`.
+
+## Orden dentro del composable, hook o componente (HARD)
+
+Aplica a composables Vue, hooks React, services Angular con estado y al cuerpo de un componente React. La línea en blanco entre grupos es formato: `gian-ts-style`.
+
+1. Dependencias: router, route, stores, `inject()`, otros composables.
+2. Estado: `ref` / `useState` / `signal`.
+3. Derivados: `computed` / `useMemo`, según A–E de `23`.
+4. Funciones: helpers internos y handlers.
+5. Efectos: `watch` / `useEffect` / `effect`.
+6. Ciclo de vida: `onMounted`.
+7. `return`, o el JSX en un componente.
+
+Dependencias y estado van en bloques separados. No se pega un efecto antes de un derivado.

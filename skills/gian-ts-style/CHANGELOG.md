@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.0 — 2026-09-30
+
+- Renombrada desde `gian-react-ts-style`. El núcleo es TypeScript y vale en React, Vue, Angular y Node. JSX queda como sección solo React.
+- `vertical-spacing`: una línea en blanco entre secciones. Declaraciones cortas del mismo tipo juntas. Sin comentarios de sección.
+
 ## 1.1.0 — 2026-09-30
 
 - Alcance: cualquier stack TS. Vue (hermano `.ts` y `<script setup lang="ts">`) sin reglas JSX ni `react-component-*`; Angular: clases, decoradores y DI son GAP o `LIBRARY_OWNED`; Node: funciones libres con `exported-arrow-default`, clases Nest/Express GAP. `.js`/`.jsx`/`.mjs`/`.cjs` fuera.

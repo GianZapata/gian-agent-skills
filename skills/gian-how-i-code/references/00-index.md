@@ -30,4 +30,4 @@ Cargar cuando: arranque humano, modo Consultar, orientación general.
 | 24 | `24-full-repo-audit.md` | Auditar repositorio completo (coverage ledger / gate) |
 | 25 | `25-vue-sfc.md` | Delta Vue: script setup inline, `Props` / `Emits`, `defineModel`, overlays con `v-if`, `composables/`. No reemplaza el núcleo |
 
-Formato visual PHP: skill `gian-php-style`. Formato visual TS/TSX: skill `gian-react-ts-style`. Ninguno es un capítulo de esta skill.
+Formato visual PHP: skill `gian-php-style`. Formato visual TS/TSX: skill `gian-ts-style`. Ninguno es un capítulo de esta skill.

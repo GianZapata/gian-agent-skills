@@ -11,8 +11,8 @@ Cargar cuando: arranque, conflicto de reglas, modo Consultar sobre “por qué�
 5. **Diálogo dueño** de mutación + invalidate; padre solo trigger + entidad + onClose. En React el montaje es `{isOpen && user && (`; en otro stack, el overlay equivalente. La propiedad no cambia.
 6. **YAGNI + migración oportunista**: al tocar, alinear; no refactor masivo no pedido. No escribir un capítulo de stack (Angular, Node, Python, …) sin un repo real.
 7. **Evaluación de mejoras de stack** antes de instalar; mala práctica ≠ “instala una lib”.
-8. **Fechas, helpers y estilo** (`23`/`04`): dayjs vía el módulo del repo; utils chicos / helpers clase de área; alias claros, no opacos. En el adaptador React: `cn()` para clases que varían, Tailwind-first, sin `*_SX` locales, memo A–E. Sintaxis TS/TSX → `gian-react-ts-style`.
-9. **Formato PHP** no vive aquí: cargar `gian-php-style`. **Formato TS/TSX** no vive aquí: cargar `gian-react-ts-style` (WRITE/FIX corrigen el hunk; AUDIT no edita).
+8. **Fechas, helpers y estilo** (`23`/`04`): dayjs vía el módulo del repo; utils chicos / helpers clase de área; alias claros, no opacos. En el adaptador React: `cn()` para clases que varían, Tailwind-first, sin `*_SX` locales, memo A–E. Sintaxis TS/TSX → `gian-ts-style`.
+9. **Formato PHP** no vive aquí: cargar `gian-php-style`. **Formato TS/TSX** no vive aquí: cargar `gian-ts-style` (WRITE/FIX corrigen el hunk; AUDIT no edita).
 10. **Ruta ≠ body.** IDs de URL no se mezclan con el DTO. Firmas y `TVariables` en `13`; schema en `10`.
 11. **El lenguaje no apaga el estándar.** Núcleo y adaptador, abajo. Una API de React que el stack no tiene no es permiso para saltarse la responsabilidad.
 

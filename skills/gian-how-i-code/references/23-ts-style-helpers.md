@@ -7,7 +7,7 @@ Cargar cuando: Implementar FE, crear util/helper, fechas en frontend, multipart/
 - **Núcleo:** renombres explícitos, dayjs, utils vs helpers, `FormDataHelper` y la sección de duplicación. Un área es `export class XxxHelper`. Una función suelta de área (fecha, número, etiqueta, dinero) es hallazgo.
 - **Adaptador React:** memoización A–E y `cn()` / `className`. En Vue, los mismos casos A–E deciden `computed` (`25`). Sin `cn()`, las clases condicionales no se resuelven inventando la utilidad: se componen en el mecanismo del stack, sin concatenar nombres Tailwind dinámicos.
 
-**Formato visual TS/TSX** (arrows, braces, JSX, imports type, comments): skill `gian-react-ts-style`. Esta reference no duplica esas reglas. **Autoridad de styling** (Tailwind vs `sx` vs theme): `04`. Forma de `export const` utils: la style skill; **cuándo** crear util vs helper: aquí.
+**Formato visual TS/TSX** (arrows, braces, JSX, imports type, comments): skill `gian-ts-style`. Esta reference no duplica esas reglas. **Autoridad de styling** (Tailwind vs `sx` vs theme): `04`. Forma de `export const` utils: la style skill; **cuándo** crear util vs helper: aquí.
 
 ## Memoización React (regla)
 
@@ -16,7 +16,7 @@ No usar `useMemo`, `useCallback` o `memo` por costumbre de performance.
 | Caso | Qué hacer |
 |---|---|
 | A. expresión derivada sencilla | cálculo directo; no `useMemo` |
-| B. 2 ramas | ternario, o `&&` boolean-safe en JSX (`gian-react-ts-style`) |
+| B. 2 ramas | ternario, o `&&` boolean-safe en JSX (`gian-ts-style`) |
 | C. valor derivado multi-rama (evitaría nested ternary) | `useMemo` + `if` + early return — STYLE_GIAN de claridad, **no** claim de performance (`derived-multi-branch`) |
 | D. JSX multi-rama en render | `if` / early return en el componente (`08`); no `useMemo` |
 | E. performance / identidad referencial | frontera ya memoizada (p. ej. `columns` MRT, `11`) o evidencia real |
@@ -31,7 +31,7 @@ const fullName = useMemo(
 // A — sí
 const fullName = `${firstName} ${lastName}`;
 
-// C — sí (claridad; ver gian-react-ts-style)
+// C — sí (claridad; ver gian-ts-style)
 const statusLabel = useMemo(() => {
   if (isLoading) return t('…');
   if (hasError) return t('…');
@@ -110,7 +110,7 @@ Excepciones (igual que `04`): mapping semántico reutilizable de variantes; prim
 
 ## Renombres explícitos (default)
 
-Alias claros frente a nombres opacos (`d`, `o`, `x`). Geometría de destructuring: `gian-react-ts-style` (`query-data-alias`, `direct-property-access`). MRT `Cell: ({ row: { original } })` se queda en `11`.
+Alias claros frente a nombres opacos (`d`, `o`, `x`). Geometría de destructuring: `gian-ts-style` (`query-data-alias`, `direct-property-access`). MRT `Cell: ({ row: { original } })` se queda en `11`.
 
 ```ts
 const { data: entities } = useEntitiesQuery(…);
@@ -145,7 +145,7 @@ Excepción: APIs del runtime que exigen `Date` (p. ej. firma de librería extern
 
 | Carpeta | Cuándo | Forma | Sufijo |
 |---------|--------|-------|--------|
-| `utils/` | Cosas **pequeñas** y genéricas (pocas líneas, sin dominio rico) | `export const … = () =>` (sintaxis: `gian-react-ts-style`) | `.util.ts` |
+| `utils/` | Cosas **pequeñas** y genéricas (pocas líneas, sin dominio rico) | `export const … = () =>` (sintaxis: `gian-ts-style`) | `.util.ts` |
 | `helpers/` | Agrupan un **área** (fechas, números, usuario, formatos humanos, reglas de dominio, **Record de meta de enum**) | `export class XxxHelper` | `.helper.ts` |
 
 Ejemplos de helpers de área: `DateHelper`, `HumanFormatsHelper`, `NumberHelper`, `UserHelper`, `FormDataHelper`.
@@ -224,4 +224,4 @@ Tooling: Serena/codegraph para localizar `DateHelper` / `NumberHelper`; ast-grep
 | Duplicación mínima solo dentro del mismo feature | Baja |
 | Nombre opaco en alias frecuente | Baja |
 
-Arrows, `{ return }`, braces de `if`, JSX props: **no** esta tabla — `gian-react-ts-style`.
+Arrows, `{ return }`, braces de `if`, JSX props: **no** esta tabla — `gian-ts-style`.

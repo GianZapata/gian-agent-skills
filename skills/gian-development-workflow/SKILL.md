@@ -23,7 +23,7 @@ La policy entera aplica en cualquier stack. Un capítulo de stack (`25` en Vue, 
 
 Si la tarea crea, edita, audita o corrige PHP: cargar también `gian-php-style` (formato visual; no duplicar esas reglas aquí). WRITE del hunk. **No correr Pint.** Laravel Boost `pint/core` queda anulado. Los planes no dicen “Pint al final”.
 
-Si la tarea crea o modifica `.ts`/`.tsx`, el hermano `.ts` de un componente Vue o un `<script setup lang="ts">` inline (incl. una feature normal, no solo “format this TS”): **HARD** cargar `gian-react-ts-style` y aplicarla en WRITE sobre código nuevo y el **hunk/función tocada** (SAFE FIX de inconsistencias de ese alcance). No migrar el archivo/repo. Si una corrección puede cambiar semántica: no aplicar; registrar GAP. AUDIT no edita. No duplicar esas reglas aquí. `<template>` y `<style>` de un `.vue` y el `.html` de Angular no tienen skill de estilo Gian: se sigue el lint del repo.
+Si la tarea crea o modifica `.ts`/`.tsx`, el hermano `.ts` de un componente Vue o un `<script setup lang="ts">` inline (incl. una feature normal, no solo “format this TS”): **HARD** cargar `gian-ts-style` y aplicarla en WRITE sobre código nuevo y el **hunk/función tocada** (SAFE FIX de inconsistencias de ese alcance). No migrar el archivo/repo. Si una corrección puede cambiar semántica: no aplicar; registrar GAP. AUDIT no edita. No duplicar esas reglas aquí. `<template>` y `<style>` de un `.vue` y el `.html` de Angular no tienen skill de estilo Gian: se sigue el lint del repo.
 
 Python: no hay skill de estilo Gian. Se sigue el Ruff o Black del repo. No se porta formato de PHP ni de TS.
 
@@ -50,11 +50,11 @@ No cargar para: preguntas generales, Git, Docker/infra pura, textos, debugging a
 
 ## Plan (agente plan)
 
-clasificar → cargar policy si desarrollo → brainstorming si aplica → grill si decisiones materiales → writing-plans si multi-step → entregar plan + estado de aprobación. Read-only siempre. Si el plan incluye snippets PHP: siguen `gian-php-style` (no PHPDoc; un parámetro en una línea). Si incluye snippets TS/TSX: siguen `gian-react-ts-style`. No duplicar esas specs aquí. **No incluir Pint como paso final** (Boost `pint/core` queda anulado).
+clasificar → cargar policy si desarrollo → brainstorming si aplica → grill si decisiones materiales → writing-plans si multi-step → entregar plan + estado de aprobación. Read-only siempre. Si el plan incluye snippets PHP: siguen `gian-php-style` (no PHPDoc; un parámetro en una línea). Si incluye snippets TS/TSX: siguen `gian-ts-style`. No duplicar esas specs aquí. **No incluir Pint como paso final** (Boost `pint/core` queda anulado).
 
 ## Build (agente build)
 
-consumir plan aprobado (o alcance aprobado) → cargar policy → Fase 0 + references según routing (lazy) → si toca PHP, WRITE `gian-php-style` en el hunk (**no Pint**) → si toca `.ts`/`.tsx` o un `<script setup lang="ts">`, WRITE `gian-react-ts-style` en el hunk (HARD; no format-only) → ejecutar por tareas/lotes con todowrite → validaciones reales del repo → revisión independiente según riesgo → cierre con evidencia. Sin plan, o tarea trivial/bug → routing proporcional de esta skill.
+consumir plan aprobado (o alcance aprobado) → cargar policy → Fase 0 + references según routing (lazy) → si toca PHP, WRITE `gian-php-style` en el hunk (**no Pint**) → si toca `.ts`/`.tsx` o un `<script setup lang="ts">`, WRITE `gian-ts-style` en el hunk (HARD; no format-only) → ejecutar por tareas/lotes con todowrite → validaciones reales del repo → revisión independiente según riesgo → cierre con evidencia. Sin plan, o tarea trivial/bug → routing proporcional de esta skill.
 
 ## Precedencia y fallback
 
@@ -71,7 +71,7 @@ Activación manual por trigger del usuario ("caveman", "be brief", "menos tokens
 
 ## Publicar estas skills
 
-Si el turno crea o edita `gian-development-workflow`, `gian-how-i-code`, `gian-php-style` o `gian-react-ts-style`:
+Si el turno crea o edita `gian-development-workflow`, `gian-how-i-code`, `gian-php-style` o `gian-ts-style`:
 
 1. El texto publicado está en el clone cuyo `origin` es `github.com/GianZapata/gian-agent-skills`, bajo `skills/<name>/`. Editar ese clone, no solo la copia instalada.
 2. La copia instalada y el clone quedan con el mismo wording. Sin paths de máquina, ni nombres de org, cliente o producto. El slug del repo de estas skills es la excepción.

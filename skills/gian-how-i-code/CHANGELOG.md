@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.4 — 2026-09-30
+
+- Orden dentro de un composable, hook o componente (`04`): dependencias, estado, derivados, funciones, efectos, ciclo de vida, return. Dependencias y estado van separados.
+- El formato visual TypeScript pasa a llamarse `gian-ts-style`. La línea en blanco entre secciones vive ahí.
+
 ## 1.4.3 — 2026-09-30
 
 - Auditoría: el reporte vive en `docs/pattern-audit/` de la raíz git del repo auditado. Si esa carpeta no está en el `.gitignore` de esa raíz, se agrega. No se ignora `docs/` entero.

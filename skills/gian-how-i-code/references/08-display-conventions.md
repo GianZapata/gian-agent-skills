@@ -15,7 +15,7 @@ Cargar cuando: labels, colores, textos por estado, copy visible, mappings de chi
 | Display ad-hoc de **un** componente (stock vs production, loading vs error) | Cadena de `if` + early return **inline** | `t()` de la vista (`15`) |
 | Schema / util / `.ts` no React | No mapping de UI | `i18n.t()` (`10`/`15`) |
 
-Nested ternary: `gian-react-ts-style` (`no-nested-ternary`). Valor multi-rama **ad-hoc** en componente: `useMemo`+if (`23` caso C). JSX multi-rama: if/early return aquí, sin `useMemo` (`23` D).
+Nested ternary: `gian-ts-style` (`no-nested-ternary`). Valor multi-rama **ad-hoc** en componente: `useMemo`+if (`23` caso C). JSX multi-rama: if/early return aquí, sin `useMemo` (`23` D).
 
 ## Enum metadata — entity helper (HARD)
 
@@ -63,7 +63,7 @@ Se acepta duplicar if-chains **ad-hoc** entre componentes. No extraer eso a help
 - Inyectar `t: TFunction` (`getXConfig(t)`, `createXSchema(t)`, `formatX(display, t)`)
 - `labelKey` + `t(config.labelKey)` en render; `humanStatusesKeys` + `statusChipColors` + `statusIcons` en paralelo (`07`)
 - `Helper.getPrimaryLabel` / `ColorHelper.statusColor` como helper de display suelto
-- Ternario anidado (>1 nivel) — forma: `gian-react-ts-style`
+- Ternario anidado (>1 nivel) — forma: `gian-ts-style`
 - Title Case forzado; siglas internas del dominio en copy visible, salvo que el usuario final las conozca y formen parte del lenguaje oficial del producto
 
 Audits locales del repo **no** ganan a esta reference. No “relocate to feature-level display configs”.

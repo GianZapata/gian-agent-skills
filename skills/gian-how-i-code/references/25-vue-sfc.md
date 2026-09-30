@@ -4,7 +4,7 @@ Cargar cuando: el repo es Vue, o se crea, edita, audita o consulta un `.vue` o u
 
 Este archivo es el **adaptador**. El núcleo sigue vigente (`01`): nombres, helpers de área, enums, contratos, errores, display. No heredar MUI, RHF, `hooks/` ni React Query. Eso no apaga el núcleo.
 
-Los nombres los elige el núcleo (`04` Naming, `23`). La forma del binding (no destructurar por rutina, `import type`, flechas, llaves) es `gian-react-ts-style`. Una forma de objeto propia es `interface` ahí (`interface-object-shape`), no una regla de este archivo. Conjuntos cerrados y uniones: `07`.
+Los nombres los elige el núcleo (`04` Naming, `23`). La forma del binding (no destructurar por rutina, `import type`, flechas, llaves) es `gian-ts-style`. Una forma de objeto propia es `interface` ahí (`interface-object-shape`), no una regla de este archivo. Conjuntos cerrados y uniones: `07`.
 
 ## Script en el .vue
 
@@ -36,6 +36,8 @@ Script vacío, sin imports ni bindings: el bloque no se agrega solo para existir
 Los componentes que usa el template se importan en ese bloque.
 
 Computed, handlers, `watch` y llamadas al service van a `composables/useEntityPage.ts`: `use` + el componente, camelCase. El composable recibe props, emit o el ref de `defineModel` ya declarados. No llama a `defineProps`, `defineEmits` ni `defineModel`. No se deja esa lógica en el script para «sacarla si crece». No se migra un repo entero por esta regla: aplica a código nuevo y al componente que se toca.
+
+El orden dentro del composable es el de `04`: dependencias, estado, derivados, funciones, efectos, ciclo de vida, return. La línea en blanco entre secciones es `gian-ts-style`.
 
 ## Props y emits
 
@@ -167,6 +169,7 @@ No instalar Vue Router, Pinia ni TanStack Vue Query porque un ejemplo los use. E
 - [ ] `<style scoped>` en el `.vue`; componentes PascalCase en el template; emits camelCase
 - [ ] `defineSlots` / `defineExpose` / `generic="T"` con `interface` local si hacen falta
 - [ ] Computed, handler, `watch` o llamada al service en `composables/useEntityPage.ts`. El script inline no los contiene
+- [ ] Orden del composable según `04`; línea en blanco entre secciones según `gian-ts-style`
 - [ ] clase de área (`23`); sin wrapper local ni función suelta de la misma área
-- [ ] enums según `07`; forma de objeto según `gian-react-ts-style`
-- [ ] formato del `<script setup>` y de los composables `.ts` según `gian-react-ts-style`
+- [ ] enums según `07`; forma de objeto según `gian-ts-style`
+- [ ] formato del `<script setup>` y de los composables `.ts` según `gian-ts-style`

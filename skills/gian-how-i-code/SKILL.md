@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.4.3"
+  version: "1.4.4"
 ---
 
 # gian-how-i-code
@@ -24,7 +24,7 @@ No usar como única skill para: explicación genérica de React/Vue/Angular/Lara
 - No migrar el repo entero en silencio; solo alcance aprobado.
 - No instalar deps ni tocar lockfiles/manifests sin OK explícito.
 - Auditoría no modifica código ni manifests.
-- El conocimiento vive en esta skill; no depender de skills externas como autoridad, **excepto** formato visual PHP → `gian-php-style` y formato visual TS/TSX → `gian-react-ts-style`.
+- El conocimiento vive en esta skill; no depender de skills externas como autoridad, **excepto** formato visual PHP → `gian-php-style` y formato visual TS/TSX → `gian-ts-style`.
 - El lenguaje no apaga el estándar. Núcleo (nombres, helpers, enums, contratos, errores, display) vale en cualquier stack. Un capítulo de stack solo documenta el adaptador. Ver `01`.
 - Vue: `<script setup lang="ts">` inline en el `.vue`. Sin `src`. El script solo declara macros (`defineProps` / `defineEmits` / `defineModel`), imports y la llamada a `composables/useThing.ts`. Computed, handlers, `watch` y llamadas al service no se acumulan ahí. Sin `defineComponent`. `25` es el delta; no reemplaza el núcleo.
 - Tests/contratos ejecutables del repo no se rompen para imponer estilo.
@@ -109,7 +109,7 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 | Ownership / enum vs union / shadow MUI / membresía includes | `07-types-enums-statuses` |
 | cn / dayjs / utils vs helpers / memoización | `23-ts-style-helpers` |
 | Memoización React (`useMemo` / `useCallback` / `memo`) | `23-ts-style-helpers` (A–E) |
-| Formato visual TS/TSX (arrows, braces, JSX) | **no esta skill** — cargar `gian-react-ts-style` |
+| Formato visual TS/TSX (arrows, braces, JSX) | **no esta skill** — cargar `gian-ts-style` |
 | Modal / drawer | `09-dialogs-drawers` |
 | Forms / schema del body (RHF + Zod en React) | `10-forms-validation` |
 | Mutations / ruta vs DTO / multipart | `13-data-fetching`, `10-forms-validation`, `23-ts-style-helpers` |

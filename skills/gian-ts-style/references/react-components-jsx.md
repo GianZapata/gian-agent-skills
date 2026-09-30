@@ -1,5 +1,7 @@
 # React components and JSX
 
+Solo React. En Vue, Angular y Node no aplica.
+
 ## Component explicit return (HARD)
 
 `react-component-explicit-return`. Identificador **PascalCase** (o anotado `FC` / `React.FC`): block body + `return` explícito, incluso si solo retorna JSX.

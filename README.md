@@ -13,7 +13,7 @@ Installed copies and this clone must stay the **same wording**. Do not put host 
 | `gian-development-workflow` | Process router (how to approach a task) |
 | `gian-how-i-code` | Implementation policy. The core applies to any stack; Laravel, React, and Vue are documented adapters |
 | `gian-php-style` | Visual PHP formatting (not architecture) |
-| `gian-react-ts-style` | Visual TypeScript / TSX formatting (not architecture) |
+| `gian-ts-style` | Visual TypeScript / TSX formatting (not architecture) |
 
 ## Layout
 
@@ -56,7 +56,7 @@ npx --yes skills@latest add GianZapata/gian-agent-skills \
   --skill gian-development-workflow \
   --skill gian-how-i-code \
   --skill gian-php-style \
-  --skill gian-react-ts-style
+  --skill gian-ts-style
 ```
 
 Global install:
@@ -66,7 +66,7 @@ npx --yes skills@latest add GianZapata/gian-agent-skills \
   --skill gian-development-workflow \
   --skill gian-how-i-code \
   --skill gian-php-style \
-  --skill gian-react-ts-style \
+  --skill gian-ts-style \
   -g
 ```
 

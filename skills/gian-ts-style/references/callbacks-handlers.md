@@ -1,5 +1,7 @@
 # Callbacks and handlers
 
+Solo React (JSX). En Vue, Angular y Node no aplica.
+
 ## Direct reference (HARD)
 
 `direct-handler-reference`. Si la función ya tiene la firma correcta:

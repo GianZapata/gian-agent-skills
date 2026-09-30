@@ -1,16 +1,16 @@
 ---
-name: gian-react-ts-style
+name: gian-ts-style
 description: "Mandatory visual TS/TSX style for any TS stack. Load when creating, editing, refactoring, reviewing, auditing, or fixing .ts/.tsx or a Vue script setup in TS, incl. a normal feature. Not for consult-only architecture questions. Governs syntax/format only; Prettier owns wrap/quotes/semi."
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.1.0"
+  version: "2.0.0"
 when-to-use: "Any .ts/.tsx create/edit/refactor/review/audit/fix in any TS stack (React, Vue sibling .ts or inline script setup lang=ts, Angular, Node); ts-style-audit; ts-style-fix; format TypeScript. Not for .js/.jsx/.mjs/.cjs, Vue template/style, Angular .html, PHP, CSS, SQL-only, or architecture-only consults."
 ---
 
-# gian-react-ts-style
+# gian-ts-style
 
-Fuente de verdad única del **estilo visual/sintaxis TS/TSX**. No es arquitectura, enums, React Query, RHF/Zod ni molde de feature (`gian-how-i-code`). No es Prettier.
+Fuente de verdad única del **estilo visual TypeScript**. El núcleo vale en React, Vue, Angular y Node. Las reglas de JSX son solo React. No es arquitectura, enums, React Query, RHF/Zod ni molde de feature (`gian-how-i-code`). No es Prettier.
 
 ## Activation Contract
 
@@ -37,7 +37,7 @@ No cargar para CSS, PHP, SQL aislado, o conversación sin TS. Arquitectura (“e
 | NEUTRAL | quotes, indent, semi, trailing comma, printWidth | MUST NOT FAIL / MUST NOT rewrite-only |
 | GAP | semántica dudosa / heurística frágil | MUST NOT FAIL; NEVER AUTOFIX |
 
-Precedencia: **instrucción explícita del usuario > HARD gian-react-ts-style > ESLint/Prettier ya activos del repo > PREFERENCE > baseline**.
+Precedencia: **instrucción explícita del usuario > HARD gian-ts-style > ESLint/Prettier ya activos del repo > PREFERENCE > baseline**.
 
 No vender preferencias de Gian como best practice universal. `references/principles.md`.
 
@@ -48,10 +48,10 @@ No vender preferencias de Gian como best practice universal. `references/princip
 - Wrapping mecánico: Prettier manda. No pelear printWidth/quotes/semi/trailing comma/JSX wrap. `references/prettier-eslint-boundary.md`
 - Exported arrow default. `function` solo overload/hoisting/API real. `references/functions-arrows.md`
 - No-component + una expresión → implicit return (object literal `({ })`). `references/functions-arrows.md`
-- Componente React PascalCase → block body + `return` explícito. `references/react-components-jsx.md`
+- Solo React: componente PascalCase → block body + `return` explícito. Boolean JSX `={true}` → shorthand. Fragment sin key → `<>`. Empty JSX → self-closing. `references/react-components-jsx.md`
 - Single-statement-if standalone (return/throw/call/assignment/continue/break) sin `{}`; líneas ≠ statements. `references/conditions-guards.md`
-- Boolean JSX `={true}` → shorthand. Fragment sin key → `<>`. Empty JSX → self-closing. `references/react-components-jsx.md`
-- Handler con firma 1:1 → referencia directa. `references/callbacks-handlers.md`
+- Solo React: handler con firma 1:1 → referencia directa. `references/callbacks-handlers.md`
+- Secciones de un composable, hook o componente: una línea en blanco entre grupos; declaraciones cortas del mismo tipo juntas. Sin comentarios de sección. `references/vertical-spacing.md`
 - Type-only import → `import type`. `references/types-imports.md`
 - Comentarios: WRITE no emite narración/JSDoc. Strip ruido obvio. Conservar directives. `references/comments.md`
 
@@ -95,6 +95,7 @@ No vender preferencias de Gian como best practice universal. `references/princip
 - `references/types-imports.md`
 - `references/access-destructuring.md`
 - `references/comments.md`
+- `references/vertical-spacing.md`
 - `assets/audit-template.md`
 - `evals/trigger-evals.json`
 - `evals/behavioral-evals.json`
