@@ -30,6 +30,7 @@ Cargar cuando: modales, drawers, overlays.
 6. Pasa `onSuccess` / `onError` (y demás) como **options** al hook de mutation (`13`): el hook solo fija `mutationFn`.
 7. Dato de otro endpoint (no include) → prop hermano; verificar Query allowlist.
 8. El overlay solo envía **DTO**. Prohibido `new FormData()`, formatear Dayjs/Date a string o armar multipart en el dialog. `mutate(data)` o `mutate({ params, data })` según `13`. Serialización en el service (`23`).
+9. No perder lo escrito al cerrar con cambios pendientes: advertir. Borrador o autoguardado solo si el flujo largo ya lo tiene, o se propone (`10`). Un error de envío no borra la captura.
 
 ### Anti-patrones
 

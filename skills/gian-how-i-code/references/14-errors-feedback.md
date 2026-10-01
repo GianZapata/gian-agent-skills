@@ -33,6 +33,7 @@ Mutaciones (caller): `onError` → `ErrorMapper.getTranslatedMessage(error)` —
 
 - Toasts humanos (qué pasó / a dónde); sin jerga interna
 - 422: mapear a campos según el patrón del repo; conservar captura; **mostrar el mensaje human-facing del backend** (`05`). No sustituirlo por un genérico. Definir mensajes en BE y no mostrarlos en FE no cuenta como integración completa. No crear ErrorMapper ni arquitectura nueva si el repo ya tiene patrón.
+- Ayuda de captura (`10`): un estado de “comprobando”, “encontrado”, “no encontrado” o “no se pudo comprobar” se puede percibir. Un fallo de red no se muestra como inválido. El 422 final sigue siendo el del backend.
 - Lecturas: empty/error states claros (no spinner eterno sin copy)
 
 ## Backend

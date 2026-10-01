@@ -85,7 +85,7 @@ La tabla no limita la regla. Si el campo no aparece, se identifica qué represen
 
 | Campo | Objetivo |
 |-------|----------|
-| Email | `type="email"`, `autocomplete="email"`. `trim` y minúsculas al escribir o al salir. Schema: email válido. En el borde, la regla de email del stack, normalizando antes de validar. |
+| Email | `type="email"`, `autocomplete="email"`. `trim`. El dominio puede ir en minúsculas. La parte antes de `@` no se fuerza a minúsculas: es decisión de producto. Schema: email válido. En el borde, la regla de email del stack. |
 | Nombre / apellidos | Letras con acentos, espacios, apóstrofo y guion. Sin dígitos. `trim` y espacios colapsados. `autocomplete="given-name"` / `"family-name"`. |
 | Teléfono | `type="tel"`, `inputmode="tel"`, `autocomplete="tel"`. Se normaliza a dígitos y un `+` inicial antes de enviar. Un número con guiones o espacios se normaliza; no se rechaza el pegado. |
 | Fecha | Date input nativo o el DatePicker del repo. ISO en el payload. Texto libre no es el tipo. |
@@ -96,11 +96,37 @@ La tabla no limita la regla. Si el campo no aparece, se identifica qué represen
 
 ### Aplicar y proponer
 
-- **Se aplica** en el campo tocado lo que no rechaza un valor que hoy pasa: el `type` que le corresponde, `inputmode`, `autocomplete` y normalización sin pérdida. Los ejemplos de la tabla (`trim`, minúsculas en email, teléfono a dígitos y `+`) no agotan la lista. Un monto `type="number"` libre pasa a decimal con 2 decimales, usando el schema de dinero o decimal del repo, sin parseo por float.
+- **Se aplica** en el campo tocado lo que no rechaza un valor que hoy pasa: el `type` que le corresponde, `inputmode`, `autocomplete` y normalización sin pérdida. Los ejemplos de la tabla (`trim`, teléfono a dígitos y `+`) no agotan la lista. Minúsculas en todo el email no son ese default. Un monto `type="number"` libre pasa a decimal con 2 decimales, usando el schema de dinero o decimal del repo, sin parseo por float.
 - **Se propone (PROP)** lo que puede rechazar datos ya guardados o cambiar el contrato. Los ejemplos (nombre o apellidos sin dígitos, reescribir un identificador ya guardado, rangos de negocio, un tope nuevo, una longitud máxima nueva) no agotan la lista. No se aplica en silencio.
 - **El control sigue a la elección, no al gusto.** Dos opciones exclusivas son un radio. No se cambian a cards. Muchas opciones usan el autocomplete que el repo ya tiene; si no hay, se propone. No se recorre el formulario cambiando widgets.
 - **La misma regla** va en el schema del form y en el borde (FormRequest, body model de Pydantic, schema del handler), con mensaje de dominio y 422 por campo (`05`, `15`).
 - **No se bloquea el pegado ni la escritura.** Si se puede normalizar sin perder el dato, se normaliza.
+
+## Ayudas de captura
+
+Al crear o editar un campo, evaluar si se puede ahorrar captura, anticipar un problema o mostrar la consecuencia. Evaluar es obligatorio. Implementar no. Se aplica solo si el repo ya tiene lo que esa ayuda necesita, el alcance lo autoriza y no pisa un valor guardado ni una corrección manual. Si falta capacidad, es propuesta (`19`). No se exigen a la vez catálogo, endpoint y debounce: cada ayuda declara solo lo suyo. Los ejemplos orientan. Un campo que no está en ellos pasa por el mismo gate. No se recorre el formulario implementando ayudas en campos no tocados.
+
+Una corrección manual gana frente a un valor generado. No se conserva en silencio si dejó de ser coherente. Si cambia el padre y la selección hija ya no corresponde, se señala o se pide revisión. No se borra sola y no se deja como válida.
+
+Cada propuesta dice qué trabajo ahorra, de dónde salen los datos, cuándo se activa, y qué pasa ante ambigüedad o fallo.
+
+### Locales
+
+No consultan. Generar un derivado con la utilidad del repo (`Str::slug` o el helper que ya exista). Filtrar un catálogo ya cargado. Proponer un valor. Mostrar la URL, el total o el nombre público antes de guardar. Un registro existente no cambia de slug porque cambió el nombre. La unicidad se comprueba aparte, al guardar.
+
+### Asíncronas
+
+Consultan. Formato mínimo primero. Debounce del proyecto, o se proponen 300–500 ms. No se instala una librería para eso. Solo se aplica la respuesta de la consulta vigente para el valor y su contexto: el mismo código postal con otro país descarta la respuesta anterior. Estados perceptibles: comprobando, encontrado, no encontrado, no se pudo comprobar. Un fallo de red no invalida el campo. Al guardar, el servidor vuelve a comprobar.
+
+“Formato válido”, “ya existe en esta base” y “el usuario controla ese correo” son tres comprobaciones. La tercera es un flujo de confirmación, no una ayuda de campo. En un formulario público no se dice “esta cuenta existe”. Al editar, la unicidad excluye el propio registro y nombra tenant, empresa y borrados. Sugerir un subdominio de la plataforma necesita formato y ocupación interna. DNS y propiedad son otro flujo.
+
+Disponible en la captura orienta. Guardar resuelve la colisión: índice único, operación atómica o bloqueo, junto con la escritura. Una comprobación previa, aunque sea de backend, puede quedar vieja (`05`).
+
+La validación mientras se escribe no es obligatoria en todos los inputs. Se usa si aporta: disponibilidad cuando el valor ya alcanza, no marcar un formato incompleto mientras se sigue escribiendo, quitar el mensaje cuando el error se corrige.
+
+### Ejemplos abiertos
+
+Valor derivado. Dato ya conocido. Valor inicial del contexto. Búsqueda que distinga opciones parecidas. Posible duplicado, sin tratar un nombre igual como duplicado seguro. Consecuencia visible antes de guardar. Campos que aparecen según la elección. Conservar lo escrito ante un error. Crear un faltante y volver. Repetir una fila sin copiar identificadores. Archivo: vista previa, requisitos, progreso, reintento. Código postal que completa lo inequívoco y deja elegir si hay varias colonias. Campo dependiente cuya selección se revisa cuando cambia el padre.
 
 ### Campo complejo
 

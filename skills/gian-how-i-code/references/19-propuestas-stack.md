@@ -14,6 +14,8 @@ Cargar cuando: gap, complejidad, dependencia potencial, mejora no molde-estricto
 
 No es obligatorio producir una propuesta en cada tarea. Si el stack actual ya resuelve adecuadamente el problema, registrar `No requiere cambio` o no crear una PROP.
 
+Una ayuda de captura (`10`) que falta se propone nombrando solo la capacidad que ella necesita: utilidad local, catálogo, endpoint o debounce. No se piden los cuatro si basta uno. No se instala sin OK.
+
 ## Decision Gate (obligatorio)
 
 1. Detectar una necesidad concreta.  

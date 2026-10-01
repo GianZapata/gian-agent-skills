@@ -32,19 +32,37 @@ Antes de crear el archivo, nombrar qué es. No agregarlo a `Support` o `Supports
 | Regla o valor de una entidad | El modelo dueño |
 | Conjunto cerrado de nombres | Enum. No una clase con `const VALUES` |
 | Transformación reutilizada de un solo eje | Helper `final` en `Helpers`, `public static`, como un eje ya cohesivo. Si ese eje existe, se extiende. No uno nuevo por un solo arreglo |
-| El paquete hace `new` de la clase | Adaptador. No es un helper. El config solo guarda el nombre de la clase |
+| La integración exige o consume la clase | Adaptador. Config, factory, contenedor o `new`. El config puede nombrar la clase. Buscar un `new` literal no basta. No es un helper |
 | Lo usa un solo dueño | Método privado de ese dueño. `private static` si no usa `$this` |
 | Solo lo usan un test o un seeder | Fixture. No código de producto |
-| Solo `__construct` | No se crea. Ni en `Support` ni en `Helpers` |
+| Solo agrupa variables, sin comportamiento ni invariante | No se crea. Ni en `Support` ni en `Helpers` |
 
-Al implementar, si se toca una clase que solo tiene constructor, se borra y el paso vuelve al dueño. No se renombra a `Support`. Auditoría: hallazgo Alto, sin editar.
+No se crea una clase solo para agrupar variables. Una clase que ya existe y solo declara constructor no se borra por eso: mirar consumidores, herencia, si el constructor valida un invariante, y si el comportamiento viene del padre. Estar en `Support` incumple el molde: es convención, no hallazgo Alto. Alto es impacto: contrato roto, efecto duplicado, dato incoherente. No se migra esa carpeta en silencio.
 
 ### Forma a copiar
 
 - Action: clase `final`, método `handle`, sin constructor si el método no usa una dependencia inyectada.
 - Query: el cálculo que solo usa esa query es un método privado de la query.
 - Valor reutilizado: helper estático en `Helpers`.
-- Adaptador de paquete: la clase que el paquete instancia, al lado de esa integración. No en `Support`.
+- Adaptador: la clase que la integración exige o consume, al lado de esa integración. No en `Support`.
+
+## Transacción y error
+
+La Action dueña delimita qué se confirma junto. Una Action reutilizable puede abrir transacción si corre sola, y participar en la exterior si la llaman. En la misma conexión, Laravel usa savepoints cuando el motor los soporta. Lo interior se confirma cuando termina la exterior. Otra conexión no entra en ese rollback: mirar la conexión efectiva de cada modelo.
+
+Un `catch` puede traducir o limpiar una causa conocida si el fallo indispensable sale con `throw`. No vale capturar dentro del callback, devolver un valor y seguir: Laravel da la transacción por buena. `CustomException` se lanza, no se retorna. El `render` arma el envelope cuando Laravel ya gestionó el rollback.
+
+Si B escribió y falla, A puede seguir con un resultado parcial autorizado solo después de que B haya revertido sus escrituras. El `catch` puede estar en A, fuera del callback de B. Que B sea opcional no basta para conservar escrituras incompletas, ni para seguir si el fallo invalida toda la operación.
+
+Durante la transacción se conserva el error que Laravel usa para reintentar, deadlock incluido. No se traduce a `CustomException` mientras esos reintentos sigan abiertos. Cuando se agotan, puede mapearse a una respuesta controlada, con `previous` y el reporte.
+
+El handler traduce las excepciones del framework al envelope. No se copia dentro de cada Action. El borde ajeno traduce lo conocido a `CustomException` y relanza el resto. El formato uniforme no prueba localización: se recorre el camino completo. El mensaje visible puede traducirse antes de construir `CustomException`. `code`, status y claves de campo quedan estables. Si el repo no tiene ese recorrido, se identifica y se propone. No se inventa un sistema de i18n en el mismo corte. `ShouldntReport` no reporta solo: un fallo técnico convertido en `CustomException` conserva la causa y define cómo se reporta.
+
+La idempotencia no es un `catch` ni un default de cada `create`. Cuando el efecto no puede repetirse, se nombran la clave, el alcance de tenant y actor, la adquisición atómica, el resultado guardado, y qué pasa si la misma clave llega con otros datos. No se devuelve el resultado viejo si el payload cambió. Se autoriza antes de devolver un resultado protegido.
+
+Saldo, stock, cupo o disponibilidad se protegen junto con la escritura: índice único, operación atómica o bloqueo. Una comprobación previa, aunque sea de backend, puede quedar vieja. “Disponible” en la captura orienta. Guardar resuelve la colisión.
+
+Los efectos de afuera no los deshace la base. Por flujo se evalúa cuándo correrlos, qué pasa si se repiten, y cómo recuperarse si la base ya confirmó y después fallan: reintento, estado pendiente o compensación. `afterCommit()` espera la transacción exterior. La idempotencia evita repetir el efecto. No se exigen los dos mecanismos iguales en cada integración.
 
 ## Query table aliases
 
@@ -185,7 +203,7 @@ Una tarea que modifica formularios o validación user-facing no puede declararse
 
 - [ ] Controller delgado
 - [ ] Request + Action + Resource / Query
-- [ ] Sin `Support` ni clase cuyo único miembro es el constructor
+- [ ] Lugar decidido antes de crear el archivo. `Support` no es el molde. No se creó una clase solo para agrupar variables
 - [ ] Includes/filters/sorts explícitos
 - [ ] Tipos cerrados: backed Enum **o** constantes SM (no ambos para lo mismo)
 - [ ] SM con const + transitions + defaultState + bootHasStateMachines

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.12 — 2026-10-01
+
+- Ayudas de captura (`10`): evaluar es obligatorio; implementar no. Local y asíncrona se separan. Cada ayuda declara solo lo que necesita. La corrección manual gana, y se señala si dejó de ser coherente. El dominio del email puede ir en minúsculas; la parte local es decisión de producto.
+- `05`: no se borra una clase solo porque declara constructor. Adaptador si la integración la exige, no solo si hay `new`. `Support` es convención, no Alta automático (`18`).
+- Transacción y error (`05`): dueño de la operación, savepoint en la misma conexión, `throw` para revertir, `CustomException` se lanza, reintento de deadlock se conserva hasta agotarlo, idempotencia operable, colisión al guardar, efectos externos por flujo.
+
 ## 1.4.11 — 2026-10-01
 
 - Laravel (`05`): antes de crear el archivo se decide el lugar. No se agrega a `Support` porque la carpeta ya existe. Config, modelo, enum, helper estático, adaptador de paquete, método privado o fixture. Prohibida una clase cuyo único miembro es el constructor.
