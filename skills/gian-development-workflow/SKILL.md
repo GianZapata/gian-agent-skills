@@ -15,6 +15,8 @@ Router de proceso: decide CÓMO resolver la tarea (qué skills de proceso, en qu
 4. Convenciones locales.
 5. Proceso genérico (Superpowers u otras skills de proceso).
 
+Una puerta de esta skill gana a la skill de proceso que nombra, aunque esa skill ya esté cargada y diga MUST o siempre.
+
 ## Activación
 
 Cargar cuando la tarea sea de desarrollo dentro del scope de `gian-how-i-code` (PHP, Laravel, React, Vue, Angular, Node, TypeScript, Python, features, refactors, migraciones, auditorías, contratos API, forms, queries/mutations, tablas, dialogs/drawers, arquitectura) o haya duda sobre qué proceso seguir.
@@ -42,11 +44,21 @@ No cargar para: preguntas generales, Git, Docker/infra pura, textos, debugging a
 
 ## Bypass (anti-sobreingeniería)
 
-- Bug → NO brainstorming, NO grill, NO writing-plans.
+- Bug → NO brainstorming, NO grill, NO writing-plans. Un fallo reproducible no se promociona a feature grande para cumplir el MUST de `brainstorming`.
 - Trivial → NO brainstorming, NO grill, NO writing-plans, NO systematic-debugging.
 - Plan aprobado → NO rediseñar: ejecutar.
+- TDD no configurado → no cargar `test-driven-development`. `writing-plans` no escribe fase TDD ni "failing test first".
+- `laravel-11-12-app-guidelines` no autoriza Pint. Gana `gian-php-style`.
 - Grill → elegir exactamente una (`grill-me` o `grill-with-docs`); nunca encadenar ambas.
 - Plan desde un reporte de auditoría ya existente → `writing-plans`; no re-auditar; el reporte es fuente de verdad.
+
+## Puertas
+
+| Situación | No cargar / no obedecer | Gana |
+|---|---|---|
+| Bug o trivial, aunque el fix cambie comportamiento | `brainstorming`, aunque diga MUST antes de cualquier cambio | Esta skill. Bug: `systematic-debugging`. Trivial: implementación directa |
+| TDD no configurado | `test-driven-development`. `writing-plans` no agrega fase TDD ni "failing test first" | Tests de `gian-how-i-code` `17` y el runner del repo. TDD solo si el usuario lo pidió en este hilo, o el proyecto/sesión ya tiene TDD estricto con un runner nombrado. Pest, PHPUnit o Vitest presentes no lo encienden |
+| PHP y está cargada `laravel-11-12-app-guidelines` | `vendor/bin/pint --dirty`, `vendor/bin/pint`, Boost `pint/core` | `gian-php-style`. No es paso final del plan ni del build |
 
 ## Plan (agente plan)
 
