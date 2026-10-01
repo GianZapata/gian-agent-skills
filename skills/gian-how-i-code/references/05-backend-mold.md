@@ -22,26 +22,29 @@ Lectura compleja → Query (Spatie QueryBuilder) → Resource
 - Lista: `Resource::collection` o el `ResourceCollection` de la feature si la lista necesita envoltura propia. No una clase aparte para el arreglo.
 - Services Laravel: solo integraciones externas
 
-## No Support ni clases vacías
+## Dónde va un valor, no en Support
 
-El molde de arriba es el conjunto. No se abre `Support`, `Supports` ni un cajón equivalente para la feature.
+Antes de crear el archivo, nombrar qué es. No agregarlo a `Support` o `Supports` porque la carpeta ya existe. Una feature nueva no abre esa carpeta ni le suma archivos. Si el repo ya la tiene, no es el molde y no se migra en silencio.
 
-Una clase entra si tiene comportamiento: un caso de uso, una query, una transición o una serialización. Un constructor no es comportamiento. Prohibida una clase cuyo único miembro es `__construct`, aunque las propiedades estén promovidas.
+| Qué es | Dónde |
+|---|---|
+| Cableado de un paquete, o un tope que cambia por entorno | `config`. El config puede nombrar una clase; no es el lugar del comportamiento |
+| Regla o valor de una entidad | El modelo dueño |
+| Conjunto cerrado de nombres | Enum. No una clase con `const VALUES` |
+| Transformación reutilizada de un solo eje | Helper `final` en `Helpers`, `public static`, como un eje ya cohesivo. Si ese eje existe, se extiende. No uno nuevo por un solo arreglo |
+| El paquete hace `new` de la clase | Adaptador. No es un helper. El config solo guarda el nombre de la clase |
+| Lo usa un solo dueño | Método privado de ese dueño. `private static` si no usa `$this` |
+| Solo lo usan un test o un seeder | Fixture. No código de producto |
+| Solo `__construct` | No se crea. Ni en `Support` ni en `Helpers` |
 
-Un valor, un arreglo o un paso que solo usa el caso dueño no se extrae a una clase:
-
-1. Método privado en la Action, Query o Resource dueña. `private static` si no usa estado de instancia. Método de instancia si usa `$this`.
-2. Si ya existe un helper de ese eje, extenderlo. No crear otro.
-3. Un helper nuevo solo si ese mismo eje se reutiliza, o si es un eje de área ya cohesivo. No por un solo arreglo.
-
-Al tocar una clase que solo tiene constructor: borrar la clase y dejar el paso en el dueño. No renombrarla. Si el repo ya tiene `Support`, una feature nueva no agrega archivos ahí y no lo toma como molde. No migrar esa carpeta en silencio. Auditoría: hallazgo Alto, sin editar.
+Al implementar, si se toca una clase que solo tiene constructor, se borra y el paso vuelve al dueño. No se renombra a `Support`. Auditoría: hallazgo Alto, sin editar.
 
 ### Forma a copiar
 
-- Action: clase `final`, método `handle`, sin constructor si no hay dependencia que el método use.
+- Action: clase `final`, método `handle`, sin constructor si el método no usa una dependencia inyectada.
 - Query: el cálculo que solo usa esa query es un método privado de la query.
-- Valor reutilizado: `final class` en `Helpers`, `public static function`. No una clase por un solo arreglo.
-- No crear un `readonly` cuyo cuerpo es solo el constructor. Ni en `Support` ni en `Helpers`.
+- Valor reutilizado: helper estático en `Helpers`.
+- Adaptador de paquete: la clase que el paquete instancia, al lado de esa integración. No en `Support`.
 
 ## Query table aliases
 

@@ -34,7 +34,7 @@ Preferir **composición** cuando haya dependencias, configuración, estado propi
 - Nombres del dominio.
 - Evitar herencia abstracta anticipada.
 - Dependencias visibles (constructor) en una clase que ya tiene comportamiento. El constructor no autoriza una clase nueva. No `app()`/`Facade` si ocultan deps relevantes en dominio.
-- No crear `Support` ni una clase vacía para un valor o un arreglo. El paso vive en un método privado del dueño; ver `05`.
+- No crear `Support` ni agregar un archivo ahí porque la carpeta existe. El lugar lo decide `05`: config, modelo, enum, helper, adaptador, método privado o fixture.
 - Transacciones en la Action dueña del caso de uso; side effects post-commit cuando corresponda.
 - Métodos privados para pasos legibles, no solo para acortar.
 - Value Objects cuando haya invariantes reales.
