@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.5 — 2026-10-01
+
+- Tests (`17`): siguen al requisito, no al borrado. Si el requisito desaparece, se borran el código y sus tests exclusivos, sin un test de "ya no existe". Si sigue, se conservan o adaptan. Si la eliminación crea una garantía vigente, se prueba esa garantía. La limpieza incluye fixtures, mocks y factories sin uso.
+
 ## 1.4.4 — 2026-09-30
 
 - Orden dentro de un composable, hook o componente (`04`): dependencias, estado, derivados, funciones, efectos, ciclo de vida, return. Dependencias y estado van separados.

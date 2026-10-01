@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.4.4"
+  version: "1.4.5"
 ---
 
 # gian-how-i-code
@@ -28,6 +28,7 @@ No usar como única skill para: explicación genérica de React/Vue/Angular/Lara
 - El lenguaje no apaga el estándar. Núcleo (nombres, helpers, enums, contratos, errores, display) vale en cualquier stack. Un capítulo de stack solo documenta el adaptador. Ver `01`.
 - Vue: `<script setup lang="ts">` inline en el `.vue`. Sin `src`. El script solo declara macros (`defineProps` / `defineEmits` / `defineModel`), imports y la llamada a `composables/useThing.ts`. Computed, handlers, `watch` y llamadas al service no se acumulan ahí. Sin `defineComponent`. `25` es el delta; no reemplaza el núcleo.
 - Tests/contratos ejecutables del repo no se rompen para imponer estilo.
+- Tests siguen al requisito, no al borrado (`17`). Si el requisito desaparece: borrar el código y sus tests exclusivos; no agregar un test de "ya no existe". Si sigue: conservar o adaptar sus tests. Si la eliminación crea una garantía vigente: probar esa garantía.
 - String enum (TS) para conjuntos cerrados; PHP: backed Enum por default, o constantes `public const` en State Machine string-based (`asantibanez`) como fuente única — ver `07`. `Record<Enum, V>` en mappings FE exhaustivos. Membresía 2+: `.includes()` / `in_array(..., true)` / `in (A, B)` en Python, no `=== || ===` — ver `07`.
 - Ownership **antes** de declarar `type`/union/enum/mapping: `APP_OWNED` \| `LIBRARY_OWNED` \| `EXTERNAL_GENERATED` \| `UNION LEGÍTIMA` — ver `07`.
 - `APP_OWNED` cerrado y nombrado (incl. modos/estados de UI de feature) → string enum por default. `LIBRARY_OWNED` → tipo oficial de la lib; no shadow types.

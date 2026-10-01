@@ -18,7 +18,18 @@ Usar **comandos del repo** (AGENTS local de validación). No imponer comandos de
 
 ## Autoría de tests
 
-Crear/actualizar cuando cambie comportamiento observable, contrato, SM, validación, bug.  
+Los tests protegen requisitos, no la implementación. Crear o actualizar un test cuando cambia un comportamiento que permanece: contrato, máquina de estados, validación o un bug.
+
+Al eliminar, se decide por el requisito:
+
+- El requisito desaparece: se borra el código y sus tests exclusivos. No se agrega un test que diga "esto ya no existe".
+- Cambia la implementación y el requisito sigue: se conservan o adaptan los tests de ese comportamiento.
+- La eliminación crea una garantía vigente (dejar de enviar un dato sensible): se prueba esa garantía, en términos del comportamiento.
+
+Limpieza completa en el mismo cambio: tests exclusivos, fixtures, mocks, factories y referencias que quedaron sin uso. La cobertura sigue a los requisitos que quedan.
+
+Al quitar un helper de formato, se borran sus tests. Si el valor que formateaba debe seguir llegando completo y sin redondeo, se conserva la prueba de eso.
+
 No obligar tests artificiales en docs/audit-only.
 
 ## Al aplicar migración
