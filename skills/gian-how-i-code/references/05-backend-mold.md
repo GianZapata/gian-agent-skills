@@ -37,7 +37,7 @@ Antes de crear el archivo, nombrar qué es. No agregarlo a `Support` o `Supports
 | Solo lo usan un test o un seeder | Fixture. No código de producto |
 | Solo agrupa variables, sin comportamiento ni invariante | No se crea. Ni en `Support` ni en `Helpers` |
 
-No se crea una clase solo para agrupar variables. Una clase que ya existe y solo declara constructor no se borra por eso: mirar consumidores, herencia, si el constructor valida un invariante, y si el comportamiento viene del padre. Estar en `Support` incumple el molde: es convención, no hallazgo Alto. Alto es impacto: contrato roto, efecto duplicado, dato incoherente. No se migra esa carpeta en silencio.
+No se crea una clase solo para agrupar variables. Una clase que ya existe y solo declara constructor no se borra por eso: mirar consumidores, herencia, si el constructor valida un invariante, y si el comportamiento viene del padre. Estar en `Support` incumple el molde. Es desviación de convención, no un nivel de severidad. La gravedad depende del impacto, la frecuencia y el riesgo sustentados por evidencia (`18`, `24`). No se migra esa carpeta en silencio.
 
 ### Forma a copiar
 
@@ -56,7 +56,7 @@ Si B escribió y falla, A puede seguir con un resultado parcial autorizado solo 
 
 Durante la transacción se conserva el error que Laravel usa para reintentar, deadlock incluido. No se traduce a `CustomException` mientras esos reintentos sigan abiertos. Cuando se agotan, puede mapearse a una respuesta controlada, con `previous` y el reporte.
 
-El handler traduce las excepciones del framework al envelope. No se copia dentro de cada Action. El borde ajeno traduce lo conocido a `CustomException` y relanza el resto. El formato uniforme no prueba localización: se recorre el camino completo. El mensaje visible puede traducirse antes de construir `CustomException`. `code`, status y claves de campo quedan estables. Si el repo no tiene ese recorrido, se identifica y se propone. No se inventa un sistema de i18n en el mismo corte. `ShouldntReport` no reporta solo: un fallo técnico convertido en `CustomException` conserva la causa y define cómo se reporta.
+El handler traduce las excepciones del framework al envelope. No se copia dentro de cada Action. El borde ajeno traduce lo conocido a `CustomException` y relanza el resto. Los mensajes visibles, incluidos los errores por campo, usan el idioma soportado del usuario y el fallback del proyecto. `code`, status y claves de campo quedan estables. Se traduce el mensaje, no la clave. La traducción puede ocurrir antes de construir `CustomException`. Se recorre ese camino. Si no existe, se identifica y se propone. No se inventa un sistema de i18n en el mismo corte. `ShouldntReport` no reporta solo: un fallo técnico convertido en `CustomException` conserva la causa y define cómo se reporta.
 
 La idempotencia no es un `catch` ni un default de cada `create`. Cuando el efecto no puede repetirse, se nombran la clave, el alcance de tenant y actor, la adquisición atómica, el resultado guardado, y qué pasa si la misma clave llega con otros datos. No se devuelve el resultado viejo si el payload cambió. Se autoriza antes de devolver un resultado protegido.
 

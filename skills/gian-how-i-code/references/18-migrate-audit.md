@@ -85,11 +85,12 @@ Contrato `19`. Costos/riesgos reales — no “ninguno”; no “garantiza CI”
 | Nivel | Ejemplos |
 |-------|----------|
 | Alta | N+1, status update a mano, contrato inventado, diálogo rompe datos, falta dayjs / `new Date` sistemático de negocio, falta ErrorMapper/apiFetcher cuando el molde lo exige, chip/banner/copy "Test mode" o validación ramificada por el runtime (`08`), efecto duplicado, dato incoherente o contrato roto por una clase fuera de lugar (`05`) |
-| Convención | Archivo en `Support`, o clase que solo agrupa variables, sin impacto funcional demostrado (`05`). No es Alta automático |
 | Media | Display helper (labels/colores), `*Helper` cajón multi-dominio, función local que duplica `DateHelper`/`NumberHelper`/util compartido, keys sueltas, props aplanadas, typed strings vs enum `APP_OWNED`, shadow type `LIBRARY_OWNED`, `useMemo` ceremonial (`23` A; no C/E), constantes `*_SX` / `get*Sx` locales, `sx` de layout/spacing/sizing ordinario, concat/template de `className` condicional, `useTheme()` ceremonial (solo para `sx`), mutation con `onSuccess`/`onError` fijos en el hook, `interface XxxInput` duplicando Zod, `TVariables` híbrido ruta+body, payload anónimo `{ body: string }`, `new FormData()` en dialog/form, IDs de ruta dentro del schema Zod, query sin `*QueryProps`, dayjs crudo pese a módulo configurado, QueryClient por feature, archivo hook kebab/snake `use-*` sistemático (`04`), cadena `=== \|\| ===` de conjunto cerrado sistemático (`07`) |
 | Baja | Naming `handle*`, `open` vs `isOpen`, `entity=`/`data=` vs prop por tipo (`09`), `=== \|\| ===` vs includes/`in_array` aislado (`07`), callback `whenLoaded` innecesario (`06`), archivo hook `use-*`/`use_*` aislado (`04`), copy Title Case, nit de carpeta, mutation sin interface `UseMutationOptions`, mutation sin los 3 genéricos explícitos si el resto (interface + DTO) está bien |
 
-Considerar impacto, frecuencia y si el patrón es **sistemático** — no bajar todo a Baja.
+La gravedad depende del impacto, la frecuencia y el riesgo sustentados por evidencia. No hace falta un incidente ya ocurrido para sostener un riesgo. No bajar todo a Baja.
+
+Estar en `Support`, o agrupar variables en una clase, es desviación de convención (`05`). No es un nivel de esta tabla. La gravedad de ese caso sale del impacto, la frecuencia y el riesgo que se puedan sostener.
 
 ## Auditar (sin editar)
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.14 — 2026-10-01
+
+- Copy (`15`, `14`, `SKILL.md`): se juzga por audiencia y función, no por palabra prohibida. Un término de dominio se conserva. El copy de operador ya escrito se propone, no se reescribe al tocar. No se inventa causa ni plazo. “Más tarde” no es el mensaje de todo error.
+- Idioma (`05`, `14`): mensajes visibles en el idioma soportado del usuario y el fallback del proyecto. `code`, status y claves de campo quedan estables.
+- `18`: “Convención” sale de la tabla de severidad. La gravedad depende del impacto, la frecuencia y el riesgo sustentados por evidencia.
+
 ## 1.4.13 — 2026-10-01
 
 - Copy visible (`15`, `14`): título, descripción, vacío, error, toast y ayuda le hablan a quien usa el producto. No nombran API, servidor ni piden operarlo. Al tocarlo, se reescribe.

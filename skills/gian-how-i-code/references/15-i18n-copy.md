@@ -49,16 +49,20 @@ Los getters conservan un único Record sin congelar el locale. El componente usa
 
 ## Copy (usuario final)
 
-Todo texto visible le habla a quien usa el producto: título, descripción, vacío, error, toast, botón, placeholder y ayuda. No se inventa una frase de operador.
+Todo texto visible se juzga por audiencia y función: título, descripción, vacío, error, toast, botón, placeholder y ayuda. La prueba no es una palabra prohibida.
 
-Prohibido en visible: API, servidor, base de datos, logs, puerto, entorno, stack, excepción, o pedir que el sistema “esté en marcha”. El usuario no opera eso. El texto dice qué pasó en su tarea y qué puede hacer: reintentar, revisar el dato, volver más tarde.
+Si quien lee no entiende la frase, o la frase le pide algo que no puede hacer, no se publica así. Un error dice qué pasó en su tarea y qué puede hacer esa persona. Un botón, un título o un placeholder cumplen su función. No se les impone la fórmula del error.
+
+No se inventa la causa ni la recuperación. No se asume que el servidor está apagado, que los datos quedaron guardados, ni cuándo vuelve. “Más tarde” vale para un fallo temporal del servicio, no para cualquier error. Un dato inválido dice qué corregir. Una sesión vencida puede pedir iniciar sesión.
+
+Un término del dominio de quien lee se conserva: `API key`, `PDF`, `URL`. “Revisa que la API esté en marcha” no: esa persona no opera el servidor. El verbo de la pantalla se conserva si es el de la operación. No se cambia “verificar” por “cargar” sin mirar qué hacía la pantalla.
 
 ```text
 BAD:  No pudimos verificar la sucursal. Revisa que la API esté en marcha e inténtalo de nuevo.
-GOOD: No pudimos cargar esta sucursal. Inténtalo de nuevo en unos minutos.
+GOOD: No pudimos verificar esta sucursal. Inténtalo más tarde.
 ```
 
-Al tocar un texto que le habla al operador, reescribirlo. No dejar el fallback técnico.
+Al detectar copy ya escrito que le habla al operador, se propone: ubicación, texto actual, problema y reemplazo. No se reescribe al tocar. El texto nuevo sale bien desde el inicio. Si se autoriza corregir ese copy, se aplica ese alcance sin volver a pedir permiso.
 
 - Sin siglas internas en visible
 - Tono natural; mayúscula natural

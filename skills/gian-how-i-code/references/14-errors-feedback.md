@@ -34,11 +34,11 @@ Mutaciones (caller): `onError` → `ErrorMapper.getTranslatedMessage(error)` —
 - Toasts humanos (qué pasó / a dónde); sin jerga interna
 - 422: mapear a campos según el patrón del repo; conservar captura; **mostrar el mensaje human-facing del backend** (`05`). No sustituirlo por un genérico. Definir mensajes en BE y no mostrarlos en FE no cuenta como integración completa. No crear ErrorMapper ni arquitectura nueva si el repo ya tiene patrón.
 - Ayuda de captura (`10`): un estado de “comprobando”, “encontrado”, “no encontrado” o “no se pudo comprobar” se puede percibir. Un fallo de red no se muestra como inválido. El 422 final sigue siendo el del backend.
-- Lecturas: empty/error states claros (no spinner eterno sin copy). El copy es de usuario final (`15`): no pide revisar que la API, el servidor o la base estén en marcha.
+- Lecturas: empty/error states claros (no spinner eterno sin copy). El copy sigue `15`: audiencia y función, no una palabra prohibida. Un término de dominio se conserva. Una instrucción que el lector no puede cumplir se propone, no se reescribe al tocar.
 
 ## Backend
 
-- Mensajes de mutación en idioma de política del proyecto
+- Mensajes visibles, incluidos los errores por campo, usan el idioma soportado del usuario y el fallback del proyecto. `code`, status y claves de campo quedan estables. Se traduce el mensaje, no la clave. Si ese recorrido no existe, se identifica y se propone (`05`). No se inventa un sistema de i18n en el mismo corte.
 - No mezclar shape de lectura con mutación solo para toast
 
 ## Anti-patrones
