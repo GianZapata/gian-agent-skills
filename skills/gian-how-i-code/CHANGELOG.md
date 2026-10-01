@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.10 — 2026-10-01
+
+- Laravel (`05`): si el repo ya tiene `Support`, no es el molde y una feature nueva no agrega archivos ahí. La forma a copiar es Action `handle`, método privado en la Query, y helper estático en `Helpers`. Prohibido un `readonly` cuyo cuerpo es solo el constructor. No migrar el `Support` existente en silencio.
+
 ## 1.4.9 — 2026-10-01
 
 - Laravel (`05`): prohibido `Support` y prohibida una clase cuyo único miembro es el constructor. Un valor o un arreglo va a un método privado del dueño; `private static` si no usa `$this`. Un helper nuevo solo si ese eje se reutiliza o ya existe. Al tocarla, se borra.

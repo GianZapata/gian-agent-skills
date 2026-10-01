@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.4.9"
+  version: "1.4.10"
 ---
 
 # gian-how-i-code
@@ -40,7 +40,7 @@ No usar como única skill para: explicación genérica de React/Vue/Angular/Lara
 - Contrato de lectura (núcleo): el serializer no dispara queries; las relaciones se cargan antes, sin N+1. En Laravel: `new XResource($this->whenLoaded('rel'))` / `::collection($this->whenLoaded('rels'))`, sin callback `fn() => new X($this->rel)` salvo lógica extra — ver `06`. En Python: `response_model` o un serializer sobre datos ya cargados.
 - Mutaciones: IDs de ruta nunca se mezclan con el DTO del body. 1 ID: `(id, data: TDto)`; 2+: `(params, data: TDto)`. El DTO sale de un schema nombrado; en TypeScript ese schema es Zod, en Python un body model de Pydantic. El envelope `*Variables` es del adaptador React Query o Vue Query (`13`). UI no arma FormData — ver `13`/`10`/`23`.
 - Campo de formulario (`10`): al tocarlo, nombrar qué representa. La tabla de `10` es ejemplo, no el universo: un campo ausente sigue la misma regla. Se aplica lo que no rechaza un valor que hoy pasa (`type`, `inputmode`, `autocomplete`, normalización sin pérdida). Lo que puede rechazar datos guardados o cambiar el contrato se propone. El control sigue a la elección, no al gusto: dos opciones exclusivas son un radio, no cards; muchas opciones usan el autocomplete del repo, o se propone. No se recorre el formulario cambiando widgets. Máscara, locale o picker: el componente del repo, o se propone el del stack (`19`). No se escribe a mano ni se instala sin OK.
-- Laravel (`05`): el molde es Controller, FormRequest, Action, Query, Resource y, si la lista lo necesita, ResourceCollection. Service solo para integración externa. Prohibido `Support` / `Supports` y prohibida una clase cuyo único miembro es el constructor. Un valor o un arreglo vive en un método privado del dueño (`private static` si no usa `$this`); un helper nuevo solo si ese eje ya se reutiliza o ya existe. Al tocar esa clase vacía o esa carpeta, borrarla y dejar el paso en el dueño.
+- Laravel (`05`): el molde es Controller, FormRequest, Action, Query, Resource y, si la lista lo necesita, ResourceCollection. Service solo para integración externa. No copiar `Support` como molde, aunque el repo ya lo tenga: una feature nueva no agrega archivos ahí. Prohibida una clase cuyo único miembro es el constructor, en `Support` o en `Helpers`. Un valor o un arreglo vive en un método privado del dueño (`private static` si no usa `$this`); un helper nuevo, en `Helpers` y con método estático, solo si ese eje ya se reutiliza o ya existe. Al tocar esa clase vacía, borrarla y dejar el paso en el dueño. No migrar el `Support` existente en silencio.
 - Entorno ≠ producto (`01`/`08`/`15`/`17`). `npm run dev`, el test runner, `NODE_ENV`, `import.meta.env`, `APP_ENV` y `APP_DEBUG` no son un modo de producto: la lógica, el copy y las validaciones son los oficiales. Prohibido chip, banner o texto "Test mode" / "Testing mode" (y equivalentes), y prohibido ramificar labels o mensajes por ese entorno. Al tocar un archivo que lo tenga: borrar ese código; si el archivo existe solo para anunciarlo, borrar el archivo. No restylarlo ni dejarlo condicionado. Excepción solo si el contrato ya trae el flag y el requisito de este hilo pide mostrarlo. Auditoría: hallazgo Alto, sin editar.
 
 ## Autoridad y precedencia

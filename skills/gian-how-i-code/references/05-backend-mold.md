@@ -34,7 +34,14 @@ Un valor, un arreglo o un paso que solo usa el caso dueño no se extrae a una cl
 2. Si ya existe un helper de ese eje, extenderlo. No crear otro.
 3. Un helper nuevo solo si ese mismo eje se reutiliza, o si es un eje de área ya cohesivo. No por un solo arreglo.
 
-Al tocar una clase que solo tiene constructor, o una carpeta `Support` creada para eso: borrar la clase y dejar el paso en el dueño. No renombrarla. Auditoría: hallazgo Alto, sin editar.
+Al tocar una clase que solo tiene constructor: borrar la clase y dejar el paso en el dueño. No renombrarla. Si el repo ya tiene `Support`, una feature nueva no agrega archivos ahí y no lo toma como molde. No migrar esa carpeta en silencio. Auditoría: hallazgo Alto, sin editar.
+
+### Forma a copiar
+
+- Action: clase `final`, método `handle`, sin constructor si no hay dependencia que el método use.
+- Query: el cálculo que solo usa esa query es un método privado de la query.
+- Valor reutilizado: `final class` en `Helpers`, `public static function`. No una clase por un solo arreglo.
+- No crear un `readonly` cuyo cuerpo es solo el constructor. Ni en `Support` ni en `Helpers`.
 
 ## Query table aliases
 
