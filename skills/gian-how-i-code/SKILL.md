@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.4.6"
+  version: "1.4.7"
 ---
 
 # gian-how-i-code
@@ -40,6 +40,7 @@ No usar como única skill para: explicación genérica de React/Vue/Angular/Lara
 - Contrato de lectura (núcleo): el serializer no dispara queries; las relaciones se cargan antes, sin N+1. En Laravel: `new XResource($this->whenLoaded('rel'))` / `::collection($this->whenLoaded('rels'))`, sin callback `fn() => new X($this->rel)` salvo lógica extra — ver `06`. En Python: `response_model` o un serializer sobre datos ya cargados.
 - Mutaciones: IDs de ruta nunca se mezclan con el DTO del body. 1 ID: `(id, data: TDto)`; 2+: `(params, data: TDto)`. El DTO sale de un schema nombrado; en TypeScript ese schema es Zod, en Python un body model de Pydantic. El envelope `*Variables` es del adaptador React Query o Vue Query (`13`). UI no arma FormData — ver `13`/`10`/`23`.
 - Campo de formulario (`10`): el tipo y la validación siguen lo que el campo representa. Se aplica lo que no rechaza datos (`type`, `inputmode`, `autocomplete`, normalización sin pérdida). Lo que puede rechazar datos guardados se propone. Moneda, decimal por locale, fecha con rangos o zona, u hora con intervalos: se usa lo que el repo ya tiene, o se propone una librería del framework (`19`). No se escribe la máscara a mano ni se instala sin OK.
+- Entorno ≠ producto (`01`/`08`/`15`/`17`). `npm run dev`, el test runner, `NODE_ENV`, `import.meta.env`, `APP_ENV` y `APP_DEBUG` no son un modo de producto: la lógica, el copy y las validaciones son los oficiales. Prohibido chip, banner o texto "Test mode" / "Testing mode" (y equivalentes), y prohibido ramificar labels o mensajes por ese entorno. Al tocar un archivo que lo tenga: borrar ese código; si el archivo existe solo para anunciarlo, borrar el archivo. No restylarlo ni dejarlo condicionado. Excepción solo si el contrato ya trae el flag y el requisito de este hilo pide mostrarlo. Auditoría: hallazgo Alto, sin editar.
 
 ## Autoridad y precedencia
 
@@ -74,6 +75,7 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 | Variante con store de UI / drawers / fetchers por scope | `20-variants.md` + `09` |
 | Tenancy central/tenant | `16-multi-tenant.md` |
 | Solo pregunta de estándar | Modo Consultar; citar `references/…` |
+| Chip, banner, texto o validación por dev/test ("Test mode", "Testing mode") | Implementar o tocar el archivo: borrar ese código; archivo que solo anuncia el entorno: borrar el archivo. Auditar: hallazgo Alto, no editar (`08`/`15`/`17`) |
 
 ## Execution Steps
 
@@ -108,6 +110,7 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 | Otro stack sin capítulo (Angular, Node, Python) | Núcleo (`01`, filas por stack). El adaptador es la API del framework; no saltar el núcleo |
 | Styling MUI/Tailwind / `sx` / `cn()` | `04-frontend-architecture`, `23-ts-style-helpers` |
 | Display / labels / estados UI | `07-types-enums-statuses`, `08-display-conventions`, `15-i18n-copy` |
+| Test mode / Testing mode / copy o chip condicionado por entorno | `01-principles`, `08-display-conventions`, `15-i18n-copy`, `17-testing-validation` |
 | Ownership / enum vs union / shadow MUI / membresía includes | `07-types-enums-statuses` |
 | cn / dayjs / utils vs helpers / memoización | `23-ts-style-helpers` |
 | Memoización React (`useMemo` / `useCallback` / `memo`) | `23-ts-style-helpers` (A–E) |

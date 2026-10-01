@@ -15,6 +15,7 @@ Cargar cuando: arranque, conflicto de reglas, modo Consultar sobre “por qué�
 9. **Formato PHP** no vive aquí: cargar `gian-php-style`. **Formato TS/TSX** no vive aquí: cargar `gian-ts-style` (WRITE/FIX corrigen el hunk; AUDIT no edita).
 10. **Ruta ≠ body.** IDs de URL no se mezclan con el DTO. Firmas y `TVariables` en `13`; schema en `10`.
 11. **El lenguaje no apaga el estándar.** Núcleo y adaptador, abajo. Una API de React que el stack no tiene no es permiso para saltarse la responsabilidad.
+12. **El entorno no es un modo de producto.** `npm run dev`, el test runner y las variables de entorno ejecutan la lógica oficial. No condicionar copy, chips ni validaciones al runtime. Al tocarlo, borrarlo (`08`/`15`/`17`).
 
 ## Núcleo y adaptador
 
@@ -72,3 +73,4 @@ Un patrón local que no está en `20` no es variante. Otra tecnología para la m
 - No diluir esta skill como “notas” o índice de otros documentos.
 - No reescribir un producto entero en un cambio pequeño.
 - No inventar campos API ni `any` para tapar gaps.
+- No anunciar el entorno en la UI ni ramificar el producto por dev/test.

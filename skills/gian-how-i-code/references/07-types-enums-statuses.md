@@ -32,6 +32,8 @@ No convertir mecánicamente toda union a enum.
 
 Incluye statuses, types, modes, roles, scopes, categories, actions, **y** estados/modos cerrados de componente o feature (`normal | loading | empty | error`, `default | selected | uploading | success | error | disabled`).
 
+Un modo inferido del runtime (`test`, `testing`, `dev`, `local`) no es `APP_OWNED`. No se declara enum ni se pinta. Si ya está y se toca el archivo, se borra (`08`).
+
 ```ts
 export enum DesignSystemTableMode {
   Normal = 'normal',

@@ -317,7 +317,7 @@ Evaluar `@tanstack/eslint-plugin-query` si:
 
 Reglas útiles: exhaustive-deps, stable-query-client, no-unstable-deps, prefer-query-options (según docs oficiales de la versión del repo).
 
-Devtools: útil en dev; no es dependencia de producción obligatoria.
+Devtools: útil en dev; no es dependencia de producción obligatoria. Devtools de librería no son UI de producto y no autorizan un chip o copy de "Test mode" (`08`).
 
 ## 7. Checklist rápido
 

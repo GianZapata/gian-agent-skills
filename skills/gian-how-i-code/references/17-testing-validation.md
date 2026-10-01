@@ -6,6 +6,12 @@ Cargar cuando: cerrar Implementar / Aplicar.
 
 Usar **comandos del repo** (AGENTS local de validación). No imponer comandos de otro producto.
 
+## El test runner no es un modo de producto
+
+PHPUnit, Pest, Vitest, Jest y `npm run dev` ejecutan la lógica oficial. No crean una UI de "Test mode" ni un mensaje de validación distinto.
+
+Al tocar un archivo de producto que anuncia el runner o el entorno: borrar ese código. No borrar la suite que protege un requisito. Un test no es un chip.
+
 ## Patrones frecuentes
 
 | Área | Ejemplo |

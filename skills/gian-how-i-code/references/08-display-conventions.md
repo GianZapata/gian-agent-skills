@@ -65,6 +65,26 @@ Se acepta duplicar if-chains **ad-hoc** entre componentes. No extraer eso a help
 - `Helper.getPrimaryLabel` / `ColorHelper.statusColor` como helper de display suelto
 - Ternario anidado (>1 nivel) — forma: `gian-ts-style`
 - Title Case forzado; siglas internas del dominio en copy visible, salvo que el usuario final las conozca y formen parte del lenguaje oficial del producto
+- Chip, banner, badge o texto de entorno: "Test mode", "Testing mode", "Modo prueba", "Dev mode", "Sandbox", "Demo", inferidos de `npm run dev`, `NODE_ENV`, `import.meta.env`, `APP_ENV` o `APP_DEBUG`
+- Enum o meta creado solo para pintar ese entorno
+
+## Entorno no es display (HARD)
+
+El runtime no es un estado de la feature. No se declara enum, no se arma `Record`, no se pinta Chip.
+
+Al tocar un archivo que lo tenga: borrar el chip, el banner, la rama y el copy. No restylarlo, no esconderlo detrás de `import.meta.env.DEV`, no moverlo a otro componente. Si el archivo existe solo para anunciar el entorno, borrar el archivo y sus imports exclusivos. La lógica de producto del mismo archivo se queda.
+
+Auditoría no edita: hallazgo Alto.
+
+Excepción: el contrato ya trae el flag y el requisito de este hilo pide mostrarlo. Si no, no existe.
+
+| Excusa | Realidad |
+|--------|----------|
+| "El dev tiene que ver que está en local" | Ya lo sabe: corrió el servidor. El copy es del producto. |
+| "Es un chip chico" | Es un modo inventado. Borrarlo. |
+| "`07` dice que los modos van a Chip" | Un modo inferido del runtime no es `APP_OWNED`. No se declara. |
+| "Lo dejo solo en dev" | Esa rama es el defecto. Borrar rama y texto. |
+| "Lo mejoro" | No tiene sentido. Borrar. |
 
 Audits locales del repo **no** ganan a esta reference. No “relocate to feature-level display configs”.
 

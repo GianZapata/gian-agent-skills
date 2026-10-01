@@ -11,7 +11,7 @@ Cargar cuando: arranque humano, modo Consultar, orientación general.
 | 05 | `05-backend-mold.md` | Molde Laravel (adaptador); FormRequest `rules`/`messages`/`attributes` |
 | 06 | `06-api-contracts.md` | Contratos HTTP; whenLoaded → Resource ctor (adaptador Laravel) |
 | 07 | `07-types-enums-statuses.md` | Enums, ownership, membresía includes / in_array / in |
-| 08 | `08-display-conventions.md` | Display inline **o** `static readonly Record` con labels dinámicos en helper |
+| 08 | `08-display-conventions.md` | Display inline **o** `static readonly Record` con labels dinámicos en helper; el entorno no es un chip |
 | 09 | `09-dialogs-drawers.md` | Diálogos / drawers; dueño de mutación; montaje condicional |
 | 10 | `10-forms-validation.md` | Forms; DTO = schema nombrado del body; tipo semántico del campo; 422 por campo; adaptador RHF+Zod |
 | 11 | `11-tables-filters.md` | Tablas y filtros |
@@ -20,7 +20,7 @@ Cargar cuando: arranque humano, modo Consultar, orientación general.
 | 14 | `14-errors-feedback.md` | Errores, cliente HTTP compartido y toasts |
 | 15 | `15-i18n-copy.md` | i18n y copy |
 | 16 | `16-multi-tenant.md` | Multi-tenant |
-| 17 | `17-testing-validation.md` | Validación |
+| 17 | `17-testing-validation.md` | Validación; el test runner no es un modo de producto |
 | 18 | `18-migrate-audit.md` | Auditoría / migración |
 | 19 | `19-propuestas-stack.md` | Evaluación de mejoras de stack |
 | 20 | `20-variants.md` | Variantes técnicas |

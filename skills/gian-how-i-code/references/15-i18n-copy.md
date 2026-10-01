@@ -55,6 +55,8 @@ Los getters conservan un único Record sin congelar el locale. El componente usa
 - Toast: qué pasó y a dónde
 - Key puede ser técnica; value humano
 - `data-testid` en inglés técnico OK
+- El entorno no cambia el copy. Prohibido "Test mode", "Testing mode" y equivalentes, y prohibido un mensaje distinto si `import.meta.env.DEV`, `NODE_ENV`, `APP_ENV` o el test runner
+- Al tocar un archivo con ese copy, o con una validación cuyo texto depende del entorno: borrar el texto y la rama. No dejar un fallback. Si el archivo existe solo para ese aviso, borrarlo (`08`)
 
 Mensajes de validación user-facing (FormRequest `messages`/`attributes`, 422 por campo): autoridad `05`/`10`/`14`. Esta reference no define esa regla.
 
