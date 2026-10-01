@@ -5,6 +5,7 @@ Cargar cuando: formularios, RHF, Zod, DTOs de mutation (body HTTP), campos condi
 ## Alcance
 
 - **Núcleo:** el body sale de un schema nombrado. Prohibido un `interface *Input` paralelo y el payload anónimo. Los IDs de ruta no entran al schema. Fuera del componente, `i18n.t()`. 422 por campo con el mensaje del backend.
+- **Tipo de campo:** al crear o editar un campo, el tipo y la validación siguen lo que ese campo representa. Ver «Tipo de campo y validación semántica».
 - **Adaptador:** en TypeScript, ese schema es Zod y el tipo sale de `z.infer`. En Python, es un body model de Pydantic. En React: RHF, `Controller`, `useFieldArray`, `zodResolver`, Container/Form. En otro stack, el form de ese stack enlaza el mismo schema.
 
 ## Stack (adaptador React)
@@ -69,6 +70,47 @@ Si hay UI que consume la validación del FormRequest (`05`):
 - No introducir una arquitectura nueva de errores; seguir ErrorMapper/`setError`/toasts del repo.
 
 Una tarea de formulario/validación no está terminada sin el completion gate de `05`.
+
+## Tipo de campo y validación semántica
+
+Al crear o editar un campo, identificar qué representa y comprobar si el tipo y la validación coinciden. El alcance es ese campo. Un hermano del mismo form con el mismo problema se reporta como propuesta; no se recorre el formulario ni el repo.
+
+La tabla es el objetivo. Qué se cambia ahora y qué se propone está en la sección siguiente. Los atributos HTML (`type`, `inputmode`, `autocomplete`) son del cliente web. La regla semántica es la misma en el schema del form y en el borde.
+
+| Campo | Objetivo |
+|-------|----------|
+| Email | `type="email"`, `autocomplete="email"`. `trim` y minúsculas al escribir o al salir. Schema: email válido. En el borde, la regla de email del stack, normalizando antes de validar. |
+| Nombre / apellidos | Letras con acentos, espacios, apóstrofo y guion. Sin dígitos. `trim` y espacios colapsados. `autocomplete="given-name"` / `"family-name"`. |
+| Teléfono | `type="tel"`, `inputmode="tel"`, `autocomplete="tel"`. Se normaliza a dígitos y un `+` inicial antes de enviar. Un número con guiones o espacios se normaliza; no se rechaza el pegado. |
+| Fecha | Date input nativo o el DatePicker del repo. ISO en el payload. Texto libre no es el tipo. |
+| Hora | `type="time"` o el picker del repo. `HH:mm` en el payload. |
+| Entero | `inputmode="numeric"` y entero. `min` / `max` cuando el dominio ya los tiene. |
+| Decimal / dinero | `inputmode="decimal"`. Dinero: 2 decimales, sin redondeo por float. Si el repo tiene schema de dinero o decimal, se usa. |
+| URL / contraseña | `type="url"`. `type="password"` con `autocomplete="new-password"` o `"current-password"`. |
+
+### Aplicar y proponer
+
+- **Se aplica** en el campo tocado lo que no rechaza un valor que hoy pasa: `type`, `inputmode`, `autocomplete` y normalización sin pérdida (`trim`, minúsculas en email, teléfono a dígitos y `+`). Un monto `type="number"` libre pasa a decimal con 2 decimales, usando el schema de dinero o decimal del repo, sin parseo por float.
+- **Se propone (PROP)** lo que puede rechazar datos ya guardados o cambiar el contrato: nombre o apellidos sin dígitos, rangos de negocio (una fecha de nacimiento no futura), un tope de decimales distinto del default de dinero, una longitud máxima nueva. No se aplica en silencio.
+- **La misma regla** va en el schema del form y en el borde (FormRequest, body model de Pydantic, schema del handler), con mensaje de dominio y 422 por campo (`05`, `15`).
+- **No se bloquea el pegado ni la escritura.** Si se puede normalizar sin perder el dato, se normaliza.
+
+### Campo complejo
+
+El input nativo no alcanza cuando el campo pide:
+
+- moneda con máscara y separadores por locale;
+- decimales con coma o punto según el idioma;
+- fechas con rangos o zonas horarias;
+- horas con intervalos.
+
+Ahí no se escribe una máscara, un parser ni un picker. El orden es el Decision Gate de `19`:
+
+1. Usar lo que el repo ya tiene: el DatePicker, el campo de moneda de su librería de UI, o un wrapper local.
+2. Si no hay, proponer una librería del framework del repo. Se consulta la documentación y se explican costo y riesgo. La librería es la de ese stack.
+3. No instalar sin OK. Mientras tanto, el campo queda con el tipo y la validación de la tabla, sin máscara casera.
+
+Señal: la tarea pide formateo, parseo o máscara propios para un dato que una librería madura ya cubre.
 
 ## Qué no hacer aquí
 

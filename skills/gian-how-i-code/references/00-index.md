@@ -13,7 +13,7 @@ Cargar cuando: arranque humano, modo Consultar, orientación general.
 | 07 | `07-types-enums-statuses.md` | Enums, ownership, membresía includes / in_array / in |
 | 08 | `08-display-conventions.md` | Display inline **o** `static readonly Record` con labels dinámicos en helper |
 | 09 | `09-dialogs-drawers.md` | Diálogos / drawers; dueño de mutación; montaje condicional |
-| 10 | `10-forms-validation.md` | Forms; DTO = schema nombrado del body; 422 por campo; adaptador RHF+Zod |
+| 10 | `10-forms-validation.md` | Forms; DTO = schema nombrado del body; tipo semántico del campo; 422 por campo; adaptador RHF+Zod |
 | 11 | `11-tables-filters.md` | Tablas y filtros |
 | 12 | `12-state-management.md` | Estado cliente |
 | 13 | `13-data-fetching.md` | Data fetching: núcleo ruta ≠ body; adaptador TanStack Query (keys, TVariables) |

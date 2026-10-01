@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.4.5"
+  version: "1.4.6"
 ---
 
 # gian-how-i-code
@@ -39,6 +39,7 @@ No usar como única skill para: explicación genérica de React/Vue/Angular/Lara
 - Display FE: metadata exhaustiva en una propiedad pública `static readonly Record<Enum, Meta>` de `<entity>.helper.ts`; getter de `label` con `i18n.t()` para resolver el locale al leer; `getXMeta(Enum | null | undefined)` como API preferida cuando el consumidor puede recibir ausencia, con `unknownMeta` y resolver privados. El acceso directo al Record queda para enums garantizados o iteración. No ampliar a `string`, usar casts ni fallbacks para ocultar drift. If-chain ad-hoc en el componente con `t()`. Prohibido `*.display.config.ts`, inyectar `TFunction`, `labelKey` diferido — ver `07`/`08`/`15`.
 - Contrato de lectura (núcleo): el serializer no dispara queries; las relaciones se cargan antes, sin N+1. En Laravel: `new XResource($this->whenLoaded('rel'))` / `::collection($this->whenLoaded('rels'))`, sin callback `fn() => new X($this->rel)` salvo lógica extra — ver `06`. En Python: `response_model` o un serializer sobre datos ya cargados.
 - Mutaciones: IDs de ruta nunca se mezclan con el DTO del body. 1 ID: `(id, data: TDto)`; 2+: `(params, data: TDto)`. El DTO sale de un schema nombrado; en TypeScript ese schema es Zod, en Python un body model de Pydantic. El envelope `*Variables` es del adaptador React Query o Vue Query (`13`). UI no arma FormData — ver `13`/`10`/`23`.
+- Campo de formulario (`10`): el tipo y la validación siguen lo que el campo representa. Se aplica lo que no rechaza datos (`type`, `inputmode`, `autocomplete`, normalización sin pérdida). Lo que puede rechazar datos guardados se propone. Moneda, decimal por locale, fecha con rangos o zona, u hora con intervalos: se usa lo que el repo ya tiene, o se propone una librería del framework (`19`). No se escribe la máscara a mano ni se instala sin OK.
 
 ## Autoridad y precedencia
 
@@ -112,7 +113,7 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 | Memoización React (`useMemo` / `useCallback` / `memo`) | `23-ts-style-helpers` (A–E) |
 | Formato visual TS/TSX (arrows, braces, JSX) | **no esta skill** — cargar `gian-ts-style` |
 | Modal / drawer | `09-dialogs-drawers` |
-| Forms / schema del body (RHF + Zod en React) | `10-forms-validation` |
+| Forms / schema del body / tipo semántico del campo (RHF + Zod en React) | `10-forms-validation`; máscara, parser o picker → `19-propuestas-stack` |
 | Mutations / ruta vs DTO / multipart | `13-data-fetching`, `10-forms-validation`, `23-ts-style-helpers` |
 | Validación user-facing / FormRequest `messages` / Pydantic / 422 por campo | `01-principles`, `05-backend-mold`, `10-forms-validation`, `14-errors-feedback` |
 | Tablas / filtros | `11-tables-filters` |

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.6 — 2026-10-01
+
+- Campo de formulario (`10`): el tipo y la validación siguen lo que el campo representa. Se aplica `type`, `inputmode`, `autocomplete` y la normalización sin pérdida. Nombre sin dígitos, rangos y topes que puedan rechazar datos guardados se proponen. La misma regla va en el schema del form y en el borde.
+- Campo complejo (`10`, `19`): moneda, decimal por locale, fecha con rangos o zona, hora con intervalos. Se usa el componente del repo. Si no existe, se propone una librería del framework. No se escribe la máscara a mano ni se instala sin OK.
+
 ## 1.4.5 — 2026-10-01
 
 - Tests (`17`): siguen al requisito, no al borrado. Si el requisito desaparece, se borran el código y sus tests exclusivos, sin un test de "ya no existe". Si sigue, se conservan o adaptan. Si la eliminación crea una garantía vigente, se prueba esa garantía. La limpieza incluye fixtures, mocks y factories sin uso.

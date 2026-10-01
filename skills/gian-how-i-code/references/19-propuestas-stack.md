@@ -37,7 +37,7 @@ No es obligatorio producir una propuesta en cada tarea. Si el stack actual ya re
 | Mejora de configuración | Ajuste de tooling/config |
 | Mejora de linting | p. ej. `@tanstack/eslint-plugin-query` |
 | Mejora de tipado | Enums, Params tipados, quitar casts |
-| Complejidad innecesariamente manual | Wizard/SM/tabla a mano cuando hay patrón maduro |
+| Complejidad innecesariamente manual | Wizard, máquina de estados o tabla a mano. También máscara, parser o picker de moneda, decimal por locale, fecha con rangos o zona, u hora con intervalos, cuando una librería madura ya lo cubre (`10`) |
 | Sustitución no recomendable | Cambiar lib por moda sin ganancia |
 | Oportunidad futura no prioritaria | Diferir |
 | No requiere cambio | Stack actual suficiente |
@@ -109,6 +109,7 @@ El adaptador React de abajo es el esperado **cuando el repo es React**. En Vue, 
 - Query-key-factory instalado pero keys manuales + invalidate con arrays sueltos → **subutilizada**.
 - Catálogos sin `staleTime` y refetch agresivo → tipado/config, no lib nueva.
 - Wizard de 8 pasos sin máquina de estados y el dominio es SM → evaluar lib o patrón interno.
+- Campo de moneda, decimal por locale, fecha con rangos o zona, u hora con intervalos: no escribir la máscara, el parser ni el picker. Usar el componente o wrapper del repo. Si no existe, PROP de una librería del framework de ese repo (`10`). No instalar sin OK. Mientras tanto, el campo queda con el tipo y la validación de `10`.
 
 ## Ejemplos de cuándo no proponer
 
@@ -117,6 +118,7 @@ El adaptador React de abajo es el esperado **cuando el repo es React**. En Vue, 
 - Instalar “la última moda” sin evidencia de dolor.
 - Instalar TanStack Query, RHF o MUI en un repo que no es React. Cumplir la capacidad con el equivalente del stack (`01`).
 - Proponer dayjs, Zod u otra lib JS en un backend Python.
+- Una máscara, un parser o un picker escritos a mano para moneda, decimal por locale, fecha u hora. Ahí la propuesta es el componente del repo o una librería del framework (`10`), no el parser propio.
 
 ## Preferencias canónicas (sin pin de versión)
 
