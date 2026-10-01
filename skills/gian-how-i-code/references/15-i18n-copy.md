@@ -62,7 +62,9 @@ BAD:  No pudimos verificar la sucursal. Revisa que la API esté en marcha e int�
 GOOD: No pudimos verificar esta sucursal. Inténtalo más tarde.
 ```
 
-Al detectar copy ya escrito que le habla al operador, se propone: ubicación, texto actual, problema y reemplazo. No se reescribe al tocar. El texto nuevo sale bien desde el inicio. Si se autoriza corregir ese copy, se aplica ese alcance sin volver a pedir permiso.
+Al detectar copy visible que habla al operador, contiene instrucciones que la audiencia no puede realizar, o atribuye causas y plazos sin evidencia, se corrige directo. Se revisa el contexto. Se conserva la operación real, el idioma del usuario y los términos del dominio, como `API key`. Los códigos y contratos quedan estables. Al terminar, se resume qué cambió.
+
+Si el usuario pide explícitamente solo analizar, o no modificar archivos, se entrega la propuesta y no se edita.
 
 - Sin siglas internas en visible
 - Tono natural; mayúscula natural

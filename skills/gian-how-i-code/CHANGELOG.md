@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.15 — 2026-10-01
+
+- Copy (`15`, `14`, `SKILL.md`): el copy de operador se corrige por defecto y después se informa. Solo se propone, sin editar, si el usuario pidió solo analizar o no modificar archivos. Un término de dominio se conserva.
+
 ## 1.4.14 — 2026-10-01
 
 - Copy (`15`, `14`, `SKILL.md`): se juzga por audiencia y función, no por palabra prohibida. Un término de dominio se conserva. El copy de operador ya escrito se propone, no se reescribe al tocar. No se inventa causa ni plazo. “Más tarde” no es el mensaje de todo error.
