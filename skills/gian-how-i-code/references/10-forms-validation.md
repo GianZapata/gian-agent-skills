@@ -5,7 +5,7 @@ Cargar cuando: formularios, RHF, Zod, DTOs de mutation (body HTTP), campos condi
 ## Alcance
 
 - **Núcleo:** el body sale de un schema nombrado. Prohibido un `interface *Input` paralelo y el payload anónimo. Los IDs de ruta no entran al schema. Fuera del componente, `i18n.t()`. 422 por campo con el mensaje del backend.
-- **Tipo de campo:** al crear o editar un campo, el tipo y la validación siguen lo que ese campo representa. Ver «Tipo de campo y validación semántica».
+- **Tipo de campo:** al crear o editar un campo, nombrar qué representa. El tipo, la validación y el control siguen eso. La tabla de abajo es ejemplo, no el universo. Un campo que no está en ella sigue la misma regla.
 - **Adaptador:** en TypeScript, ese schema es Zod y el tipo sale de `z.infer`. En Python, es un body model de Pydantic. En React: RHF, `Controller`, `useFieldArray`, `zodResolver`, Container/Form. En otro stack, el form de ese stack enlaza el mismo schema.
 
 ## Stack (adaptador React)
@@ -73,9 +73,15 @@ Una tarea de formulario/validación no está terminada sin el completion gate de
 
 ## Tipo de campo y validación semántica
 
-Al crear o editar un campo, identificar qué representa y comprobar si el tipo y la validación coinciden. El alcance es ese campo. Un hermano del mismo form con el mismo problema se reporta como propuesta; no se recorre el formulario ni el repo.
+Al crear o editar un campo, nombrar qué representa. El tipo, la validación y el control siguen eso. No hace falta que el campo esté en la tabla. Email, nombre o teléfono son ejemplos de la misma regla, no la lista cerrada.
 
-La tabla es el objetivo. Qué se cambia ahora y qué se propone está en la sección siguiente. Los atributos HTML (`type`, `inputmode`, `autocomplete`) son del cliente web. La regla semántica es la misma en el schema del form y en el borde.
+El alcance es ese campo. Un hermano del mismo form con el mismo problema se reporta como propuesta; no se recorre el formulario ni el repo cambiando widgets.
+
+Qué se cambia ahora y qué se propone está en «Aplicar y proponer». Los atributos HTML (`type`, `inputmode`, `autocomplete`) son del cliente web. La regla semántica es la misma en el schema del form y en el borde.
+
+### Ejemplos
+
+La tabla no limita la regla. Si el campo no aparece, se identifica qué representa y se aplica el gate de abajo.
 
 | Campo | Objetivo |
 |-------|----------|
@@ -90,8 +96,9 @@ La tabla es el objetivo. Qué se cambia ahora y qué se propone está en la secc
 
 ### Aplicar y proponer
 
-- **Se aplica** en el campo tocado lo que no rechaza un valor que hoy pasa: `type`, `inputmode`, `autocomplete` y normalización sin pérdida (`trim`, minúsculas en email, teléfono a dígitos y `+`). Un monto `type="number"` libre pasa a decimal con 2 decimales, usando el schema de dinero o decimal del repo, sin parseo por float.
-- **Se propone (PROP)** lo que puede rechazar datos ya guardados o cambiar el contrato: nombre o apellidos sin dígitos, rangos de negocio (una fecha de nacimiento no futura), un tope de decimales distinto del default de dinero, una longitud máxima nueva. No se aplica en silencio.
+- **Se aplica** en el campo tocado lo que no rechaza un valor que hoy pasa: el `type` que le corresponde, `inputmode`, `autocomplete` y normalización sin pérdida. Los ejemplos de la tabla (`trim`, minúsculas en email, teléfono a dígitos y `+`) no agotan la lista. Un monto `type="number"` libre pasa a decimal con 2 decimales, usando el schema de dinero o decimal del repo, sin parseo por float.
+- **Se propone (PROP)** lo que puede rechazar datos ya guardados o cambiar el contrato. Los ejemplos (nombre o apellidos sin dígitos, reescribir un identificador ya guardado, rangos de negocio, un tope nuevo, una longitud máxima nueva) no agotan la lista. No se aplica en silencio.
+- **El control sigue a la elección, no al gusto.** Dos opciones exclusivas son un radio. No se cambian a cards. Muchas opciones usan el autocomplete que el repo ya tiene; si no hay, se propone. No se recorre el formulario cambiando widgets.
 - **La misma regla** va en el schema del form y en el borde (FormRequest, body model de Pydantic, schema del handler), con mensaje de dominio y 422 por campo (`05`, `15`).
 - **No se bloquea el pegado ni la escritura.** Si se puede normalizar sin perder el dato, se normaliza.
 

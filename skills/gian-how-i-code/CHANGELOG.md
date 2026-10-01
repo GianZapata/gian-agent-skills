@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.8 — 2026-10-01
+
+- Campo de formulario (`10`): la tabla es ejemplo, no el universo. Cualquier campo se trata por lo que representa. Se aplica la normalización sin pérdida; lo que rechaza datos guardados o cambia el contrato se propone. El control sigue a la elección: dos opciones exclusivas son un radio, no cards; muchas opciones usan el autocomplete del repo, o se propone.
+
 ## 1.4.7 — 2026-10-01
 
 - Entorno ≠ producto (`01`, `08`, `15`, `17`). `npm run dev` y el test runner no son un modo. Prohibido chip, banner o copy "Test mode" / "Testing mode", y prohibido ramificar validaciones por el runtime. Al tocar ese código, se borra; si el archivo existe solo para anunciarlo, se borra el archivo. Excepción solo si el contrato ya trae el flag y el requisito pide mostrarlo.
