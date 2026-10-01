@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.9 — 2026-10-01
+
+- Laravel (`05`): prohibido `Support` y prohibida una clase cuyo único miembro es el constructor. Un valor o un arreglo va a un método privado del dueño; `private static` si no usa `$this`. Un helper nuevo solo si ese eje se reutiliza o ya existe. Al tocarla, se borra.
+
 ## 1.4.8 — 2026-10-01
 
 - Campo de formulario (`10`): la tabla es ejemplo, no el universo. Cualquier campo se trata por lo que representa. Se aplica la normalización sin pérdida; lo que rechaza datos guardados o cambia el contrato se propone. El control sigue a la elección: dos opciones exclusivas son un radio, no cards; muchas opciones usan el autocomplete del repo, o se propone.

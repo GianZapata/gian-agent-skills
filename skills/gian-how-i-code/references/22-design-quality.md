@@ -33,7 +33,8 @@ Preferir **composición** cuando haya dependencias, configuración, estado propi
 - No clases `Manager` / `Helper` / `Service` **cajón de sastre** (multi-dominio). Sí se permiten `*Helper` con **un solo eje cohesivo** (`DateHelper`, `NumberHelper`, `UserHelper`, etc.) — ver `23`.
 - Nombres del dominio.
 - Evitar herencia abstracta anticipada.
-- Dependencias visibles (constructor); no `app()`/`Facade` si ocultan deps relevantes en dominio.
+- Dependencias visibles (constructor) en una clase que ya tiene comportamiento. El constructor no autoriza una clase nueva. No `app()`/`Facade` si ocultan deps relevantes en dominio.
+- No crear `Support` ni una clase vacía para un valor o un arreglo. El paso vive en un método privado del dueño; ver `05`.
 - Transacciones en la Action dueña del caso de uso; side effects post-commit cuando corresponda.
 - Métodos privados para pasos legibles, no solo para acortar.
 - Value Objects cuando haya invariantes reales.

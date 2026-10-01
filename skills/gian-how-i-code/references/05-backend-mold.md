@@ -19,7 +19,22 @@ Lectura compleja → Query (Spatie QueryBuilder) → Resource
 - Actions: mutaciones, transacciones, dominio
 - Queries: includes, filters, sorts, counts
 - Resources: serializan; **no** cargan relaciones ni disparan queries; `whenLoaded` al ctor del Resource (`06`)
+- Lista: `Resource::collection` o el `ResourceCollection` de la feature si la lista necesita envoltura propia. No una clase aparte para el arreglo.
 - Services Laravel: solo integraciones externas
+
+## No Support ni clases vacías
+
+El molde de arriba es el conjunto. No se abre `Support`, `Supports` ni un cajón equivalente para la feature.
+
+Una clase entra si tiene comportamiento: un caso de uso, una query, una transición o una serialización. Un constructor no es comportamiento. Prohibida una clase cuyo único miembro es `__construct`, aunque las propiedades estén promovidas.
+
+Un valor, un arreglo o un paso que solo usa el caso dueño no se extrae a una clase:
+
+1. Método privado en la Action, Query o Resource dueña. `private static` si no usa estado de instancia. Método de instancia si usa `$this`.
+2. Si ya existe un helper de ese eje, extenderlo. No crear otro.
+3. Un helper nuevo solo si ese mismo eje se reutiliza, o si es un eje de área ya cohesivo. No por un solo arreglo.
+
+Al tocar una clase que solo tiene constructor, o una carpeta `Support` creada para eso: borrar la clase y dejar el paso en el dueño. No renombrarla. Auditoría: hallazgo Alto, sin editar.
 
 ## Query table aliases
 
@@ -160,6 +175,7 @@ Una tarea que modifica formularios o validación user-facing no puede declararse
 
 - [ ] Controller delgado
 - [ ] Request + Action + Resource / Query
+- [ ] Sin `Support` ni clase cuyo único miembro es el constructor
 - [ ] Includes/filters/sorts explícitos
 - [ ] Tipos cerrados: backed Enum **o** constantes SM (no ambos para lo mismo)
 - [ ] SM con const + transitions + defaultState + bootHasStateMachines
