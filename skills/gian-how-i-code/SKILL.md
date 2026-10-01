@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.4.12"
+  version: "1.4.13"
 ---
 
 # gian-how-i-code
@@ -41,6 +41,7 @@ No usar como única skill para: explicación genérica de React/Vue/Angular/Lara
 - Mutaciones: IDs de ruta nunca se mezclan con el DTO del body. 1 ID: `(id, data: TDto)`; 2+: `(params, data: TDto)`. El DTO sale de un schema nombrado; en TypeScript ese schema es Zod, en Python un body model de Pydantic. El envelope `*Variables` es del adaptador React Query o Vue Query (`13`). UI no arma FormData — ver `13`/`10`/`23`.
 - Campo de formulario (`10`): al tocarlo, nombrar qué representa. La tabla de `10` es ejemplo, no el universo. Se aplica lo que no rechaza un valor que hoy pasa. Lo que puede rechazar datos guardados o cambiar el contrato se propone. El control sigue a la elección, no al gusto. Al crear o editar un campo, evaluar si una ayuda de captura ahorra trabajo, anticipa un problema o muestra la consecuencia. Evaluar es obligatorio. Implementar no: solo si el repo ya tiene lo que esa ayuda necesita, el alcance lo autoriza y no pisa un valor guardado ni una corrección manual. Si falta capacidad, proponer (`19`). No exigir a la vez catálogo, endpoint y debounce.
 - Laravel (`05`): antes de crear un archivo, decidir el lugar. No agregarlo a `Support` porque la carpeta ya existe. Config, modelo, enum, helper de un eje ya cohesivo, método privado, fixture, o adaptador si la integración exige o consume la clase (config, factory, contenedor o `new`). No se crea una clase solo para agrupar variables. Una clase existente que solo declara constructor no se borra por eso: mirar consumidores, herencia e invariante. Estar en `Support` es convención, no hallazgo Alto. Alto es impacto: contrato roto, efecto duplicado, dato incoherente. La Action dueña delimita la transacción. `CustomException` se lanza, no se retorna. No migrar un `Support` existente en silencio.
+- Copy visible (`15`): título, descripción, vacío, error, toast, botón, placeholder y ayuda le hablan a quien usa el producto. No nombran API, servidor, base, logs, puerto, entorno ni piden operarlo. Dicen qué pasó en su tarea y qué puede hacer. Al tocar un texto que le habla al operador, reescribirlo. No dejar el fallback técnico.
 - Entorno ≠ producto (`01`/`08`/`15`/`17`). `npm run dev`, el test runner, `NODE_ENV`, `import.meta.env`, `APP_ENV` y `APP_DEBUG` no son un modo de producto: la lógica, el copy y las validaciones son los oficiales. Prohibido chip, banner o texto "Test mode" / "Testing mode" (y equivalentes), y prohibido ramificar labels o mensajes por ese entorno. Al tocar un archivo que lo tenga: borrar ese código; si el archivo existe solo para anunciarlo, borrar el archivo. No restylarlo ni dejarlo condicionado. Excepción solo si el contrato ya trae el flag y el requisito de este hilo pide mostrarlo. Auditoría: hallazgo Alto, sin editar.
 
 ## Autoridad y precedencia

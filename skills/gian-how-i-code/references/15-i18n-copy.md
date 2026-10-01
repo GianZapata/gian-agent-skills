@@ -49,6 +49,17 @@ Los getters conservan un único Record sin congelar el locale. El componente usa
 
 ## Copy (usuario final)
 
+Todo texto visible le habla a quien usa el producto: título, descripción, vacío, error, toast, botón, placeholder y ayuda. No se inventa una frase de operador.
+
+Prohibido en visible: API, servidor, base de datos, logs, puerto, entorno, stack, excepción, o pedir que el sistema “esté en marcha”. El usuario no opera eso. El texto dice qué pasó en su tarea y qué puede hacer: reintentar, revisar el dato, volver más tarde.
+
+```text
+BAD:  No pudimos verificar la sucursal. Revisa que la API esté en marcha e inténtalo de nuevo.
+GOOD: No pudimos cargar esta sucursal. Inténtalo de nuevo en unos minutos.
+```
+
+Al tocar un texto que le habla al operador, reescribirlo. No dejar el fallback técnico.
+
 - Sin siglas internas en visible
 - Tono natural; mayúscula natural
 - Título ↔ botón consistentes

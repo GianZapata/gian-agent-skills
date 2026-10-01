@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.13 — 2026-10-01
+
+- Copy visible (`15`, `14`): título, descripción, vacío, error, toast y ayuda le hablan a quien usa el producto. No nombran API, servidor ni piden operarlo. Al tocarlo, se reescribe.
+
 ## 1.4.12 — 2026-10-01
 
 - Ayudas de captura (`10`): evaluar es obligatorio; implementar no. Local y asíncrona se separan. Cada ayuda declara solo lo que necesita. La corrección manual gana, y se señala si dejó de ser coherente. El dominio del email puede ir en minúsculas; la parte local es decisión de producto.
