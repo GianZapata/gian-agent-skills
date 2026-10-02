@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.17 — 2026-10-02
+
+- Superficie de captura (`10`, `15`, `14`, `05`, `SKILL.md`): que el sistema compruebe, calcule o limite no autoriza publicarlo. El éxito y el estado normal no se anuncian. Si hace falta señalar, es un icono, y no siempre. El fallo que hay que corregir sí lleva el mensaje. Sin botón de comprobar si el campo ya consulta, sin segundo envío al lado de Guardar, sin título que repite la única etiqueta, sin descargo de lo que Guardar no hace.
+
 ## 1.4.16 — 2026-10-01
 
 - Caso de uso backend (`05`, `SKILL.md`, `24`, `18`): la Action garantiza el caso al crear, modificar o auditar, aunque tenga una línea. El flujo es FormRequest antes del Controller. `render()` no revierte escrituras. Cuatro conclusiones, sin cupo mínimo. La ausencia de una regla extra no es decisión pendiente por sí sola.

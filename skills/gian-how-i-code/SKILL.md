@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.4.16"
+  version: "1.4.17"
 ---
 
 # gian-how-i-code
@@ -39,7 +39,8 @@ No usar como única skill para: explicación genérica de React/Vue/Angular/Lara
 - Display FE: metadata exhaustiva en una propiedad pública `static readonly Record<Enum, Meta>` de `<entity>.helper.ts`; getter de `label` con `i18n.t()` para resolver el locale al leer; `getXMeta(Enum | null | undefined)` como API preferida cuando el consumidor puede recibir ausencia, con `unknownMeta` y resolver privados. El acceso directo al Record queda para enums garantizados o iteración. No ampliar a `string`, usar casts ni fallbacks para ocultar drift. If-chain ad-hoc en el componente con `t()`. Prohibido `*.display.config.ts`, inyectar `TFunction`, `labelKey` diferido — ver `07`/`08`/`15`.
 - Contrato de lectura (núcleo): el serializer no dispara queries; las relaciones se cargan antes, sin N+1. En Laravel: `new XResource($this->whenLoaded('rel'))` / `::collection($this->whenLoaded('rels'))`, sin callback `fn() => new X($this->rel)` salvo lógica extra — ver `06`. En Python: `response_model` o un serializer sobre datos ya cargados.
 - Mutaciones: IDs de ruta nunca se mezclan con el DTO del body. 1 ID: `(id, data: TDto)`; 2+: `(params, data: TDto)`. El DTO sale de un schema nombrado; en TypeScript ese schema es Zod, en Python un body model de Pydantic. El envelope `*Variables` es del adaptador React Query o Vue Query (`13`). UI no arma FormData — ver `13`/`10`/`23`.
-- Campo de formulario (`10`): al tocarlo, nombrar qué representa. La tabla de `10` es ejemplo, no el universo. Se aplica lo que no rechaza un valor que hoy pasa. Lo que puede rechazar datos guardados o cambiar el contrato se propone. El control sigue a la elección, no al gusto. Al crear o editar un campo, evaluar si una ayuda de captura ahorra trabajo, anticipa un problema o muestra la consecuencia. Evaluar es obligatorio. Implementar no: solo si el repo ya tiene lo que esa ayuda necesita, el alcance lo autoriza y no pisa un valor guardado ni una corrección manual. Si falta capacidad, proponer (`19`). No exigir a la vez catálogo, endpoint y debounce.
+- Campo de formulario (`10`): al tocarlo, nombrar qué representa. La tabla de `10` es ejemplo, no el universo. Se aplica lo que no rechaza un valor que hoy pasa. Lo que puede rechazar datos guardados o cambiar el contrato se propone. El control sigue a la elección, no al gusto. Al crear o editar un campo, evaluar si una ayuda de captura ahorra trabajo, anticipa un problema o muestra la consecuencia. Evaluar es obligatorio. Implementar no: solo si el repo ya tiene lo que esa ayuda necesita, el alcance lo autoriza y no pisa un valor guardado ni una corrección manual. Si falta capacidad, proponer (`19`). No exigir a la vez catálogo, endpoint y debounce. Que la ayuda exista no autoriza publicarla.
+- Superficie de captura (`10`/`15`): que el sistema compruebe, calcule o limite no se publica por eso. El estado normal y el éxito no se anuncian con texto. Si hace falta señalar, es un icono: carga mientras consulta, verde si está libre, rojo si no. En reposo, o si el valor ya guardado sigue siendo el normal, no se pone nada. El icono no es obligatorio. El fallo que hay que corregir sí lleva el mensaje. No se agrega un botón de comprobar si el campo ya consulta, ni un segundo envío al lado de Guardar, salvo que el usuario pidió esa acción. El título de una sección no repite la etiqueta de su único campo. Prohibido el descargo: "Solo presentación", "Guardar no convierte", y explicar qué no hace el sistema. Al tocarlo, se quita ese adorno y no se sustituye por otro texto. Si el usuario pidió solo analizar, se propone y no se edita.
 - Caso de uso backend (`05`): al crear, modificar o auditar un endpoint, Action, Job o comando, la Action garantiza el caso desde las entradas previstas, aunque tenga una línea. Reutiliza Policy, modelo y constraint. No duplica validaciones sin mirar consumidores. En implementación autorizada, pone las protecciones que el contrato ya exige. Si falta una regla de negocio, plantea esa decisión y sigue con lo independiente. Auditar no modifica.
 - Laravel (`05`): antes de crear un archivo, decidir el lugar. No agregarlo a `Support` porque la carpeta ya existe. Config, modelo, enum, helper de un eje ya cohesivo, método privado, fixture, o adaptador si la integración exige o consume la clase (config, factory, contenedor o `new`). No se crea una clase solo para agrupar variables. Una clase existente que solo declara constructor no se borra por eso: mirar consumidores, herencia e invariante. Estar en `Support` es desviación de convención. La gravedad depende del impacto, la frecuencia y el riesgo sustentados por evidencia (`18`, `24`). La Action dueña delimita la transacción. `CustomException` se lanza, no se retorna. No migrar un `Support` existente en silencio.
 - Copy visible (`15`): el texto se juzga por audiencia y función, no por una palabra prohibida. Un término del dominio (`API key`, `PDF`, `URL`) se conserva. Al detectar copy que habla al operador, pide algo que esa persona no puede hacer, o atribuye causa o plazo sin evidencia, se corrige directo y después se informa qué cambió. Se conserva la operación real, el idioma del usuario y los códigos. Si el usuario pide solo analizar o no modificar archivos, se propone y no se edita.
@@ -79,6 +80,7 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 | Tenancy central/tenant | `16-multi-tenant.md` |
 | Solo pregunta de estándar | Modo Consultar; citar `references/…` |
 | Chip, banner, texto o validación por dev/test ("Test mode", "Testing mode") | Implementar o tocar el archivo: borrar ese código; archivo que solo anuncia el entorno: borrar el archivo. Auditar: hallazgo Alto, no editar (`08`/`15`/`17`) |
+| Estado de captura, ayuda, botón extra o descargo junto al campo | No publicar el éxito ni el estado normal. Icono solo si señalar aporta. Al tocar, quitar el adorno; no sustituirlo por otro texto (`10`/`15`) |
 
 ## Execution Steps
 
@@ -120,6 +122,7 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 | Formato visual TS/TSX (arrows, braces, JSX) | **no esta skill** — cargar `gian-ts-style` |
 | Modal / drawer | `09-dialogs-drawers` |
 | Forms / schema del body / tipo semántico del campo (RHF + Zod en React) | `10-forms-validation`; máscara, parser o picker → `19-propuestas-stack` |
+| Ayuda de captura, disponibilidad, icono de estado, botón extra o helper de descargo | `10-forms-validation`, `15-i18n-copy` |
 | Mutations / ruta vs DTO / multipart | `13-data-fetching`, `10-forms-validation`, `23-ts-style-helpers` |
 | Validación user-facing / FormRequest `messages` / Pydantic / 422 por campo | `01-principles`, `05-backend-mold`, `10-forms-validation`, `14-errors-feedback` |
 | Tablas / filtros | `11-tables-filters` |

@@ -79,7 +79,7 @@ El handler traduce las excepciones del framework al envelope. No se copia dentro
 
 La idempotencia no es un `catch` ni un default de cada `create`. Cuando el efecto no puede repetirse, se nombran la clave, el alcance de tenant y actor, la adquisición atómica, el resultado guardado, y qué pasa si la misma clave llega con otros datos. No se devuelve el resultado viejo si el payload cambió. Se autoriza antes de devolver un resultado protegido.
 
-Saldo, stock, cupo o disponibilidad se protegen junto con la escritura: índice único, operación atómica o bloqueo. Una comprobación previa, aunque sea de backend, puede quedar vieja. “Disponible” en la captura orienta. Guardar resuelve la colisión.
+Saldo, stock, cupo o disponibilidad se protegen junto con la escritura: índice único, operación atómica o bloqueo. Una comprobación previa, aunque sea de backend, puede quedar vieja. La comprobación previa orienta al sistema. No se publica como "Disponible". Guardar resuelve la colisión.
 
 Los efectos de afuera no los deshace la base. Por flujo se evalúa cuándo correrlos, qué pasa si se repiten, y cómo recuperarse si la base ya confirmó y después fallan: reintento, estado pendiente o compensación. `afterCommit()` espera la transacción exterior. La idempotencia evita repetir el efecto. No se exigen los dos mecanismos iguales en cada integración.
 
