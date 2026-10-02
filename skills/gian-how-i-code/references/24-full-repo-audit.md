@@ -6,6 +6,8 @@ Cargar cuando: el usuario pide auditar **todo** / el **proyecto** / el **repo** 
 
 **Sin cuota mínima de hallazgos.** Profundidad = inventario + búsquedas + categorías sin hallazgos con evidencia + gate.
 
+Backend: al crear, modificar o auditar un caso, recorrer ruta o entrada → autorización → Request → Controller → Action → persistencia y efectos → respuesta. Incluye Job, comando y Action que llama a otra. Las garantías están en `05`. Tener `transaction()` y `CustomException` no cierra el caso.
+
 ## 1. Cargar el estándar instalado
 
 1. Leer `gian-how-i-code/SKILL.md` (versión en frontmatter).

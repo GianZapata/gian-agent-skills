@@ -12,9 +12,28 @@ Formato visual PHP (indent, braces, `=>`, guards): `gian-php-style`. Esta refere
 ## Flujo HTTP
 
 ```text
-Route → Controller (delgado) → FormRequest → Action → Resource
+Route → FormRequest → Controller (delgado) → Action → Resource
+Job o comando → Action
 Lectura compleja → Query (Spatie QueryBuilder) → Resource
 ```
+
+Laravel valida el FormRequest antes de invocar el método del controller.
+
+| Capa | Garantiza |
+|---|---|
+| FormRequest | Entrada HTTP: requerido, formato, tipo, límite. Puede adelantar un rechazo |
+| Controller | Datos y contexto, llama a la Action, arma la respuesta. No decide el negocio |
+| Action | Condiciones del caso, escrituras, transacción si hace falta, errores conocidos. Sigue siendo válida si la llaman un Job u otra Action, sin ese Request |
+| Resource | Serializa. No carga relaciones ni dispara queries |
+| Policy | Permiso. Si no hay HTTP, se reutiliza con el actor explícito |
+| Modelo | Invariante cohesiva de esa entidad |
+| Base | Constraint, índice único o bloqueo. Protege la escritura. No reemplaza a la Action |
+
+La Action coordina esas garantías. No las duplica por rutina. Una comprobación en el Request mejora la respuesta temprana. No sustituye la garantía junto a la escritura.
+
+Al crear, modificar o auditar un caso, se recorre el flujo aunque la Action tenga una línea. En implementación autorizada, se ponen las protecciones que el contrato ya exige. Si falta una regla de negocio, se plantea esa decisión y se sigue con lo independiente. La ausencia de una regla extra no es, por sí sola, una decisión pendiente. Pendiente solo si una ambigüedad concreta cambia el caso. Auditar no modifica.
+
+Buscar una mejora justificada es obligatorio aunque el caso cumpla. No hay cupo mínimo. No se agrega transacción, `catch`, clase, validación ni idempotencia por rutina. Tener `transaction()` y `CustomException` no demuestra que el flujo sea correcto.
 
 - Actions: mutaciones, transacciones, dominio
 - Queries: includes, filters, sorts, counts
@@ -50,7 +69,7 @@ No se crea una clase solo para agrupar variables. Una clase que ya existe y solo
 
 La Action dueña delimita qué se confirma junto. Una Action reutilizable puede abrir transacción si corre sola, y participar en la exterior si la llaman. En la misma conexión, Laravel usa savepoints cuando el motor los soporta. Lo interior se confirma cuando termina la exterior. Otra conexión no entra en ese rollback: mirar la conexión efectiva de cada modelo.
 
-Un `catch` puede traducir o limpiar una causa conocida si el fallo indispensable sale con `throw`. No vale capturar dentro del callback, devolver un valor y seguir: Laravel da la transacción por buena. `CustomException` se lanza, no se retorna. El `render` arma el envelope cuando Laravel ya gestionó el rollback.
+Un `catch` puede traducir o limpiar una causa conocida si el fallo indispensable sale con `throw`. No vale capturar dentro del callback, devolver un valor y seguir: Laravel da la transacción por buena. `CustomException` se lanza, no se retorna. `render()` construye la respuesta HTTP. Si la excepción escapa del callback de una transacción, Laravel revierte esa transacción antes de propagarla. Renderizar una excepción no revierte escrituras por sí mismo. Si el error ocurre fuera de la transacción, o después del commit, no hay rollback.
 
 Si B escribió y falla, A puede seguir con un resultado parcial autorizado solo después de que B haya revertido sus escrituras. El `catch` puede estar en A, fuera del callback de B. Que B sea opcional no basta para conservar escrituras incompletas, ni para seguir si el fallo invalida toda la operación.
 

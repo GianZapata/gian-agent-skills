@@ -36,6 +36,17 @@ La ruta es relativa a la raíz git del repo auditado, no a un repo padre. Ejempl
 
 Idioma: **español**.
 
+## Conclusión de un caso backend
+
+Cada conclusión es una de cuatro. Buscar una mejora justificada es obligatorio aunque el caso cumpla. No hay cupo mínimo.
+
+| Clase | Cuándo |
+|---|---|
+| Defecto demostrado | El código incumple una garantía que el contrato ya exige |
+| Mejora justificada | Hay evidencia de una oportunidad. No es rutina |
+| Decisión pendiente | Una ambigüedad concreta cambia el caso. La ausencia de una regla extra no basta |
+| Adecuado | El caso cumple para el contrato y el alcance revisados |
+
 ## Estructura del archivo
 
 ```markdown

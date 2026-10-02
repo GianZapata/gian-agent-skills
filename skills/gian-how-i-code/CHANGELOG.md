@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.16 — 2026-10-01
+
+- Caso de uso backend (`05`, `SKILL.md`, `24`, `18`): la Action garantiza el caso al crear, modificar o auditar, aunque tenga una línea. El flujo es FormRequest antes del Controller. `render()` no revierte escrituras. Cuatro conclusiones, sin cupo mínimo. La ausencia de una regla extra no es decisión pendiente por sí sola.
+
 ## 1.4.15 — 2026-10-01
 
 - Copy (`15`, `14`, `SKILL.md`): el copy de operador se corrige por defecto y después se informa. Solo se propone, sin editar, si el usuario pidió solo analizar o no modificar archivos. Un término de dominio se conserva.
