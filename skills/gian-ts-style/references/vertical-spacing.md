@@ -1,6 +1,6 @@
 # Vertical spacing
 
-PREFERENCE. Separar secciones con **una** línea en blanco. El orden lo decide `gian-how-i-code` (`04`): dependencias que no leen estado local, estado, hooks que leen ese estado, variables derivadas, funciones, efectos al final, return. Si el edit entra en ese cuerpo, `04` reordena esa función.
+PREFERENCE. Separar secciones con **una** línea en blanco. Los slots los decide `gian-how-i-code` (`04`). Los casos dentro de cada slot, y el orden de una función plana, los decide `26`. Si el edit entra en ese cuerpo, `04` y `26` reordenan esa función. Esta reference solo inserta la línea en blanco.
 
 WRITE aplica la línea en blanco en el hunk. AUDIT marca FAIL solo si es objetivo: dos secciones pegadas, o dos líneas en blanco seguidas. No recorrer el archivo.
 

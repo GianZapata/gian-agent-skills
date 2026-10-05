@@ -2,6 +2,8 @@
 
 Una línea en blanco después de un bloque que ya es multilínea. Lo que cabe en una línea y es el mismo paso se queda junto. Nunca dos líneas en blanco.
 
+El orden de los pasos lo decide `gian-how-i-code` (`26`). Este archivo solo inserta la línea en blanco.
+
 ## Mismo paso, una línea
 
 Asignaciones de una línea del mismo paso van juntas, solo entre ellas. Una escalera de `if` que resuelve un solo valor no se abre. Un `if` de una línea no gana su propio blanco.

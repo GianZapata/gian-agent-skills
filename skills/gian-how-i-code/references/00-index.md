@@ -29,5 +29,6 @@ Cargar cuando: arranque humano, modo Consultar, orientación general.
 | 23 | `23-ts-style-helpers.md` | cn, dayjs, memoización A–E, utils vs helpers, FormDataHelper |
 | 24 | `24-full-repo-audit.md` | Auditar repositorio completo (coverage ledger / gate) |
 | 25 | `25-vue-sfc.md` | Delta Vue: script setup inline, `Props` / `Emits`, `defineModel`, overlays con `v-if`, `composables/`. No reemplaza el núcleo |
+| 26 | `26-function-body-order.md` | Orden de sentencias dentro de la función tocada: método PHP, función plana, y casos dentro de los slots de `04` |
 
 Formato visual PHP: skill `gian-php-style`. Formato visual TS/TSX: skill `gian-ts-style`. Ninguno es un capítulo de esta skill.

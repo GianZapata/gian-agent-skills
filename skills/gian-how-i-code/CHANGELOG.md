@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.20 — 2026-10-05
+
+- Orden dentro de la función (`26`, `04`, `05`, `25`, `SKILL.md`): un método PHP y una función plana siguen el rol (normalizar, guards, cargar, decidir, derivar, efecto, return). En un componente, hook o composable los slots siguen en `04` y los casos de cada slot en `26`. Si el edit entra en esa función, se reordena. El otro método o el otro componente no.
+
 ## 1.4.19 — 2026-10-05
 
 - Orden del cuerpo (`04`, `SKILL.md`): dependencias que no leen estado local, estado, hooks que leen ese estado, variables derivadas, funciones, efectos al final, return. Si el edit entra en ese cuerpo, se reordena esa función. No el archivo ni el otro componente.

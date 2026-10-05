@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.2 — 2026-10-05
+
+- `vertical-spacing`: los slots siguen en `04`. Los casos dentro de cada slot, y el orden de una función plana, los decide `26`. Esta reference solo inserta la línea en blanco.
+
 ## 2.0.1 — 2026-10-05
 
 - `vertical-spacing`: la cita del orden sigue a `04`. Efectos al final. Si el edit entra en el cuerpo, `04` reordena esa función. La línea en blanco sigue en el hunk.

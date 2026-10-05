@@ -226,6 +226,8 @@ Si el edit entra en ese cuerpo, esa función queda en este orden antes de cerrar
 
 Un archivo con dos componentes: solo el cuerpo que se editó. Imports, la interface de props o un tipo al lado no disparan el reorden si el cuerpo no se tocó. No se recorre el archivo ni el repo.
 
+Los casos dentro de cada slot (dependencias, estado, queries, derivadas, handlers, efectos y returns tempranos) están en `26`. Esta sección no los repite.
+
 ```tsx
 export const InboxPage = () => {
   const navigate = useNavigate();

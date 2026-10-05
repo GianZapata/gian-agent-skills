@@ -4,7 +4,7 @@ description: "Mandatory visual PHP/Laravel style. Load whenever creating, editin
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.2.2"
+  version: "1.2.3"
 when-to-use: "Any PHP create/edit/refactor/review/audit/fix; Laravel Boost pint; format PHP; php-style-audit; php-style-fix. Not for CSS, TypeScript, SQL-only, or conversation without PHP."
 ---
 

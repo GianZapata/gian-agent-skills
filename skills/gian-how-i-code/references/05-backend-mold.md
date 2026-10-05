@@ -9,6 +9,8 @@ Cargar cuando: endpoints, Actions, Queries, Resources, Form Requests, state mach
 
 Formato visual PHP (indent, braces, `=>`, guards): `gian-php-style`. Esta reference no duplica esas reglas.
 
+Orden del cuerpo del método tocado: `26`. Si el edit entra en el método, se reordena ese método. El otro método del archivo no. Esta reference no duplica ese orden.
+
 ## Flujo HTTP
 
 ```text

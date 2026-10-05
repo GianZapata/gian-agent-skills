@@ -70,6 +70,8 @@ consumir plan aprobado (o alcance aprobado) → cargar policy → Fase 0 + refer
 
 Si el edit entra en el cuerpo de un componente, hook o composable, reordenar esa función según `04` antes de cerrar el cambio. Efectos al final, antes del return. No el otro componente del archivo.
 
+Si el edit entra en un método PHP, reordenar ese método según `26` antes de cerrar el cambio. No el otro método del archivo.
+
 ## Precedencia y fallback
 
 Este router DELEGA: no reescribe contenido de las process skills ni de la policy. Si una process skill no está disponible o falla, degradar al siguiente nivel (sin writing-plans → lotes con todowrite; sin brainstorming → preguntas directas al usuario). Si `gian-how-i-code` no está disponible, continuar el proceso y señalarlo en el cierre.
