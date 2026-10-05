@@ -55,6 +55,7 @@ Antes de crear el archivo, nombrar qué es. No agregarlo a `Support` o `Supports
 | Lo usa un solo dueño | Método privado de ese dueño. `private static` si no usa `$this` |
 | Solo lo usan un test o un seeder | Fixture. No código de producto |
 | Solo agrupa variables, sin comportamiento ni invariante | No se crea. Ni en `Support` ni en `Helpers` |
+| Trait horizontal | `app/Traits/<anfitrión>/`. Un solo nivel. Modelos: `app/Traits/Models/`, namespace `App\Traits\Models` |
 
 No se crea una clase solo para agrupar variables. Una clase que ya existe y solo declara constructor no se borra por eso: mirar consumidores, herencia, si el constructor valida un invariante, y si el comportamiento viene del padre. Estar en `Support` incumple el molde. Es desviación de convención, no un nivel de severidad. La gravedad depende del impacto, la frecuencia y el riesgo sustentados por evidencia (`18`, `24`). No se migra esa carpeta en silencio.
 
@@ -64,6 +65,7 @@ No se crea una clase solo para agrupar variables. Una clase que ya existe y solo
 - Query: el cálculo que solo usa esa query es un método privado de la query.
 - Valor reutilizado: helper estático en `Helpers`.
 - Adaptador: la clase que la integración exige o consume, al lado de esa integración. No en `Support`.
+- Trait: `app/Traits/<anfitrión>/Nombre.php`. El anfitrión es el tipo de clase que lo usa (`Models`, `Jobs`, `Actions`). Un trait de modelo es `app/Traits/Models/Nombre.php`, namespace `App\Traits\Models`. No vive en `app/Models` ni en `Concerns`. Un trait que ya está plano en `app/Traits/` no se mueve en silencio. La regla vale para un trait nuevo y para el que se toca.
 
 ## Transacción y error
 

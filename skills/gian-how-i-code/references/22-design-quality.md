@@ -6,6 +6,8 @@ No es permiso para sobrearquitectar. Preferir el cambio más pequeño que mejore
 
 ## Traits
 
+**Dónde vive el archivo:** `05`. `app/Traits/<anfitrión>/`, un solo nivel. Un trait de modelo es `app/Traits/Models/Nombre.php`, namespace `App\Traits\Models`.
+
 Usar traits solo para comportamiento **horizontal, cohesivo y reutilizado** por varias clases.
 
 **Buenos casos:** auditoría técnica, integración con un paquete, scopes cohesivos, tenancy, metadata compartida, adaptación exigida por framework (p. ej. `HasStateMachines`).

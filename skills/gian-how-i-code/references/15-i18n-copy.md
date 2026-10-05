@@ -64,6 +64,13 @@ BAD:  No pudimos verificar la sucursal. Revisa que la API esté en marcha e int�
 GOOD: No pudimos verificar esta sucursal. Inténtalo más tarde.
 ```
 
+Un `message` de `abort()`, excepción o JSON que el cliente puede mostrar es la misma copy. Un nombre interno de otra superficie no se publica: para quien lee no significa nada. Si hace falta la frase, nombra su tarea.
+
+```text
+BAD:  El laboratorio de chat ya no está disponible.
+GOOD: El chat no está disponible.
+```
+
 Al detectar copy visible que habla al operador, contiene instrucciones que la audiencia no puede realizar, o atribuye causas y plazos sin evidencia, se corrige directo. Se revisa el contexto. Se conserva la operación real, el idioma del usuario y los términos del dominio, como `API key`. Los códigos y contratos quedan estables. Al terminar, se resume qué cambió.
 
 Si el usuario pide explícitamente solo analizar, o no modificar archivos, se entrega la propuesta y no se edita.
