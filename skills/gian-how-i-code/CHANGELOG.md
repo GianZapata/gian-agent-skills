@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.21 — 2026-10-05
+
+- Carga (`26`): las lecturas consecutivas que no se necesitan entre sí son el mismo paso. La que usa el resultado de la anterior va debajo.
+- Cierre React (`gian-development-workflow`): el cuerpo de un componente, hook o composable se reordena con los slots de `04` y los casos de cada slot en `26`.
+
 ## 1.4.20 — 2026-10-05
 
 - Orden dentro de la función (`26`, `04`, `05`, `25`, `SKILL.md`): un método PHP y una función plana siguen el rol (normalizar, guards, cargar, decidir, derivar, efecto, return). En un componente, hook o composable los slots siguen en `04` y los casos de cada slot en `26`. Si el edit entra en esa función, se reordena. El otro método o el otro componente no.

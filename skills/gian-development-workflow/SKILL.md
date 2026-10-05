@@ -68,7 +68,7 @@ clasificar → cargar policy si desarrollo → brainstorming si aplica → grill
 
 consumir plan aprobado (o alcance aprobado) → cargar policy → Fase 0 + references según routing (lazy) → si toca PHP, WRITE `gian-php-style` en el hunk (**no Pint**) → si toca `.ts`/`.tsx` o un `<script setup lang="ts">`, WRITE `gian-ts-style` en el hunk (HARD; no format-only) → ejecutar por tareas/lotes con todowrite → validaciones reales del repo → revisión independiente según riesgo → cierre con evidencia. Sin plan, o tarea trivial/bug → routing proporcional de esta skill.
 
-Si el edit entra en el cuerpo de un componente, hook o composable, reordenar esa función según `04` antes de cerrar el cambio. Efectos al final, antes del return. No el otro componente del archivo.
+Si el edit entra en el cuerpo de un componente, hook o composable, reordenar esa función antes de cerrar el cambio. Los slots están en `04`. Los casos dentro de cada slot están en `26`. Efectos al final, antes del return. No el otro componente del archivo.
 
 Si el edit entra en un método PHP, reordenar ese método según `26` antes de cerrar el cambio. No el otro método del archivo.
 

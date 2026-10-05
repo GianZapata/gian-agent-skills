@@ -18,11 +18,20 @@ El mismo orden por rol vale para un método PHP y para una función plana `.ts` 
 
 1. Normalizar la entrada: trim, cast, default. Las de una línea del mismo paso van juntas.
 2. Guards: `return` / `throw` tempranos, y `continue` dentro de un bucle. El orden es invalidez, ausencia, conflicto, precondición. El camino feliz queda al nivel del método.
-3. Cargar. Cada lectura es un paso. Una query no sube por encima del id que usa.
+3. Cargar. Las lecturas consecutivas que no se necesitan entre sí son el mismo paso. La que usa el resultado de la anterior va debajo. Una query no sube por encima del id que usa.
 4. Decidir: `match`, `if` / `else` que elige un valor. Un anidado profundo se queda, o se extrae a un método privado. No se reordenan sus ramas.
 5. Derivar: mapas, reducciones y transforms de lo cargado.
 6. Efecto: writes, eventos, jobs. Un write no queda arriba del guard que lo habría saltado.
 7. `return` del camino feliz.
+
+```php
+$invoice = $this->invoices->find($id);
+$payments = $this->payments->forInvoice($id);
+
+$customer = $this->customers->find($invoice->customerId);
+```
+
+`$invoice` y `$payments` solo usan `$id`, así que van juntas. `$customer` usa `$invoice`, así que baja.
 
 La transacción envuelve el efecto. Los guards y la lectura que decide entrar quedan afuera. Si el lock exige que esa lectura viva adentro, la sección crítica se queda entera adentro.
 
