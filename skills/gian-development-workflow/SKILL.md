@@ -93,5 +93,6 @@ Si el turno crea o edita `gian-development-workflow`, `gian-how-i-code`, `gian-p
 
 ## References
 
+- `references/workflow-activation.md`
 - `references/style-activation.md`
 - Tool choice follows la policy global de herramientas del host. Do not add a second routing skill.
