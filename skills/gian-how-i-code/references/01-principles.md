@@ -74,3 +74,4 @@ Un patrón local que no está en `20` no es variante. Otra tecnología para la m
 - No reescribir un producto entero en un cambio pequeño.
 - No inventar campos API ni `any` para tapar gaps.
 - No anunciar el entorno en la UI ni ramificar el producto por dev/test.
+- No anunciar en la UI un valor fijo de prueba ni el desvío de un registro hacia ese valor.

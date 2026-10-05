@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.22 — 2026-10-05
+
+- Valor fijo de prueba (`15`, `01`, `SKILL.md`): un teléfono, correo, id o URL fijo que no es el del registro va en el request, el dial o la config. La pantalla no anuncia el desvío ni el guion de la prueba. Al tocarlo se quita el aviso; el cableado se queda.
+
 ## 1.4.21 — 2026-10-05
 
 - Carga (`26`): las lecturas consecutivas que no se necesitan entre sí son el mismo paso. La que usa el resultado de la anterior va debajo.

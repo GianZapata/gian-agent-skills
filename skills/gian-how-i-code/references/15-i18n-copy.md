@@ -80,11 +80,25 @@ Si el usuario pide explícitamente solo analizar, o no modificar archivos, se en
 - Sin siglas internas en visible
 - Tono natural; mayúscula natural
 - Título ↔ botón consistentes
-- Toast: qué pasó y a dónde
+- Toast: qué pasó y a dónde. «A dónde» es la pantalla o la tarea, no un valor fijo de prueba
 - Key puede ser técnica; value humano
 - `data-testid` en inglés técnico OK
 - El entorno no cambia el copy. Prohibido "Test mode", "Testing mode" y equivalentes, y prohibido un mensaje distinto si `import.meta.env.DEV`, `NODE_ENV`, `APP_ENV` o el test runner
 - Al tocar un archivo con ese copy, o con una validación cuyo texto depende del entorno: borrar el texto y la rama. No dejar un fallback. Si el archivo existe solo para ese aviso, borrarlo (`08`)
+
+## Valor fijo de prueba
+
+Cuando pidan un valor fijo para que la integración salga por ahí (teléfono, correo, id, URL) y ese valor no es el del registro, el valor va en el request, el dial o la config. La pantalla sigue mostrando el registro real.
+
+No se publica el desvío ni el guion de la prueba. Prohibido el aviso, toast, helper o nota.
+
+```text
+BAD:  Llamada ordenada a +52…. Contesta y di bueno enseguida.
+BAD:  Este registro se redirige a +52….
+GOOD: El dial usa ese número. La ficha sigue mostrando el teléfono del registro.
+```
+
+Al tocar un archivo que lo tenga: quitar el texto y el estado que solo existe para mostrarlo. El cableado se queda. Excepción: en este hilo pidieron mostrar ese destino.
 
 Mensajes de validación user-facing (FormRequest `messages`/`attributes`, 422 por campo): autoridad `05`/`10`/`14`. Esta reference no define esa regla.
 
