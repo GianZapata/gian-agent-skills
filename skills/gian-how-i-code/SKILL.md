@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.4.18"
+  version: "1.4.19"
 ---
 
 # gian-how-i-code
@@ -43,6 +43,8 @@ No usar como única skill para: explicación genérica de React/Vue/Angular/Lara
 - Superficie de captura (`10`/`15`): que el sistema compruebe, calcule o limite no se publica por eso. El estado normal y el éxito no se anuncian con texto. Si hace falta señalar, es un icono: carga mientras consulta, verde si está libre, rojo si no. En reposo, o si el valor ya guardado sigue siendo el normal, no se pone nada. El icono no es obligatorio. El fallo que hay que corregir sí lleva el mensaje. No se agrega un botón de comprobar si el campo ya consulta, ni un segundo envío al lado de Guardar, salvo que el usuario pidió esa acción. El título de una sección no repite la etiqueta de su único campo. Prohibido el descargo: "Solo presentación", "Guardar no convierte", y explicar qué no hace el sistema. Al tocarlo, se quita ese adorno y no se sustituye por otro texto. Si el usuario pidió solo analizar, se propone y no se edita.
 - Caso de uso backend (`05`): al crear, modificar o auditar un endpoint, Action, Job o comando, la Action garantiza el caso desde las entradas previstas, aunque tenga una línea. Reutiliza Policy, modelo y constraint. No duplica validaciones sin mirar consumidores. En implementación autorizada, pone las protecciones que el contrato ya exige. Si falta una regla de negocio, plantea esa decisión y sigue con lo independiente. Auditar no modifica.
 - Laravel (`05`): antes de crear un archivo, decidir el lugar. No agregarlo a `Support` porque la carpeta ya existe. Config, modelo, enum, helper de un eje ya cohesivo, método privado, fixture, o adaptador si la integración exige o consume la clase (config, factory, contenedor o `new`). No se crea una clase solo para agrupar variables. Una clase existente que solo declara constructor no se borra por eso: mirar consumidores, herencia e invariante. Estar en `Support` es desviación de convención. La gravedad depende del impacto, la frecuencia y el riesgo sustentados por evidencia (`18`, `24`). La Action dueña delimita la transacción. `CustomException` se lanza, no se retorna. No migrar un `Support` existente en silencio.
+- Carga con forma (`15`/`04`): skeleton de la superficie. El párrafo «Cargando…» no es el placeholder visible.
+- Orden del cuerpo (`04`): en un componente, hook o composable, dependencias que no leen estado local, estado, hooks que leen ese estado, variables derivadas, funciones, y los efectos al final, antes del `return`. Si el edit entra en ese cuerpo, se reordena esa función. Otro componente del mismo archivo no. Imports o la interface de props no disparan el reorden.
 - Copy visible (`15`): el texto se juzga por audiencia y función, no por una palabra prohibida. Un término del dominio (`API key`, `PDF`, `URL`) se conserva. Un `message` de `abort()`, excepción o JSON que el cliente puede mostrar es copy: se escribe con las palabras de quien lee. Un nombre interno que para esa persona no significa nada (laboratorio, lab, flag, módulo) no se publica. Si hace falta la frase, nombra su tarea. Al detectar copy que habla al operador, pide algo que esa persona no puede hacer, o atribuye causa o plazo sin evidencia, se corrige directo y después se informa qué cambió. Se conserva la operación real, el idioma del usuario y los códigos. Si el usuario pide solo analizar o no modificar archivos, se propone y no se edita.
 - Entorno ≠ producto (`01`/`08`/`15`/`17`). `npm run dev`, el test runner, `NODE_ENV`, `import.meta.env`, `APP_ENV` y `APP_DEBUG` no son un modo de producto: la lógica, el copy y las validaciones son los oficiales. Prohibido chip, banner o texto "Test mode" / "Testing mode" (y equivalentes), y prohibido ramificar labels o mensajes por ese entorno. Al tocar un archivo que lo tenga: borrar ese código; si el archivo existe solo para anunciarlo, borrar el archivo. No restylarlo ni dejarlo condicionado. Excepción solo si el contrato ya trae el flag y el requisito de este hilo pide mostrarlo. Auditoría: hallazgo Alto, sin editar.
 
@@ -112,6 +114,7 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 | Arranque / índice humano | `00-index`, `01-principles` |
 | Toca repo | `02-repository-discovery` (inventario + tooling) |
 | Feature FE | `03-feature-mold`, `04-frontend-architecture`, `13-data-fetching`, `23-ts-style-helpers` |
+| Cuerpo de un componente, hook o composable | `04-frontend-architecture` (orden; al tocarlo, reordenar esa función) |
 | Repo Vue / `.vue` | Núcleo (`01`, `03`, `04` Naming, `07`, `08`, `14`, `23`) + `25-vue-sfc` |
 | Otro stack sin capítulo (Angular, Node, Python) | Núcleo (`01`, filas por stack). El adaptador es la API del framework; no saltar el núcleo |
 | Styling MUI/Tailwind / `sx` / `cn()` | `04-frontend-architecture`, `23-ts-style-helpers` |

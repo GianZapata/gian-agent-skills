@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1 — 2026-10-05
+
+- `vertical-spacing`: la cita del orden sigue a `04`. Efectos al final. Si el edit entra en el cuerpo, `04` reordena esa función. La línea en blanco sigue en el hunk.
+
 ## 2.0.0 — 2026-09-30
 
 - Renombrada desde `gian-react-ts-style`. El núcleo es TypeScript y vale en React, Vue, Angular y Node. JSX queda como sección solo React.

@@ -4,7 +4,7 @@ description: "Mandatory visual TS/TSX style for any TS stack. Load when creating
 license: Apache-2.0
 metadata:
   author: gian
-  version: "2.0.0"
+  version: "2.0.1"
 when-to-use: "Any .ts/.tsx create/edit/refactor/review/audit/fix in any TS stack (React, Vue sibling .ts or inline script setup lang=ts, Angular, Node); ts-style-audit; ts-style-fix; format TypeScript. Not for .js/.jsx/.mjs/.cjs, Vue template/style, Angular .html, PHP, CSS, SQL-only, or architecture-only consults."
 ---
 

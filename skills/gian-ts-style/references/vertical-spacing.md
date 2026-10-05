@@ -1,8 +1,8 @@
 # Vertical spacing
 
-PREFERENCE. Separar secciones con **una** línea en blanco. El orden de las secciones lo decide `gian-how-i-code` (`04`): dependencias, estado, derivados, funciones, efectos, ciclo de vida, return.
+PREFERENCE. Separar secciones con **una** línea en blanco. El orden lo decide `gian-how-i-code` (`04`): dependencias que no leen estado local, estado, hooks que leen ese estado, variables derivadas, funciones, efectos al final, return. Si el edit entra en ese cuerpo, `04` reordena esa función.
 
-WRITE la aplica en el hunk. AUDIT marca FAIL solo si es objetivo: dos secciones pegadas, o dos líneas en blanco seguidas. No recorrer el archivo.
+WRITE aplica la línea en blanco en el hunk. AUDIT marca FAIL solo si es objetivo: dos secciones pegadas, o dos líneas en blanco seguidas. No recorrer el archivo.
 
 ## Juntas
 

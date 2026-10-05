@@ -55,6 +55,8 @@ Si quien lee no entiende la frase, o la frase le pide algo que no puede hacer, n
 
 No se inventa la causa ni la recuperación. No se asume que el servidor está apagado, que los datos quedaron guardados, ni cuándo vuelve. “Más tarde” vale para un fallo temporal del servicio, no para cualquier error. Un dato inválido dice qué corregir. Una sesión vencida puede pedir iniciar sesión.
 
+Si la pantalla ya tiene forma (tarjeta, lista, ficha, gráfica), la espera es un skeleton de esa forma, no un párrafo «Cargando…». El error y el vacío siguen en palabras. El nombre para el lector de pantalla, si hace falta, va en `sr-only`. El mecanismo (Tailwind o MUI) lo decide `04`.
+
 Que el sistema compruebe, calcule o limite no se publica por eso. Prohibido anunciar el éxito o el estado normal: "Disponible", "Encontrado", "Solo presentación", "Guardar no convierte", y cualquier frase que explique qué no hace Guardar. Si hace falta señalar, es un icono (`10`). El icono no es obligatorio. El título de una sección no repite la etiqueta de su único campo. Al tocarlo, se quita ese adorno y no se sustituye por otro texto.
 
 Un término del dominio de quien lee se conserva: `API key`, `PDF`, `URL`. “Revisa que la API esté en marcha” no: esa persona no opera el servidor. El verbo de la pantalla se conserva si es el de la operación. No se cambia “verificar” por “cargar” sin mirar qué hacía la pantalla.

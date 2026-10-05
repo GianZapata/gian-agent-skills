@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.19 — 2026-10-05
+
+- Orden del cuerpo (`04`, `SKILL.md`): dependencias que no leen estado local, estado, hooks que leen ese estado, variables derivadas, funciones, efectos al final, return. Si el edit entra en ese cuerpo, se reordena esa función. No el archivo ni el otro componente.
+- Carga con forma (`04`, `15`, `SKILL.md`): si la espera ocupa el lugar de una tarjeta, lista, ficha o gráfica, el placeholder es un skeleton. El párrafo «Cargando…» no.
+
 ## 1.4.17 — 2026-10-02
 
 - Superficie de captura (`10`, `15`, `14`, `05`, `SKILL.md`): que el sistema compruebe, calcule o limite no autoriza publicarlo. El éxito y el estado normal no se anuncian. Si hace falta señalar, es un icono, y no siempre. El fallo que hay que corregir sí lleva el mensaje. Sin botón de comprobar si el campo ya consulta, sin segundo envío al lado de Guardar, sin título que repite la única etiqueta, sin descargo de lo que Guardar no hace.

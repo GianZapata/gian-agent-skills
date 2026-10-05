@@ -37,7 +37,7 @@ Los componentes que usa el template se importan en ese bloque.
 
 Computed, handlers, `watch` y llamadas al service van a `composables/useEntityPage.ts`: `use` + el componente, camelCase. El composable recibe props, emit o el ref de `defineModel` ya declarados. No llama a `defineProps`, `defineEmits` ni `defineModel`. No se deja esa lógica en el script para «sacarla si crece». No se migra un repo entero por esta regla: aplica a código nuevo y al componente que se toca.
 
-El orden dentro del composable es el de `04`: dependencias, estado, derivados, funciones, efectos, ciclo de vida, return. La línea en blanco entre secciones es `gian-ts-style`.
+El orden dentro del composable es el de `04`: dependencias que no leen estado local, estado, hooks que leen ese estado, variables derivadas, funciones, efectos al final, return. Si el edit entra en ese cuerpo, se reordena esa función. La línea en blanco entre secciones es `gian-ts-style`.
 
 ## Props y emits
 

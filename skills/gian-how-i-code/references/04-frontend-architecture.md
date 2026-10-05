@@ -184,6 +184,15 @@ Selectores `'& .Mui…'` son fallback, no default. No inventar nombres de slot: 
 
 `size={{ xs: 12, md: 6 }}` (no props legacy `item` / `xs`).
 
+## Skeleton de carga
+
+Si la espera ocupa el lugar de una tarjeta, lista, ficha o gráfica, el placeholder es un skeleton con el alto de lo que va a llegar. No un párrafo visible.
+
+- La pantalla ya está en Tailwind: bloques `animate-pulse`.
+- La superficie ya es MUI (tabla, diálogo): `Skeleton` de MUI.
+
+No se agrega una librería. El texto de error y el vacío no se sustituyen.
+
 ## Organización
 
 - Container / presentational en forms
@@ -201,14 +210,40 @@ Selectores `'& .Mui…'` son fallback, no default. No inventar nombres de slot: 
 
 ## Orden dentro del composable, hook o componente (HARD)
 
-Aplica a composables Vue, hooks React, services Angular con estado y al cuerpo de un componente React. La línea en blanco entre grupos es formato: `gian-ts-style`.
+Aplica a composables Vue, hooks React, services Angular con estado y al cuerpo de un componente React. La línea en blanco entre grupos es formato: `gian-ts-style`. Sin comentarios de sección (`// State`, `// Effects`).
 
-1. Dependencias: router, route, stores, `inject()`, otros composables.
-2. Estado: `ref` / `useState` / `signal`.
-3. Derivados: `computed` / `useMemo`, según A–E de `23`.
-4. Funciones: helpers internos y handlers.
-5. Efectos: `watch` / `useEffect` / `effect`.
-6. Ciclo de vida: `onMounted`.
+1. Dependencias que no leen estado local: router, route, stores, `inject()`, clientes.
+2. Estado: `ref` / `useState` / `useRef` / `signal`.
+3. Hooks que leen ese estado: query, mutation, debounce, otro composable. Van arriba de cualquier `return`.
+4. Variables derivadas: `const` desde esos datos, `computed` / `useMemo`, según A–E de `23`.
+5. Funciones: helpers internos y handlers.
+6. Efectos, al final: `watch` / `useEffect` / `effect`, y el ciclo de vida (`onMounted`) si existe.
 7. `return`, o el JSX en un componente.
 
-Dependencias y estado van en bloques separados. No se pega un efecto antes de un derivado.
+Un `return` temprano no queda antes de un hook. Si hoy está arriba, baja.
+
+Si el edit entra en ese cuerpo, esa función queda en este orden antes de cerrar el cambio. Se mueven los bloques de primer nivel. No se agrega un guard dentro de un efecto para compensar el movimiento.
+
+Un archivo con dos componentes: solo el cuerpo que se editó. Imports, la interface de props o un tipo al lado no disparan el reorden si el cuerpo no se tocó. No se recorre el archivo ni el repo.
+
+```tsx
+export const InboxPage = () => {
+  const navigate = useNavigate();
+
+  const [search, setSearch] = useState('');
+
+  const inbox = useInboxQuery({ search });
+
+  const rows = inbox.data?.data ?? [];
+
+  const openRow = (id: string) => {
+    navigate(`/inbox/${id}`);
+  };
+
+  useEffect(() => {
+    document.title = rows[0]?.title ?? 'Bandeja';
+  }, [rows]);
+
+  return <List rows={rows} onOpen={openRow} />;
+};
+```

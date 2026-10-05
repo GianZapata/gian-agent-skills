@@ -68,6 +68,8 @@ clasificar → cargar policy si desarrollo → brainstorming si aplica → grill
 
 consumir plan aprobado (o alcance aprobado) → cargar policy → Fase 0 + references según routing (lazy) → si toca PHP, WRITE `gian-php-style` en el hunk (**no Pint**) → si toca `.ts`/`.tsx` o un `<script setup lang="ts">`, WRITE `gian-ts-style` en el hunk (HARD; no format-only) → ejecutar por tareas/lotes con todowrite → validaciones reales del repo → revisión independiente según riesgo → cierre con evidencia. Sin plan, o tarea trivial/bug → routing proporcional de esta skill.
 
+Si el edit entra en el cuerpo de un componente, hook o composable, reordenar esa función según `04` antes de cerrar el cambio. Efectos al final, antes del return. No el otro componente del archivo.
+
 ## Precedencia y fallback
 
 Este router DELEGA: no reescribe contenido de las process skills ni de la policy. Si una process skill no está disponible o falla, degradar al siguiente nivel (sin writing-plans → lotes con todowrite; sin brainstorming → preguntas directas al usuario). Si `gian-how-i-code` no está disponible, continuar el proceso y señalarlo en el cierre.
