@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.25 — 2026-10-09
+
+- Ejemplos de componente en `04` y `26` anotados con `FC`, como exige `gian-ts-style` 2.1.0.
+
 ## 1.4.24 — 2026-10-09
 
 - Detectar y avisar (`15`, `21`, `SKILL.md`, workflow, `visual-quality`): la falta de datos no bloquea ni se pregunta. Se implementa con una constante y `TODO(datos)`, y el plan y el cierre listan *Sin datos todavía* (con `archivo:línea`) y *Texto de la referencia que no publiqué*, aunque nadie lo pida. Antes de cerrar, `rg` de rótulos sobre los archivos tocados.

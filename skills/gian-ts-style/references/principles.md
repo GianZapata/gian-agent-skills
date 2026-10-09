@@ -55,6 +55,7 @@ Una tarea normal (“agrega un filtro a esta tabla”) que edita `.ts`/`.tsx` es
   - type-only import → `import type`
   - `onClick={() => onClose()}` → `onClick={onClose}` (firma 1:1, cero args extra)
   - `if` standalone + una statement aprobada → quitar `{}`
+  - componente tocado `({…}: Props) =>` / `React.FC` / `type Props = {}` → `interface Props` + `FC<Props>` (revertir si falla el typecheck)
 - **AST-SENSITIVE** — corregible **solo** con gate:
   - `compact-if-else` plano
   - single-statement multilínea (JSX/throw wrap)
@@ -69,7 +70,7 @@ Una tarea normal (“agrega un filtro a esta tabla”) que edita `.ts`/`.tsx` es
   - `= []` donde `undefined` tiene semántica (detail query)
   - comentario why no-obvio
   - `renderFoo` camelCase ambiguo componente vs helper
-  - `React.FC` vs props explícitas
+  - firma de componente genérico, `forwardRef` o `memo` con comparador
   - wrap que Prettier reimprime
 
 Al omitir: reportar `GAP — no corregido automáticamente: posible cambio de asociación/semántica`.

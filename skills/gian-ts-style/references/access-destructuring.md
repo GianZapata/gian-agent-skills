@@ -19,7 +19,7 @@ No HARD. WRITE en locals nuevos. AUDIT no FAIL corpus. NEVER AUTOFIX masivo.
 
 GAP / no aplicar:
 
-- params de componente/hook (`({ open, onClose }: Props)`)
+- params de componente (`FC<Props> = ({ open, onClose })`) y de hook
 - `Cell: ({ row: { original } })` — molde `gian-how-i-code` `11`
 - alias de query (`query-data-alias`)
 

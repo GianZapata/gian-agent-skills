@@ -4,7 +4,7 @@ description: "Mandatory visual TS/TSX style for any TS stack. Load when creating
 license: Apache-2.0
 metadata:
   author: gian
-  version: "2.0.2"
+  version: "2.1.0"
 when-to-use: "Any .ts/.tsx create/edit/refactor/review/audit/fix in any TS stack (React, Vue sibling .ts or inline script setup lang=ts, Angular, Node); ts-style-audit; ts-style-fix; format TypeScript. Not for .js/.jsx/.mjs/.cjs, Vue template/style, Angular .html, PHP, CSS, SQL-only, or architecture-only consults."
 ---
 
@@ -48,7 +48,7 @@ No vender preferencias de Gian como best practice universal. `references/princip
 - Wrapping mecánico: Prettier manda. No pelear printWidth/quotes/semi/trailing comma/JSX wrap. `references/prettier-eslint-boundary.md`
 - Exported arrow default. `function` solo overload/hoisting/API real. `references/functions-arrows.md`
 - No-component + una expresión → implicit return (object literal `({ })`). `references/functions-arrows.md`
-- Solo React: componente PascalCase → block body + `return` explícito. Boolean JSX `={true}` → shorthand. Fragment sin key → `<>`. Empty JSX → self-closing. `references/react-components-jsx.md`
+- Solo React: componente PascalCase → block body + `return` explícito. Props: `interface Props` local + `export const X: FC<Props> = ({ … }) => { return … }`; sin props, `FC`. Boolean JSX `={true}` → shorthand. Fragment sin key → `<>`. Empty JSX → self-closing. `references/react-components-jsx.md`
 - Single-statement-if standalone (return/throw/call/assignment/continue/break) sin `{}`; líneas ≠ statements. `references/conditions-guards.md`
 - Solo React: handler con firma 1:1 → referencia directa. `references/callbacks-handlers.md`
 - Secciones de un composable, hook o componente: una línea en blanco entre grupos; declaraciones cortas del mismo tipo juntas. Sin comentarios de sección. `references/vertical-spacing.md`
@@ -66,7 +66,7 @@ No vender preferencias de Gian como best practice universal. `references/princip
 | Auditar estilo / ts-style-audit | AUDIT: no editar; solo FAIL reales |
 | Corregir formato / ts-style-fix | FIX: solo estilo seguro; listar omitidos |
 | Wrap/quotes/indent que Prettier reimprime | ignorar (PRETTIER_OWNED) |
-| `React.FC` vs props explícitas | GAP; match-file |
+| Firma de componente React | WRITE/FIX `interface Props` + `FC<Props>` en el componente tocado. GAP: genérico, `forwardRef`, `memo` con comparador, lint que prohíbe `FC` |
 
 ## Execution Steps
 

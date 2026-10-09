@@ -229,7 +229,7 @@ Un archivo con dos componentes: solo el cuerpo que se editó. Imports, la interf
 Los casos dentro de cada slot (dependencias, estado, queries, derivadas, handlers, efectos y returns tempranos) están en `26`. Esta sección no los repite.
 
 ```tsx
-export const InboxPage = () => {
+export const InboxPage: FC = () => {
   const navigate = useNavigate();
 
   const [search, setSearch] = useState('');

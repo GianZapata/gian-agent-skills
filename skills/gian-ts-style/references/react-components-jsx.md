@@ -7,7 +7,7 @@ Solo React. En Vue, Angular y Node no aplica.
 `react-component-explicit-return`. Identificador **PascalCase** (o anotado `FC` / `React.FC`): block body + `return` explícito, incluso si solo retorna JSX.
 
 ```tsx
-const EmptyState = () => {
+export const EmptyState: FC = () => {
   return (
     <Stack>
       <Typography>Sin registros</Typography>
@@ -19,7 +19,7 @@ const EmptyState = () => {
 No convertir automáticamente a:
 
 ```tsx
-const EmptyState = () => (
+export const EmptyState: FC = () => (
   <Stack>
     <Typography>Sin registros</Typography>
   </Stack>
@@ -34,7 +34,50 @@ No aplicar a:
 - `Cell`, `Header`, `queryFn` que retornan JSX → `arrow-implicit-return`
 - factories no PascalCase
 
-`React.FC` vs props explícitas: GAP; match-file. No migrar.
+## Component props (HARD)
+
+`react-component-fc-props`. Las props van en una `interface Props` local al archivo. El componente se anota con `FC<Props>` y destructura las props en la firma. Sin props: `FC`.
+
+```tsx
+import type { FC, ReactNode } from 'react';
+
+interface Props {
+  open: boolean;
+  onClose: () => void;
+  children: ReactNode;
+}
+
+export const InvoiceDrawer: FC<Props> = ({ open, onClose, children }) => {
+  return (
+    <Drawer open={open} onClose={onClose}>
+      {children}
+    </Drawer>
+  );
+};
+```
+
+No:
+
+```tsx
+export const InvoiceDrawer = ({ open, onClose }: Props) => { … };
+export const InvoiceDrawer = ({ open, onClose }: { open: boolean; onClose: () => void }) => { … };
+type Props = { open: boolean };
+export const InvoiceDrawer: React.FC<Props> = …;
+```
+
+- `FC` con `import type { FC } from 'react'`, no `React.FC`.
+- `children` se declara en `Props` como `ReactNode`. `FC` no lo agrega.
+- Si otro archivo necesita el tipo: `export interface InvoiceDrawerProps`.
+- WRITE: componente nuevo y componente tocado. FIX: el mismo cambio en ese alcance. El otro componente del archivo no se migra.
+- Si el typecheck falla por la firma (retorna `string` o `undefined` con tipos viejos), revertir y registrar GAP.
+
+GAP, se conserva la forma actual:
+
+- componente genérico (`<T,>(props: Props<T>)`)
+- `forwardRef`, y `memo(...)` con comparador
+- `Cell`, `Header` y render props de librería
+- componente cuya forma impone el generador del router
+- el repo tiene activa una regla de ESLint que prohíbe `FC`: gana el lint
 
 ## Conditional `&&` (PREFERENCE)
 

@@ -67,7 +67,7 @@ Los slots son los de `04`. Aquí solo el orden dentro de cada uno.
 - Returns tempranos del componente, después de todos los hooks: loading, error, vacío, y el return principal.
 
 ```tsx
-export const InvoicePage = () => {
+export const InvoicePage: FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 

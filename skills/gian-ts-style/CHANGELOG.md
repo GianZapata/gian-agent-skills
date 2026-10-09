@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.0 — 2026-10-09
+
+- `react-component-fc-props` (HARD, solo React): props en `interface Props` local y componente `export const X: FC<Props> = ({ … }) => { return … }`; sin props, `FC`. `import type { FC }`, no `React.FC`. Aplica al componente nuevo o tocado. GAP en genérico, `forwardRef`, `memo` con comparador y lint que prohíbe `FC`. Reemplaza el GAP match-file.
+
 ## 2.0.2 — 2026-10-05
 
 - `vertical-spacing`: los slots siguen en `04`. Los casos dentro de cada slot, y el orden de una función plana, los decide `26`. Esta reference solo inserta la línea en blanco.
