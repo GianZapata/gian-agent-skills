@@ -7,6 +7,7 @@ Cargar cuando: cerrar un modo; formato de reportes.
 - Lista de archivos creados/modificados
 - Checklist molde FE/BE
 - Propuestas abiertas (PROP) si las hay
+- Si se partió de una referencia o un plan: *Sin datos todavía* con `archivo:línea` de cada `TODO(datos)` (desde `rg`), y *Texto de la referencia que no publiqué* (original → qué se hizo). Va aunque nadie lo pida. Si no hubo casos, no se agrega (`15`)
 - Validación ejecutada o motivo
 - Si toca formularios o validación user-facing: no declarar done sin el completion gate de `05` (`rules` / `messages` / copy / cobertura semántica / attributes si aplica / 422 BE / consumo FE)
 

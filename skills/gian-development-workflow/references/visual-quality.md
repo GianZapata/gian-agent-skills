@@ -87,4 +87,4 @@ Proporcionales al cambio.
 8. Contratos, stack y dependencias siguen vigentes.
 9. Revisar lo renderizado con las herramientas disponibles. Capturas de los viewports del producto. Tests en verde no alcanzan.
 10. Si no se vio, decir exactamente qué falta. No afirmar acabado solo con código.
-11. La referencia (HTML, captura, Figma, plan) aporta composición, tokens y datos de ejemplo. Su título, sus notas de fase, muestra, Mock o entrega no son copy. Sección sin datos: constante + `TODO:` en código, sin rótulo. Fuera de alcance: no se monta. Ver `gian-how-i-code` `15`.
+11. La referencia (HTML, captura, Figma, plan) aporta composición, tokens y datos de ejemplo. Su título, sus notas de fase, muestra, Mock o entrega no son copy. Sección sin datos: constante + `TODO(datos)` en código, sin rótulo. Fuera de alcance: no se monta. Detectarlo, implementarlo igual y avisar en el plan y en el cierre (*Sin datos todavía*, *Texto de la referencia que no publiqué*). Ver `gian-how-i-code` `15`.

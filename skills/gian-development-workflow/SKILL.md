@@ -64,11 +64,13 @@ No cargar para: preguntas generales, Git, Docker/infra pura, textos, debugging a
 
 clasificar → cargar policy si desarrollo → brainstorming si aplica → grill si decisiones materiales → writing-plans si multi-step → entregar plan + estado de aprobación. Read-only siempre. Si el plan incluye snippets PHP: siguen `gian-php-style` (no PHPDoc; un parámetro en una línea). Si incluye snippets TS/TSX: siguen `gian-ts-style`. No duplicar esas specs aquí. **No incluir Pint como paso final** (Boost `pint/core` queda anulado).
 
-Un plan no manda a la UI texto de la referencia ni del propio plan: nombre de la referencia, fase, Mock o muestra, dueño o fecha de entrega. Sección sin datos: constante + `TODO:` en el código, nada visible. Fuera de alcance: no se monta (`gian-how-i-code` `15`).
+Si se parte de una referencia o un plan, el plan lista *Sin datos todavía* y *Texto de la referencia que no se publica*. La UI no lleva ese texto: nombre de la referencia, fase, Mock o muestra, dueño o fecha de entrega. Sección sin datos: constante + `TODO(datos)`, sin preguntar ni bloquear. Fuera de alcance: no se monta (`gian-how-i-code` `15`).
 
 ## Build (agente build)
 
 consumir plan aprobado (o alcance aprobado) → cargar policy → Fase 0 + references según routing (lazy) → si toca PHP, WRITE `gian-php-style` en el hunk (**no Pint**) → si toca `.ts`/`.tsx` o un `<script setup lang="ts">`, WRITE `gian-ts-style` en el hunk (HARD; no format-only) → ejecutar por tareas/lotes con todowrite → validaciones reales del repo → revisión independiente según riesgo → cierre con evidencia. Sin plan, o tarea trivial/bug → routing proporcional de esta skill.
+
+Si se partió de una referencia o un plan: antes de cerrar, `rg` de rótulos y `rg "TODO\(datos\)"` sobre los archivos tocados. El cierre lleva *Sin datos todavía* con `archivo:línea` y *Texto de la referencia que no publiqué* (`gian-how-i-code` `15`, `21`).
 
 Si el edit entra en el cuerpo de un componente, hook o composable, reordenar esa función antes de cerrar el cambio. Los slots están en `04`. Los casos dentro de cada slot están en `26`. Efectos al final, antes del return. No el otro componente del archivo.
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.24 — 2026-10-09
+
+- Detectar y avisar (`15`, `21`, `SKILL.md`, workflow, `visual-quality`): la falta de datos no bloquea ni se pregunta. Se implementa con una constante y `TODO(datos)`, y el plan y el cierre listan *Sin datos todavía* (con `archivo:línea`) y *Texto de la referencia que no publiqué*, aunque nadie lo pida. Antes de cerrar, `rg` de rótulos sobre los archivos tocados.
+
 ## 1.4.23 — 2026-10-09
 
 - Referencia ≠ producto (`15`, `08`, `18`, `SKILL.md`, workflow, `visual-quality`): el nombre de la referencia, la fase, "Mock", "Muestra" y las notas de entrega no se publican. El título nombra la tarea. Sección sin datos: constante + `TODO:` en código, nada visible. Lo que está fuera de alcance no se monta.

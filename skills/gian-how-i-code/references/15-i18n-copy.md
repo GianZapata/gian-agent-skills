@@ -112,7 +112,7 @@ Un HTML exportado, una captura, un Figma, una spec o un plan aportan composició
 
 El título nombra la tarea de quien usa la pantalla.
 
-Sección sin contrato de datos: se monta igual que las demás. Los valores viven en una sola constante de la feature, con `// TODO: <contrato o endpoint que falta>`. El TODO no nombra personas. La pantalla no anuncia el hardcode: sin badge, leyenda, tooltip ni nota.
+Sección sin contrato de datos: se monta igual que las demás. Los valores viven en una sola constante de la feature, con `// TODO(datos): <endpoint, campo o contrato que falta>`. Ese prefijo fijo permite listarlos con `rg "TODO\(datos\)"`. El TODO no nombra personas. La pantalla no anuncia el hardcode: sin badge, leyenda, tooltip ni nota.
 
 Lo que está fuera de alcance (export, PDF, una acción de otra fase) no se monta. Ni botón deshabilitado, ni "Próximamente", ni placeholder.
 
@@ -122,7 +122,7 @@ GOOD: Inicio
 
 BAD:  Facturas pendientes · Mock — aún no entregan el contrato
 GOOD: Facturas pendientes
-      (valores de PENDING_INVOICES_PLACEHOLDER con // TODO: conectar al contrato de facturas)
+      (valores de PENDING_INVOICES_DATA con // TODO(datos): endpoint de facturas pendientes)
 
 BAD:  [Reporte próxima fase] deshabilitado
 GOOD: el control no existe
@@ -131,7 +131,34 @@ BAD:  Periodo de muestra: 1–31 oct
 GOOD: el filtro muestra el periodo elegido
 ```
 
-Un plan tampoco autoriza publicarlo. Si lo pide, se aplica esta regla y el cierre informa qué no se publicó. Al tocar un archivo que lo tenga, se quita el texto y el estado que solo existe para mostrarlo. Excepción: este hilo pide mostrarlo. Auditoría: hallazgo Alto, sin editar (`18`).
+Un plan tampoco autoriza publicarlo. Al tocar un archivo que lo tenga, se quita el texto y el estado que solo existe para mostrarlo. Excepción: este hilo pide mostrarlo. Auditoría: hallazgo Alto, sin editar (`18`).
+
+### Detectar y avisar
+
+La falta de datos no bloquea y no se pregunta. Se detecta, se implementa igual y se avisa. El aviso va siempre, en el plan y en el cierre, aunque nadie lo haya pedido.
+
+1. Detectar. Antes de escribir, recorrer la referencia y el plan sección por sección. Sin datos todavía: una cifra, lista o tarjeta que ningún endpoint, campo o tabla alimenta. Texto de andamiaje: lo de la lista de arriba.
+2. Implementar. Sección sin datos: los datos de ejemplo de la referencia en una sola constante con `TODO(datos)`. Texto de andamiaje: título por la tarea, omitido, o no montado si es otra fase.
+3. Revisar antes de cerrar. Strings visibles de los archivos tocados y de los JSON de locale:
+
+```bash
+rg -n -i "mock|muestra|ejemplo|demo|oficial|pr[oó]xima fase|pr[oó]ximamente|fase [0-9]|placeholder|sample|lorem" <archivos tocados>
+rg -n "TODO\(datos\)" <archivos tocados>
+```
+
+Cada coincidencia visible se corrige, o se conserva si es término del dominio de quien lee. Un rótulo que ya estaba en un archivo tocado se quita y se lista.
+
+4. Avisar. El plan lleva las dos listas, con lo que se hará. El cierre lleva el mismo bloque con `archivo:línea` sacado del `rg` (`21`). Si no hubo casos, no se agrega el bloque.
+
+```text
+Sin datos todavía
+- Facturas pendientes: falta el endpoint de facturas pendientes. Constante en features/dashboard/constants/dashboard.constants.ts:14 (TODO(datos)).
+
+Texto de la referencia que no publiqué
+- "Dashboard oficial" → título "Inicio"
+- Badge "Mock" y su leyenda → omitidos
+- "Reporte próxima fase" → no montado (fuera de alcance)
+```
 
 Mensajes de validación user-facing (FormRequest `messages`/`attributes`, 422 por campo): autoridad `05`/`10`/`14`. Esta reference no define esa regla.
 
