@@ -49,6 +49,7 @@ No crear helpers de display (`08` es autoridad). **No** está prohibido `useMemo
 |---|---|
 | Completamente estáticas | `className` directo; no `cn()` ceremonial |
 | Condicionales, compuestas o variables por estado/props runtime | `cn()` |
+| Ternario entre variables o constantes de clase | `cn(base, cond && extra)` inline |
 | Estado resuelto solo por props MUI y `className` idéntico | `className` estático permitido |
 
 Selected:
@@ -102,7 +103,10 @@ Las clases Tailwind deben existir completas y ser detectables estáticamente por
 const CONTROL_SX = { … };
 const selectedToggleSx = { … };
 const toggleButtonSx = (selected: boolean) => ({ … });
+const cardClass = 'rounded-xl border border-divider bg-white p-4';
 ```
+
+Un string de clases tampoco: va inline. Si el bloque se repite, componente (`04`).
 
 Preferir Tailwind + `cn()` directamente en JSX cuando el gate de `04` lo permita.
 
@@ -214,6 +218,8 @@ Tooling: Serena/codegraph para localizar `DateHelper` / `NumberHelper`; ast-grep
 | Concatenación/template de clases condicionales en vez de `cn()` | Media |
 | Ternario completo de `className` cuando las clases varían (base duplicada) | Media |
 | Constante/function local de styling sustituible por Tailwind + `cn()` | Media |
+| String de clases local (`const cardClass = '…'`) en vez de inline + `cn()` | Media |
+| Template literal que compone una constante de clases | Media |
 | `sx` usado para layout/spacing/sizing ordinario pudiendo usar Tailwind | Media |
 | `useTheme()` solo para alimentar `sx` (preferir `sx={theme => …}`) | Media |
 | Clase estática sin `cn()` | — permitido |

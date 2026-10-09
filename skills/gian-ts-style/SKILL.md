@@ -4,7 +4,7 @@ description: "Mandatory visual TS/TSX style for any TS stack. Load when creating
 license: Apache-2.0
 metadata:
   author: gian
-  version: "2.1.0"
+  version: "2.2.0"
 when-to-use: "Any .ts/.tsx create/edit/refactor/review/audit/fix in any TS stack (React, Vue sibling .ts or inline script setup lang=ts, Angular, Node); ts-style-audit; ts-style-fix; format TypeScript. Not for .js/.jsx/.mjs/.cjs, Vue template/style, Angular .html, PHP, CSS, SQL-only, or architecture-only consults."
 ---
 
@@ -49,6 +49,7 @@ No vender preferencias de Gian como best practice universal. `references/princip
 - Exported arrow default. `function` solo overload/hoisting/API real. `references/functions-arrows.md`
 - No-component + una expresión → implicit return (object literal `({ })`). `references/functions-arrows.md`
 - Solo React: componente PascalCase → block body + `return` explícito. Props: `interface Props` local + `export const X: FC<Props> = ({ … }) => { return … }`; sin props, `FC`. Boolean JSX `={true}` → shorthand. Fragment sin key → `<>`. Empty JSX → self-closing. `references/react-components-jsx.md`
+- Solo React: `className` no estático (template literal, `+`, ternario, join, prop `className`) → `cn()` del repo en el hunk. No crear otro `cn` ni importar `clsx`/`twMerge` directo. `rg` de cierre sobre los `.tsx` tocados. `references/react-components-jsx.md`
 - Single-statement-if standalone (return/throw/call/assignment/continue/break) sin `{}`; líneas ≠ statements. `references/conditions-guards.md`
 - Solo React: handler con firma 1:1 → referencia directa. `references/callbacks-handlers.md`
 - Secciones de un composable, hook o componente: una línea en blanco entre grupos; declaraciones cortas del mismo tipo juntas. Sin comentarios de sección. `references/vertical-spacing.md`
@@ -66,6 +67,7 @@ No vender preferencias de Gian como best practice universal. `references/princip
 | Auditar estilo / ts-style-audit | AUDIT: no editar; solo FAIL reales |
 | Corregir formato / ts-style-fix | FIX: solo estilo seguro; listar omitidos |
 | Wrap/quotes/indent que Prettier reimprime | ignorar (PRETTIER_OWNED) |
+| `className` con template literal, `+`, ternario, join o prop `className` | WRITE/FIX `cn()` del repo en el hunk. GAP si el repo no tiene `cn` |
 | Firma de componente React | WRITE/FIX `interface Props` + `FC<Props>` en el componente tocado. GAP: genérico, `forwardRef`, `memo` con comparador, lint que prohíbe `FC` |
 
 ## Execution Steps
@@ -73,9 +75,10 @@ No vender preferencias de Gian como best practice universal. `references/princip
 1. Anunciar modo: WRITE, AUDIT o FIX.
 2. Cargar solo `references/` de las reglas tocadas.
 3. WRITE: HARD/PREFERENCE en código nuevo y hunk tocado; SAFE FIX de inconsistencias **en ese alcance**; no comentarios nuevos; no tocar el resto del archivo.
-4. AUDIT: TS/TSX relevante; alta confianza; agrupar repeticiones; formato `assets/audit-template.md`.
-5. FIX: solo estilo; SAFE FIX siempre; AST-SENSITIVE solo con gate; NEVER AUTOFIX si puede cambiar semántica; listar GAP omitidos.
-6. No migrar un repo entero salvo audit+fix pedido.
+4. WRITE en `.tsx` React: antes de cerrar, el `rg` de `classname-cn` sobre los archivos tocados; corregir cada coincidencia del hunk.
+5. AUDIT: TS/TSX relevante; alta confianza; agrupar repeticiones; formato `assets/audit-template.md`.
+6. FIX: solo estilo; SAFE FIX siempre; AST-SENSITIVE solo con gate; NEVER AUTOFIX si puede cambiar semántica; listar GAP omitidos.
+7. No migrar un repo entero salvo audit+fix pedido.
 
 ## Output Contract
 

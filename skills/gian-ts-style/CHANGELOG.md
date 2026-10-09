@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.0 — 2026-10-09
+
+- `classname-cn` (HARD, solo React): en el hunk tocado, `className` con template literal, `+`, ternario, join o prop `className` se escribe con el `cn` del repo. No se crea otro ni se importa `clsx`/`twMerge` directo. `rg` de cierre sobre los `.tsx` tocados. GAP si el repo no tiene `cn`. Tailwind vs `sx` y las constantes de styling siguen en `gian-how-i-code` `04`/`23`.
+
 ## 2.1.0 — 2026-10-09
 
 - `react-component-fc-props` (HARD, solo React): props en `interface Props` local y componente `export const X: FC<Props> = ({ … }) => { return … }`; sin props, `FC`. `import type { FC }`, no `React.FC`. Aplica al componente nuevo o tocado. GAP en genérico, `forwardRef`, `memo` con comparador y lint que prohíbe `FC`. Reemplaza el GAP match-file.

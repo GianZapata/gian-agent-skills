@@ -27,7 +27,7 @@ Rules:
 
 ## Rule ids
 
-`exported-arrow-default`, `arrow-implicit-return`, `react-component-explicit-return`, `react-component-fc-props`, `single-statement-if`, `compact-if-else`, `guard-clause-over-nesting`, `conditional-and-render`, `simple-jsx-ternary`, `no-nested-ternary`, `derived-multi-branch`, `direct-handler-reference`, `inline-argument-handler`, `no-ceremonial-handler-extraction`, `boolean-prop-shorthand`, `fragment-shorthand`, `self-closing-jsx`, `intentional-prop-spread`, `type-only-import`, `interface-object-shape`, `direct-property-access`, `query-data-alias`, `list-data-default`, `comments-noise`.
+`exported-arrow-default`, `arrow-implicit-return`, `react-component-explicit-return`, `react-component-fc-props`, `classname-cn`, `single-statement-if`, `compact-if-else`, `guard-clause-over-nesting`, `conditional-and-render`, `simple-jsx-ternary`, `no-nested-ternary`, `derived-multi-branch`, `direct-handler-reference`, `inline-argument-handler`, `no-ceremonial-handler-extraction`, `boolean-prop-shorthand`, `fragment-shorthand`, `self-closing-jsx`, `intentional-prop-spread`, `type-only-import`, `interface-object-shape`, `direct-property-access`, `query-data-alias`, `list-data-default`, `comments-noise`.
 
 `single-statement-multiline` is a clause of `single-statement-if` (do not emit as a separate AUDIT id).
 

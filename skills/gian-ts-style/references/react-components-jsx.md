@@ -79,6 +79,39 @@ GAP, se conserva la forma actual:
 - componente cuya forma impone el generador del router
 - el repo tiene activa una regla de ESLint que prohíbe `FC`: gana el lint
 
+## className con cn() (HARD)
+
+`classname-cn`. En el hunk tocado, un `className` que no es un string literal estático se escribe con el `cn` del repo:
+
+- template literal → `cn(...)`
+- concatenación con `+` → `cn(...)`
+- ternario de strings o de variables → `cn(base, cond && extra)`
+- `[...].join(' ')` o `filter(Boolean).join(' ')` → `cn(...)`
+- `className` recibido por props → `cn(base, className)`
+
+```tsx
+BAD:  <span className={`mr-1 text-muted ${isOpen ? 'rotate-180' : ''}`} />
+GOOD: <span className={cn('mr-1 text-muted', isOpen && 'rotate-180')} />
+
+BAD:  <article className={prominent ? cardClass : innerClass}>
+GOOD: <article className={cn('rounded-lg border p-3', prominent && 'rounded-xl bg-white p-4')}>
+```
+
+Un string estático sigue sin `cn()`: `className="flex gap-2"`.
+
+Antes de escribir, localizar el `cn` existente: `rg "export (const|function) cn\b"`. No crear otro. No importar `clsx` ni `twMerge` directo si `cn` existe.
+
+Antes de cerrar, sobre los `.tsx` tocados:
+
+```bash
+rg -n 'className=\{(`|[^}]*\+|[^}]*\?|[^}]*join\()' <archivos tocados>
+rg -n "const [A-Za-z_]*(Class|CLASS|Classes|CLASSES)[A-Za-z_]* = ['\`]" <archivos tocados>
+```
+
+Cada coincidencia dentro del hunk se corrige. Un string de clases local (`const cardClass = '…'`) se inlinea en el componente tocado (`gian-how-i-code` `04`/`23`).
+
+GAP: el repo no tiene `cn`, o no es React. No se crea (`gian-how-i-code` `19`). Qué va en Tailwind y qué en `sx` lo decide `gian-how-i-code` `04`.
+
 ## Conditional `&&` (PREFERENCE)
 
 `conditional-and-render`. Mostrar algo solo si es true:

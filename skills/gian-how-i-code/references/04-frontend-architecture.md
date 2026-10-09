@@ -100,6 +100,29 @@ const getButtonSx = (selected: boolean) => ({ … });
 
 Si representan styling ordinario, expresarlos con Tailwind y `cn()` en el punto de uso.
 
+Lo mismo con un string de clases. No:
+
+```tsx
+const cardClass = 'rounded-xl border border-divider bg-white p-4';
+const innerClass = 'rounded-lg border border-divider p-3';
+
+<article className={prominent ? cardClass : innerClass}>
+<div className={`${cardClass} mt-4`}>
+```
+
+Sí:
+
+```tsx
+<article
+  className={cn(
+    'rounded-lg border border-divider p-3',
+    prominent && 'rounded-xl bg-white p-4'
+  )}
+>
+```
+
+Si el mismo bloque se repite, se extrae un componente (`<SummaryCard prominent>`), no un string. Al tocar un componente que usa la constante, se inlinea en ese componente; el resto del archivo no se migra. Un primitive compartido entre archivos que ya existe en el repo, o un mapa de variantes, se conserva y se compone con `cn()`, nunca con template literal.
+
 Una constante de styling sólo se justifica si representa una abstracción **semántica reutilizable** y no una agrupación de CSS. Excepciones: mapping de variantes compartido; primitive/shared real; valor dinámico que exige theme; API MUI que sólo expone razonablemente `sx`.
 
 5. `sx` es escape hatch, no styling default. Sigue siendo válido cuando:

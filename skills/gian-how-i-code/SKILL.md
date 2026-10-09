@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.4.25"
+  version: "1.4.26"
 ---
 
 # gian-how-i-code
@@ -33,7 +33,7 @@ No usar como única skill para: explicación genérica de React/Vue/Angular/Lara
 - Ownership **antes** de declarar `type`/union/enum/mapping: `APP_OWNED` \| `LIBRARY_OWNED` \| `EXTERNAL_GENERATED` \| `UNION LEGÍTIMA` — ver `07`.
 - `APP_OWNED` cerrado y nombrado (incl. modos/estados de UI de feature) → string enum por default. `LIBRARY_OWNED` → tipo oficial de la lib; no shadow types.
 - Memoización React según `23` (A–E): no ceremonial (A); STYLE_GIAN multi-rama (C) y MRT/`11` (E) sí.
-- Styling (adaptador React, `04`/`23`): Tailwind-first cuando existe una utility o un token bridge real equivalente; `cn()` cuando las clases se componen o varían por estado/props runtime; sin constantes locales `*_SX` / `get*Sx`; `sx={(theme) => ({ … theme.palette })}` como escape hatch sin equivalencia limpia; `useTheme()` solo si el theme sale de `sx`. En otro stack, las clases se componen con el mecanismo del framework. No se exige `cn()`, MUI ni `sx`.
+- Styling (adaptador React, `04`/`23`): Tailwind-first cuando existe una utility o un token bridge real equivalente; `cn()` cuando las clases se componen o varían por estado/props runtime; sin constantes locales `*_SX` / `get*Sx` ni strings de clases (`const cardClass = '…'`): las clases van inline y, si el bloque se repite, se extrae un componente; template literal, concatenación, ternario o join en `className` → el `cn()` del repo, sin crear otro ni importar `clsx`/`twMerge` directo; `sx={(theme) => ({ … theme.palette })}` como escape hatch sin equivalencia limpia; `useTheme()` solo si el theme sale de `sx`. En otro stack, las clases se componen con el mecanismo del framework. No se exige `cn()`, MUI ni `sx`.
 - Comentarios `ADAPTAR` solo en templates de `assets/`; eliminarlos al materializar código productivo. Template-only `ADAPTAR` MUST resolverse o quitarse al instanciar; MUST NOT sobrevivir en código de producto.
 - Validación user-facing (núcleo): cada regla del borde tiene un mensaje de dominio, y el 422 llega por campo a la UI existente. Cobertura semántica regla→mensaje. En Laravel: FormRequest con `messages()` y, si hace falta, `attributes()`; no se da por terminado solo con `rules()`. En Python: el body model de Pydantic, con un handler de `RequestValidationError` que devuelve el mismo copy. En Node: el schema del handler — ver `01`/`05`/`10`/`14`.
 - Display FE: metadata exhaustiva en una propiedad pública `static readonly Record<Enum, Meta>` de `<entity>.helper.ts`; getter de `label` con `i18n.t()` para resolver el locale al leer; `getXMeta(Enum | null | undefined)` como API preferida cuando el consumidor puede recibir ausencia, con `unknownMeta` y resolver privados. El acceso directo al Record queda para enums garantizados o iteración. No ampliar a `string`, usar casts ni fallbacks para ocultar drift. If-chain ad-hoc en el componente con `t()`. Prohibido `*.display.config.ts`, inyectar `TFunction`, `labelKey` diferido — ver `07`/`08`/`15`.

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.26 — 2026-10-09
+
+- `no-local-style-constants` (`04`, `23`, `SKILL.md`): también cubre los strings de clases (`const cardClass = '…'`). Las clases van inline con `cn()`; si el bloque se repite, se extrae un componente. Template literal, concatenación, ternario o join en `className` → el `cn()` del repo. La mecánica por hunk vive en `gian-ts-style` 2.2.0 (`classname-cn`).
+
 ## 1.4.25 — 2026-10-09
 
 - Ejemplos de componente en `04` y `26` anotados con `FC`, como exige `gian-ts-style` 2.1.0.

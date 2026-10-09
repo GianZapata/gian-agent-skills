@@ -55,6 +55,7 @@ Una tarea normal (“agrega un filtro a esta tabla”) que edita `.ts`/`.tsx` es
   - type-only import → `import type`
   - `onClick={() => onClose()}` → `onClick={onClose}` (firma 1:1, cero args extra)
   - `if` standalone + una statement aprobada → quitar `{}`
+  - `className` con template literal, `+`, ternario o join → `cn()` del repo (`classname-cn`)
   - componente tocado `({…}: Props) =>` / `React.FC` / `type Props = {}` → `interface Props` + `FC<Props>` (revertir si falla el typecheck)
 - **AST-SENSITIVE** — corregible **solo** con gate:
   - `compact-if-else` plano
@@ -90,4 +91,4 @@ No usar 80/100/120 como umbral de esta skill.
 
 Arquitectura, ownership de tipos, enums, React Query, RHF/Zod, UI/UX, selección de librerías → `gian-how-i-code`.
 Class methods `static async foo()` vs class field arrows → molde `03`/`13`, GAP aquí.
-`export function cn` de shadcn/generated → GAP.
+`export function cn` de shadcn/generated → GAP. Usar `cn` en `className` sí es de esta skill (`classname-cn`). Tailwind vs `sx` y las constantes de styling → `gian-how-i-code` `04`/`23`.
