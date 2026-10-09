@@ -36,20 +36,20 @@ No aplicar a:
 
 ## Component props (HARD)
 
-`react-component-fc-props`. Las props van en una `interface Props` local al archivo. El componente se anota con `FC<Props>` y destructura las props en la firma. Sin props: `FC`.
+`react-component-fc-props`. Las props van en una interface que se llama como el componente más `Props`: `HomePage` → `HomePageProps`, `InvoiceDrawer` → `InvoiceDrawerProps`. El componente se anota con `FC<HomePageProps>` y destructura las props en la firma. Sin props: `FC`.
 
 ```tsx
 import type { FC, ReactNode } from 'react';
 
-interface Props {
-  open: boolean;
+interface InvoiceDrawerProps {
+  isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
 }
 
-export const InvoiceDrawer: FC<Props> = ({ open, onClose, children }) => {
+export const InvoiceDrawer: FC<InvoiceDrawerProps> = ({ isOpen, onClose, children }) => {
   return (
-    <Drawer open={open} onClose={onClose}>
+    <Drawer open={isOpen} onClose={onClose}>
       {children}
     </Drawer>
   );
@@ -59,21 +59,29 @@ export const InvoiceDrawer: FC<Props> = ({ open, onClose, children }) => {
 No:
 
 ```tsx
-export const InvoiceDrawer = ({ open, onClose }: Props) => { … };
-export const InvoiceDrawer = ({ open, onClose }: { open: boolean; onClose: () => void }) => { … };
-type Props = { open: boolean };
-export const InvoiceDrawer: React.FC<Props> = …;
+interface Props { … }
+export const InvoiceDrawer: FC<Props> = …;
+
+interface DrawerProps { … }
+export const InvoiceDrawer: FC<DrawerProps> = …;
+
+export const InvoiceDrawer = ({ isOpen, onClose }: InvoiceDrawerProps) => { … };
+export const InvoiceDrawer = ({ isOpen }: { isOpen: boolean }) => { … };
+type InvoiceDrawerProps = { isOpen: boolean };
+export const InvoiceDrawer: React.FC<InvoiceDrawerProps> = …;
 ```
 
+- El nombre es exacto: `<NombreDelComponente>Props`. `Props` a secas, una abreviatura o el nombre de otro componente es error.
+- Cada componente del archivo tiene la suya: `HomePage` usa `HomePageProps` y `HomePageHeader` usa `HomePageHeaderProps`.
+- La interface es local. Se exporta solo si otro archivo la necesita, con el mismo nombre.
 - `FC` con `import type { FC } from 'react'`, no `React.FC`.
-- `children` se declara en `Props` como `ReactNode`. `FC` no lo agrega.
-- Si otro archivo necesita el tipo: `export interface InvoiceDrawerProps`.
-- WRITE: componente nuevo y componente tocado. FIX: el mismo cambio en ese alcance. El otro componente del archivo no se migra.
+- `children` se declara en la interface como `ReactNode`. `FC` no lo agrega.
+- WRITE: componente nuevo y componente tocado. FIX: el mismo cambio en ese alcance, incluido renombrar `Props` → `<Componente>Props` y sus usos. El otro componente del archivo no se migra.
 - Si el typecheck falla por la firma (retorna `string` o `undefined` con tipos viejos), revertir y registrar GAP.
 
 GAP, se conserva la forma actual:
 
-- componente genérico (`<T,>(props: Props<T>)`)
+- componente genérico (`<T,>(props: SelectProps<T>)`)
 - `forwardRef`, y `memo(...)` con comparador
 - `Cell`, `Header` y render props de librería
 - componente cuya forma impone el generador del router

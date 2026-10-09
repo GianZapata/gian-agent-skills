@@ -56,7 +56,7 @@ Una tarea normal (“agrega un filtro a esta tabla”) que edita `.ts`/`.tsx` es
   - `onClick={() => onClose()}` → `onClick={onClose}` (firma 1:1, cero args extra)
   - `if` standalone + una statement aprobada → quitar `{}`
   - `className` con template literal, `+`, ternario o join → `cn()` del repo (`classname-cn`)
-  - componente tocado `({…}: Props) =>` / `React.FC` / `type Props = {}` → `interface Props` + `FC<Props>` (revertir si falla el typecheck)
+  - componente tocado `({…}: Props) =>` / `React.FC` / `type Props = {}` / `interface Props` → `interface <Componente>Props` + `FC<ComponenteProps>` (revertir si falla el typecheck)
 - **AST-SENSITIVE** — corregible **solo** con gate:
   - `compact-if-else` plano
   - single-statement multilínea (JSX/throw wrap)

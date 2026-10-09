@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.3.0 — 2026-10-09
+
+- `react-component-fc-props`: la interface se llama `<Componente>Props` (`HomePage` → `HomePageProps`). `Props` a secas, una abreviatura o el nombre de otro componente es error; FIX la renombra en el componente tocado. Cada componente del archivo tiene la suya. El ejemplo de drawer usa `isOpen` (`gian-how-i-code` `09`).
+
 ## 2.2.0 — 2026-10-09
 
 - `classname-cn` (HARD, solo React): en el hunk tocado, `className` con template literal, `+`, ternario, join o prop `className` se escribe con el `cn` del repo. No se crea otro ni se importa `clsx`/`twMerge` directo. `rg` de cierre sobre los `.tsx` tocados. GAP si el repo no tiene `cn`. Tailwind vs `sx` y las constantes de styling siguen en `gian-how-i-code` `04`/`23`.
