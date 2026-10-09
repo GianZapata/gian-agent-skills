@@ -67,6 +67,7 @@ Se acepta duplicar if-chains **ad-hoc** entre componentes. No extraer eso a help
 - Title Case forzado; siglas internas del dominio en copy visible, salvo que el usuario final las conozca y formen parte del lenguaje oficial del producto
 - Chip, banner, badge o texto de entorno: "Test mode", "Testing mode", "Modo prueba", "Dev mode", "Sandbox", "Demo", inferidos de `npm run dev`, `NODE_ENV`, `import.meta.env`, `APP_ENV` o `APP_DEBUG`
 - Enum o meta creado solo para pintar ese entorno
+- Chip, badge o leyenda que viene de la referencia o del plan: "Mock", "Muestra", "Datos de ejemplo", "Oficial", "Próxima fase", "Próximamente" (`15`). Tampoco un enum o meta creado solo para pintarlo
 
 ## Entorno no es display (HARD)
 

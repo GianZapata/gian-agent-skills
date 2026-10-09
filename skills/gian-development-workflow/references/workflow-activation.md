@@ -2,6 +2,8 @@
 
 Pegar el bloque `gian-development-workflow-bootstrap` en el always-on de cada harness, junto al de estilo. No es un include: los agentes no lo siguen salvo que esté inyectado.
 
+La calidad visual no va dentro de ese bloque. Su bootstrap está en `references/visual-quality-bootstrap.md`. El adaptador lo inyecta fuera de las regiones `gentle-ai:*`.
+
 El bloque obliga a abrir los archivos. Recordar la skill no cuenta. Nombrarla no cuenta. No copiar aquí el molde de `gian-how-i-code`.
 
 ```markdown

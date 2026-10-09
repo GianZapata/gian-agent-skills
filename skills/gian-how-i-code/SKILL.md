@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.4.22"
+  version: "1.4.23"
 ---
 
 # gian-how-i-code
@@ -48,6 +48,7 @@ No usar como única skill para: explicación genérica de React/Vue/Angular/Lara
 - Copy visible (`15`): el texto se juzga por audiencia y función, no por una palabra prohibida. Un término del dominio (`API key`, `PDF`, `URL`) se conserva. Un `message` de `abort()`, excepción o JSON que el cliente puede mostrar es copy: se escribe con las palabras de quien lee. Un nombre interno que para esa persona no significa nada (laboratorio, lab, flag, módulo) no se publica. Si hace falta la frase, nombra su tarea. Al detectar copy que habla al operador, pide algo que esa persona no puede hacer, o atribuye causa o plazo sin evidencia, se corrige directo y después se informa qué cambió. Se conserva la operación real, el idioma del usuario y los códigos. Si el usuario pide solo analizar o no modificar archivos, se propone y no se edita.
 - Entorno ≠ producto (`01`/`08`/`15`/`17`). `npm run dev`, el test runner, `NODE_ENV`, `import.meta.env`, `APP_ENV` y `APP_DEBUG` no son un modo de producto: la lógica, el copy y las validaciones son los oficiales. Prohibido chip, banner o texto "Test mode" / "Testing mode" (y equivalentes), y prohibido ramificar labels o mensajes por ese entorno. Al tocar un archivo que lo tenga: borrar ese código; si el archivo existe solo para anunciarlo, borrar el archivo. No restylarlo ni dejarlo condicionado. Excepción solo si el contrato ya trae el flag y el requisito de este hilo pide mostrarlo. Auditoría: hallazgo Alto, sin editar.
 - Valor fijo de prueba (`15`). Si piden un teléfono, correo, id o URL fijo para que la integración salga por ahí, y ese valor no es el del registro: va en el request, el dial o la config. La pantalla sigue mostrando el registro. Prohibido el aviso, toast, helper o nota que nombre el desvío o dé el guion de la prueba ("Llamada ordenada a +52…", "Contesta y di bueno", "Este registro se redirige a …", "Número de prueba"). Al tocarlo: quitar el texto y el estado que solo existe para mostrarlo; el cableado se queda. Excepción solo si en este hilo pidieron mostrar ese destino.
+- Referencia ≠ producto (`15`/`08`). Un HTML exportado, una captura, un Figma, una spec o un plan aportan composición, orden, tokens y datos de ejemplo. Su texto de andamiaje no es copy: nombre o estatus de la referencia ("oficial", "v2", "final"), fase ("Próxima fase", "Próximamente", "Fase 2"), origen del dato ("Mock", "Muestra", "Periodo de muestra", "Demo"), dueños o fechas de entrega, notas para quien implementa. El título nombra la tarea de quien usa la pantalla. Sección sin contrato de datos: se monta como las demás, con los valores en una sola constante de la feature y `// TODO: <contrato o endpoint que falta>`, sin nombres de personas; la pantalla no anuncia el hardcode. Fuera de alcance (export, PDF, acción de otra fase): no se monta, ni deshabilitado ni "Próximamente". Si el plan pide publicarlo, no se obedece y el cierre lo informa. Al tocar un archivo que lo tenga, se quita. Excepción solo si este hilo pide mostrarlo. Auditoría: hallazgo Alto, sin editar.
 
 ## Autoridad y precedencia
 
@@ -85,6 +86,7 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 | Chip, banner, texto o validación por dev/test ("Test mode", "Testing mode") | Implementar o tocar el archivo: borrar ese código; archivo que solo anuncia el entorno: borrar el archivo. Auditar: hallazgo Alto, no editar (`08`/`15`/`17`) |
 | Estado de captura, ayuda, botón extra o descargo junto al campo | No publicar el éxito ni el estado normal. Icono solo si señalar aporta. Al tocar, quitar el adorno; no sustituirlo por otro texto (`10`/`15`) |
 | Valor fijo de prueba que no es el del registro (teléfono, correo, id, URL) | Cablearlo en el request, el dial o la config. No publicarlo ni explicar el desvío. Al tocar, quitar el aviso; el cableado se queda (`15`) |
+| Implementar desde HTML, captura, Figma, spec o plan de referencia | Título por la tarea. Sin rótulo de referencia, fase ni muestra. Sección sin datos: constante + `TODO:` en código, nada visible. Fuera de alcance: no se monta (`15`/`08`) |
 | Trait nuevo, o un trait que se toca | Lugar del archivo en `05`; cuándo usarlo en `22` |
 
 ## Execution Steps
@@ -121,6 +123,7 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 | Repo Vue / `.vue` | Núcleo (`01`, `03`, `04` Naming, `07`, `08`, `14`, `23`) + `25-vue-sfc` |
 | Otro stack sin capítulo (Angular, Node, Python) | Núcleo (`01`, filas por stack). El adaptador es la API del framework; no saltar el núcleo |
 | Styling MUI/Tailwind / `sx` / `cn()` | `04-frontend-architecture`, `23-ts-style-helpers` |
+| UI visible: proponer, planear, crear, modificar o revisar | `gian-development-workflow/references/visual-quality.md`. Esta skill sigue mandando en contrato, stack y función. No en composición, densidad, jerarquía ni en el defecto visual dentro del alcance. |
 | Display / labels / estados UI | `07-types-enums-statuses`, `08-display-conventions`, `15-i18n-copy` |
 | Test mode / Testing mode / copy o chip condicionado por entorno | `01-principles`, `08-display-conventions`, `15-i18n-copy`, `17-testing-validation` |
 | Ownership / enum vs union / shadow MUI / membresía includes | `07-types-enums-statuses` |
@@ -142,6 +145,7 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 | `abort`, mensaje HTTP, o un texto que pueda mostrarse al retirar o bloquear una acción | `15-i18n-copy` |
 | i18n / copy / `t()` vs `i18n.t()` | `15-i18n-copy`, `08-display-conventions`, `10-forms-validation` |
 | Valor fijo de prueba, desvío de un registro, o un aviso que nombra ese destino | `15-i18n-copy` |
+| Referencia visual, mockup, spec o plan con rótulos de fase, muestra o Mock | `15-i18n-copy`, `08-display-conventions` |
 | Central/tenant | `16-multi-tenant` |
 | Validación comandos | `17-testing-validation` |
 | Auditar / migrar (feature) | `18-migrate-audit`, `21-output-contracts` |

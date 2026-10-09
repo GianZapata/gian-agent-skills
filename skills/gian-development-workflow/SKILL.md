@@ -64,6 +64,8 @@ No cargar para: preguntas generales, Git, Docker/infra pura, textos, debugging a
 
 clasificar → cargar policy si desarrollo → brainstorming si aplica → grill si decisiones materiales → writing-plans si multi-step → entregar plan + estado de aprobación. Read-only siempre. Si el plan incluye snippets PHP: siguen `gian-php-style` (no PHPDoc; un parámetro en una línea). Si incluye snippets TS/TSX: siguen `gian-ts-style`. No duplicar esas specs aquí. **No incluir Pint como paso final** (Boost `pint/core` queda anulado).
 
+Un plan no manda a la UI texto de la referencia ni del propio plan: nombre de la referencia, fase, Mock o muestra, dueño o fecha de entrega. Sección sin datos: constante + `TODO:` en el código, nada visible. Fuera de alcance: no se monta (`gian-how-i-code` `15`).
+
 ## Build (agente build)
 
 consumir plan aprobado (o alcance aprobado) → cargar policy → Fase 0 + references según routing (lazy) → si toca PHP, WRITE `gian-php-style` en el hunk (**no Pint**) → si toca `.ts`/`.tsx` o un `<script setup lang="ts">`, WRITE `gian-ts-style` en el hunk (HARD; no format-only) → ejecutar por tareas/lotes con todowrite → validaciones reales del repo → revisión independiente según riesgo → cierre con evidencia. Sin plan, o tarea trivial/bug → routing proporcional de esta skill.
@@ -95,8 +97,16 @@ Si el turno crea o edita `gian-development-workflow`, `gian-how-i-code`, `gian-p
 4. Commit y push en el mismo turno, sin preguntar. Para estos cuatro skills, esta orden gana a “solo commitea si te lo piden”.
 5. No incluir secretos ni archivos ajenos al cambio. No saltarse hooks.
 
+## Calidad visual
+
+Si la tarea propone, crea, modifica o revisa UI visible, antes de la primera decisión visual abre `references/visual-quality.md`. Plan, análisis y review incluidos. No abrir en tareas sin interfaz.
+
+La principal es preferencia de superficie. Un apoyo no trae otra dirección y no se cargan dos apoyos en la misma delegación. Las preferencias de `gian-how-i-code` no congelan un defecto visual dentro del alcance. Contratos, stack y función siguen en esa skill.
+
 ## References
 
 - `references/workflow-activation.md`
 - `references/style-activation.md`
+- `references/visual-quality.md`
+- `references/visual-quality-bootstrap.md`
 - Tool choice follows la policy global de herramientas del host. Do not add a second routing skill.

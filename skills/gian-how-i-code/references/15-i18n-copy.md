@@ -100,6 +100,39 @@ GOOD: El dial usa ese número. La ficha sigue mostrando el teléfono del registr
 
 Al tocar un archivo que lo tenga: quitar el texto y el estado que solo existe para mostrarlo. El cableado se queda. Excepción: en este hilo pidieron mostrar ese destino.
 
+## Referencia, plan o mockup
+
+Un HTML exportado, una captura, un Figma, una spec o un plan aportan composición, orden, tokens y datos de ejemplo. Su texto de andamiaje sirve a quien diseña, no a quien usa la pantalla, y no se publica:
+
+- Nombre o estatus de la referencia: "oficial", "v2", "final", "exportado"
+- Fase o alcance: "Próxima fase", "Próximamente", "Fase 2", "Fuera de este corte"
+- Origen del dato: "Mock", "Muestra", "Periodo de muestra", "Datos de ejemplo", "Demo"
+- Personas, dueños o fechas de entrega
+- Notas de diseño para quien implementa
+
+El título nombra la tarea de quien usa la pantalla.
+
+Sección sin contrato de datos: se monta igual que las demás. Los valores viven en una sola constante de la feature, con `// TODO: <contrato o endpoint que falta>`. El TODO no nombra personas. La pantalla no anuncia el hardcode: sin badge, leyenda, tooltip ni nota.
+
+Lo que está fuera de alcance (export, PDF, una acción de otra fase) no se monta. Ni botón deshabilitado, ni "Próximamente", ni placeholder.
+
+```text
+BAD:  Dashboard oficial
+GOOD: Inicio
+
+BAD:  Facturas pendientes · Mock — aún no entregan el contrato
+GOOD: Facturas pendientes
+      (valores de PENDING_INVOICES_PLACEHOLDER con // TODO: conectar al contrato de facturas)
+
+BAD:  [Reporte próxima fase] deshabilitado
+GOOD: el control no existe
+
+BAD:  Periodo de muestra: 1–31 oct
+GOOD: el filtro muestra el periodo elegido
+```
+
+Un plan tampoco autoriza publicarlo. Si lo pide, se aplica esta regla y el cierre informa qué no se publicó. Al tocar un archivo que lo tenga, se quita el texto y el estado que solo existe para mostrarlo. Excepción: este hilo pide mostrarlo. Auditoría: hallazgo Alto, sin editar (`18`).
+
 Mensajes de validación user-facing (FormRequest `messages`/`attributes`, 422 por campo): autoridad `05`/`10`/`14`. Esta reference no define esa regla.
 
 ## Validación sugerida

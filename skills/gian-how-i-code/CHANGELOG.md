@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.23 — 2026-10-09
+
+- Referencia ≠ producto (`15`, `08`, `18`, `SKILL.md`, workflow, `visual-quality`): el nombre de la referencia, la fase, "Mock", "Muestra" y las notas de entrega no se publican. El título nombra la tarea. Sección sin datos: constante + `TODO:` en código, nada visible. Lo que está fuera de alcance no se monta.
+
 ## 1.4.22 — 2026-10-05
 
 - Valor fijo de prueba (`15`, `01`, `SKILL.md`): un teléfono, correo, id o URL fijo que no es el del registro va en el request, el dial o la config. La pantalla no anuncia el desvío ni el guion de la prueba. Al tocarlo se quita el aviso; el cableado se queda.
