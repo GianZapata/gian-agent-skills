@@ -45,6 +45,7 @@ Commit only the skill change. Do not commit `evals/`, secrets, or unrelated file
 
 ## Flow
 
+0. Before comparing, verifying or editing: `git pull --ff-only origin main`. Compare and sync against `origin/main`, never against an older commit named in a prompt. Never restore the installed copy to an older commit's text; if they differ, report it.
 1. Edit files under `skills/` in this clone.
 2. Apply the same edit to the installed copy of that skill.
 3. Commit and push in the same turn, without asking.
