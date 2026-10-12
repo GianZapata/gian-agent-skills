@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.8.0 — 2026-10-12
+
+- `guard-glue`: el resumen distingue bloques planos del cuerpo superior de un componente, hook o composable; los early returns de ese cuerpo conservan la separación de slots de `04`.
+- `self-check.mjs`: el diff selecciona miembros de clase individualmente, incluidas propiedades sin función, sin revisar métodos hermanos. El cuerpo seleccionado se comprueba completo. `--all` y archivos nuevos conservan la revisión completa.
+
 ## 2.7.0 — 2026-10-12
 
 - `derived-multi-branch` (HARD): un ternario cuya condición junta 3+ partes con `&&` / `||` también entra, aunque tenga dos resultados. En componente o hook va `useMemo` + `if` + early return (`gian-how-i-code` `23` C), en Vue `computed`; fuera, `if` / `return`. Se quita la forma `getX()` que contradecía a `23`.

@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // gian-ts-style self-check. Run from the repo root of the project being edited:
-//   node <skill>/assets/self-check.mjs              -> functions touched in `git diff HEAD` + untracked files
-//   node <skill>/assets/self-check.mjs a.tsx b.ts   -> functions touched in those files (whole file if untracked)
-//   node <skill>/assets/self-check.mjs --all a.tsx  -> every function in those files
+//   node <skill>/assets/self-check.mjs              -> units touched in `git diff HEAD` + untracked files
+//   node <skill>/assets/self-check.mjs a.tsx b.ts   -> units touched in those files (whole file if untracked)
+//   node <skill>/assets/self-check.mjs --all a.tsx  -> every unit in those files
+// Paths filter files, not hunks. A versioned class selects each member by its own span.
 // Exit 0: 0 pendientes. Exit 1: FAIL. Exit 2: could not run (report as GAP).
 
 import { execFileSync } from 'node:child_process';
@@ -720,14 +721,113 @@ const check = (file) => {
     return;
   }
 
+  const unwrapInit = (node) => {
+    let current = node;
+
+    while (current && (ts.isParenthesizedExpression(current) || ts.isAsExpression(current) || ts.isNonNullExpression(current) || ts.isSatisfiesExpression?.(current))) {
+      current = current.expression;
+    }
+
+    return current;
+  };
+
+  const moduleClass = (statement) => {
+    if (ts.isClassDeclaration(statement)) return statement;
+
+    if (!ts.isVariableStatement(statement) || statement.declarationList.declarations.length !== 1) return null;
+
+    const init = unwrapInit(statement.declarationList.declarations[0].initializer);
+
+    return init && ts.isClassExpression(init) ? init : null;
+  };
+
+  const overlapsLines = (from, to) => ranges === null || ranges.some(([start, end]) => start <= to && end >= from);
+
+  const headerSpan = (klass) => {
+    const from = startLine(klass);
+
+    if (!klass.members.length) return [from, endLine(klass)];
+
+    const firstMember = startLine(klass.members[0]);
+
+    if (firstMember <= from) return null;
+
+    return [from, firstMember - 1];
+  };
+
+  const checkClassHeader = (klass) => {
+    for (const decorator of ts.getDecorators?.(klass) ?? []) {
+      if (overlapsLines(startLine(decorator), endLine(decorator))) checkNode(decorator);
+    }
+
+    for (const modifier of klass.modifiers ?? []) {
+      if (overlapsLines(startLine(modifier), endLine(modifier))) checkNode(modifier);
+    }
+
+    if (klass.name && overlapsLines(startLine(klass.name), endLine(klass.name))) checkNode(klass.name);
+
+    for (const parameter of klass.typeParameters ?? []) {
+      if (overlapsLines(startLine(parameter), endLine(parameter))) checkNode(parameter);
+    }
+
+    for (const clause of klass.heritageClauses ?? []) {
+      if (overlapsLines(startLine(clause), endLine(clause))) checkNode(clause);
+    }
+  };
+
   let anyTouched = false;
 
-  for (const statement of sf.statements) {
-    if (!touched(statement)) continue;
-
+  const review = (node, from, to) => {
     anyTouched = true;
-    checkNode(statement);
-    checkRange(startLine(statement), endLine(statement));
+    checkNode(node);
+    checkRange(from, to);
+  };
+
+  for (const statement of sf.statements) {
+    const klass = ranges === null ? null : moduleClass(statement);
+
+    if (!klass) {
+      if (!touched(statement)) continue;
+
+      review(statement, startLine(statement), endLine(statement));
+      continue;
+    }
+
+    const header = headerSpan(klass);
+
+    if (header && overlapsLines(header[0], header[1])) {
+      anyTouched = true;
+      checkClassHeader(klass);
+      checkRange(header[0], header[1]);
+    }
+
+    if (ts.isVariableStatement(statement)) {
+      const declaration = statement.declarationList.declarations[0];
+      const nameHit = overlapsLines(startLine(declaration.name), endLine(declaration.name));
+      const typeHit = declaration.type && overlapsLines(startLine(declaration.type), endLine(declaration.type));
+
+      if (nameHit) checkNode(declaration.name);
+      if (typeHit) checkNode(declaration.type);
+
+      if (nameHit || typeHit) {
+        anyTouched = true;
+        checkRange(startLine(declaration.name), typeHit ? endLine(declaration.type) : endLine(declaration.name));
+      }
+
+      const wrapper = declaration.initializer;
+
+      if (wrapper && (ts.isSatisfiesExpression(wrapper) || ts.isAsExpression(wrapper)) && overlapsLines(startLine(wrapper.type), endLine(wrapper.type))) {
+        anyTouched = true;
+        checkNode(wrapper.type);
+        checkRange(startLine(wrapper.type), endLine(wrapper.type));
+      }
+    }
+
+    for (const member of klass.members) {
+      if (!overlapsLines(startLine(member), endLine(member))) continue;
+
+      review(member, startLine(member), endLine(member));
+    }
   }
 
   if (!anyTouched || !file.endsWith('.tsx')) return;

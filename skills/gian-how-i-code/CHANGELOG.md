@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.31 — 2026-10-12
+
+- `26` §Alcance: el self-check conserva la separación por método o componente tocado; no abre sus hermanos ni omite las declaraciones y propiedades tocadas.
+
 ## 1.4.30 — 2026-10-12
 
 - `23` caso C: también un ternario cuya condición junta 3+ partes con `&&` / `||`, aunque tenga dos resultados. `useMemo` + `if` + early return es obligatorio en componente y hook (Vue: `computed`). Ejemplo `orderMessage`. B queda para dos resultados con una condición de 1 o 2 partes. Lo verifica `gian-ts-style` `self-check.mjs`.
