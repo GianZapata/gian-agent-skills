@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.5.0 — 2026-10-12
+
+- `assets/self-check.mjs` (nuevo): verificador con el parser de TypeScript del repo. Revisa las funciones tocadas en `git diff HEAD` (o `--all`): `slot-order`, `vertical-spacing`, `read-group`, `guard-glue`, `single-statement-if`, `arrow-implicit-return`, `classname-cn`, `boolean-prop-shorthand`, `fragment-shorthand`, `self-closing-jsx`, `handler-naming`, `data-hook-location`, `no-local-style-constants`, `comments-noise`; GAP para `enum-ownership` y bloques repetidos. WRITE y FIX no cierran sin su salida. Antes el cierre pedía un `self-check.sh` que no existía.
+- `vertical-spacing` pasa a HARD con lista cerrada de secciones: dos slots distintos nunca van pegados; una sentencia multilínea cierra con línea en blanco; función, efecto o `useMemo` con cuerpo llevan blanco antes y después; derivadas agrupadas por fuente. Nuevo § Dentro de un bloque: pasos de `26` y `guard-glue` (el guard queda pegado a su lectura). Ejemplo React y ejemplo "No".
+- La línea de `SKILL.md` ya no dice "del mismo tipo": nombra los slots de `04`, para que funcione sin abrir la reference.
+
 ## 2.4.0 — 2026-10-12
 
 - `read-group` (HARD, `vertical-spacing.md`, `SKILL.md`, audit): cada lectura (query en un componente, hook o composable; `await` que trae datos en una función plana; un `await` que escribe es efecto) abre su grupo y una línea en blanco lo cierra. Su complemento de una línea (ids, `Map` por id) va pegado debajo. Dos lecturas solo van pegadas si la segunda es complemento de la primera. Las mutations de una línea siguen juntas entre ellas. Una lectura multilínea cierra con línea en blanco antes de su complemento; solo el guard que la valida queda pegado.

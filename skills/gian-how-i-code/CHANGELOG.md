@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.28 — 2026-10-12
+
+- `04` §Orden: los slots nombran `useContext`, `useTranslation` y `useQueryClient` (dependencias), `useReducer` y `useForm` (estado), y `useWatch`, `useFieldArray` y `useFormState` (hooks que leen estado). La derivada que un hook recibe como argumento va justo arriba de él y es la única que sube. La línea en blanco entre slots es HARD y la verifica `gian-ts-style` `assets/self-check.mjs`.
+
 ## 1.4.27 — 2026-10-12
 
 - `26` §Cargar: las lecturas que no se necesitan entre sí ya no son "el mismo paso" pegado. Cada lectura es su grupo visual; la línea en blanco la pone `read-group` de `gian-php-style` 1.3.0 / `gian-ts-style` 2.4.0. Los ejemplos PHP y React de `26` separan cada lectura.

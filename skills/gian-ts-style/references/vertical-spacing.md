@@ -1,28 +1,137 @@
 # Vertical spacing
 
-PREFERENCE. Separar secciones con **una** línea en blanco. Los slots los decide `gian-how-i-code` (`04`). Los casos dentro de cada slot, y el orden de una función plana, los decide `26`. Si el edit entra en ese cuerpo, `04` y `26` reordenan esa función. Esta reference solo inserta la línea en blanco.
+## vertical-spacing (HARD)
 
-WRITE aplica la línea en blanco en el hunk. AUDIT marca FAIL solo si es objetivo: dos secciones pegadas, o dos líneas en blanco seguidas. No recorrer el archivo.
+`vertical-spacing`. Separar secciones con **una** línea en blanco. Los slots los decide `gian-how-i-code` (`04`). El orden dentro de cada slot, y el de una función plana, lo decide `26`. Si el edit entra en ese cuerpo, `04` y `26` reordenan esa función. Esta reference solo inserta la línea en blanco.
 
-## Juntas
+Sección, lista cerrada:
 
-Declaraciones cortas del mismo tipo van seguidas, sin línea en blanco, salvo dos lecturas (`read-group`, abajo).
+- cada grupo de declaraciones de una línea del mismo slot de `04` (dependencias, estado, hooks que leen estado, derivadas, funciones de una línea);
+- cada sentencia multilínea (una `const` que ocupa varias líneas, una llamada que Prettier parte);
+- cada función con block body;
+- cada `computed` / `useMemo` / `useCallback` con block body;
+- cada `watch` / `useEffect` / `useLayoutEffect` / `onMounted`;
+- cada lectura con su complemento (`read-group`, abajo);
+- el grupo de returns tempranos de una línea;
+- el `return` final.
+
+Reglas:
+
+- Dos slots distintos de `04` nunca van pegados, aunque las dos líneas sean cortas.
+- Las declaraciones de una línea del mismo slot van seguidas, sin línea en blanco, salvo dos lecturas (`read-group`).
+- Una sentencia multilínea cierra con una línea en blanco. La siguiente no se le pega.
+- Una función, efecto, `useMemo` o `computed` con cuerpo lleva una línea en blanco antes y después.
+- En el slot de derivadas, las que leen la misma fuente van juntas. Al cambiar de fuente (`indicators.occupancy` → `indicators.arrears`), una línea en blanco.
+- Nunca dos líneas en blanco seguidas.
+- Sin comentarios de sección (`// State`, `// Effects`): los prohíbe `comments.md`. El espacio marca la sección.
+
+## Dentro de un bloque (HARD)
+
+El cuerpo de un handler, `useMemo`, efecto, callback o función plana con varios pasos sigue los pasos de `gian-how-i-code` `26`: normalizar, guards, cargar, decidir, derivar, efecto, `return`. Una línea en blanco entre pasos. Una sentencia multilínea cierra con línea en blanco.
+
+`guard-glue`. La lectura que un guard necesita queda pegada encima de ese guard. El blanco va después del guard.
 
 ```ts
+const areaNumber = (value: string | null): number | null => {
+  if (value === null || value === '') return null;
+
+  const number = Number(value);
+  if (!Number.isFinite(number)) return null;
+
+  return number;
+};
+```
+
+No:
+
+```ts
+const number = Number(value);
+
+if (!Number.isFinite(number)) return null;
+```
+
+En el cuerpo de un componente esto no aplica: los returns tempranos son su propio slot (`04`) y van separados.
+
+## React
+
+```tsx
+export const InvoicePage: FC = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const [note, setNote] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+
+  const { data: invoice, isPending } = useInvoiceQuery(id);
+
+  const payInvoice = usePayInvoiceMutation(id);
+
+  const rows = invoice?.lines ?? [];
+  const canPay = invoice?.status === InvoiceStatus.Pending;
+
+  const total = rows.reduce(
+    (sum, row) => sum + row.amount,
+    0,
+  );
+
+  const formatAmount = (value: number) => formatCurrency(value, invoice?.currency);
+
+  useEffect(() => {
+    document.title = invoice?.number ?? 'Factura';
+  }, [invoice?.number]);
+
+  if (isPending) return <Skeleton />;
+  if (!invoice) return <EmptyState />;
+
+  return (
+    <InvoiceView
+      rows={rows}
+      note={note}
+      isOpen={isOpen}
+      canPay={canPay}
+      total={formatAmount(total)}
+      onOpenLine={(lineId) => navigate(`/invoices/${id}/lines/${lineId}`)}
+      onNoteChange={setNote}
+      onToggle={() => setIsOpen(!isOpen)}
+      onPay={() => payInvoice.mutate({ note })}
+    />
+  );
+};
+```
+
+No:
+
+```tsx
+const navigate = useNavigate();
+const { data: tenant } = useTenantInfo();
+const periodRef = useRef<HTMLDivElement>(null);
+const [period, setPeriod] = useState(Period.Month);
+const rows = invoice?.lines ?? [];
+const occupancyRate = indicators?.occupancy.rate
+  ? rate(indicators.occupancy.rate)
+  : null;
+const cohortShare = cohortMxn?.percent ? rate(cohortMxn.percent) : null;
+const openBand = () => {
+  onOpen(bucket);
+};
+```
+
+Ahí la query va pegada a las dependencias, el `useRef` queda fuera del slot de estado, una derivada multilínea se pega a la siguiente y el handler se pega a las derivadas.
+
+## Vue
+
+```ts
+const route = useRoute();
+
 const draft = ref('');
 const selectedId = ref('');
 
 const query = computed(() => route.query.q);
 const debt = computed(() => parseDebt(route.query.debt));
-```
 
-## Separadas
-
-Cada función, `computed` con cuerpo, `watch` o efecto lleva una línea en blanco antes y después.
-
-```ts
 const filtered = computed(() => {
   if (!debt.value) return matched;
+
   return matched.filter((row) => standing(row) === debt.value);
 });
 
@@ -34,8 +143,6 @@ watch(query, (value) => {
   draft.value = value;
 });
 ```
-
-Nunca dos líneas en blanco seguidas. Sin comentarios de sección (`// State`, `// Effects`): los prohíbe `comments.md`. El espacio marca la sección.
 
 ## Una lectura, un grupo (HARD)
 
@@ -86,4 +193,6 @@ const invoices = await invoiceService.list({ orderIds });
 const customers = await customerService.list(range);
 ```
 
-WRITE lo aplica en la función tocada. AUDIT: FAIL si dos lecturas van pegadas y la segunda no es complemento de la primera. Si no es claro que una línea sea lectura o complemento: GAP, sin FAIL.
+## Aplicar
+
+WRITE y FIX aplican estas reglas en la función tocada y cierran con `assets/self-check.mjs` (`SKILL.md` § Self-check). AUDIT: FAIL si dos secciones van pegadas, si una sentencia multilínea no cierra con línea en blanco, si el guard se separa de su lectura, si dos lecturas van pegadas y la segunda no es complemento, o si hay dos líneas en blanco seguidas. La agrupación de derivadas por fuente la aplica el agente; si es dudosa, GAP.

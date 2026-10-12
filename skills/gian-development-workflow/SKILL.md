@@ -76,6 +76,12 @@ Si el edit entra en el cuerpo de un componente, hook o composable, reordenar esa
 
 Si el edit entra en un método PHP, reordenar ese método según `26` antes de cerrar el cambio. No el otro método del archivo.
 
+## Self-check de estilo (obligatorio)
+
+Antes del cierre, en toda tarea que crea o edita `.ts` / `.tsx` o un `<script setup lang="ts">`, correr desde la raíz del repo `node <ruta de gian-ts-style>/assets/self-check.mjs`. Sin argumentos revisa las funciones tocadas en `git diff HEAD` y los archivos nuevos. Cada FAIL se corrige en el alcance y se vuelve a correr hasta `Self-check TS: 0 pendientes`. El cierre pega esa última línea tal cual sale. Si sale `GAP` (exit 2), se reporta así. Nunca se escribe `0 pendientes` sin haber corrido el script.
+
+PHP todavía no tiene script: el cierre dice `Self-check PHP: manual` y lista las reglas de `gian-php-style` revisadas en el método tocado.
+
 ## Precedencia y fallback
 
 Este router DELEGA: no reescribe contenido de las process skills ni de la policy. Si una process skill no está disponible o falla, degradar al siguiente nivel (sin writing-plans → lotes con todowrite; sin brainstorming → preguntas directas al usuario). Si `gian-how-i-code` no está disponible, continuar el proceso y señalarlo en el cierre.

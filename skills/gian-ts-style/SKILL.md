@@ -4,7 +4,7 @@ description: "Mandatory visual TS/TSX style for any TS stack. Load when creating
 license: Apache-2.0
 metadata:
   author: gian
-  version: "2.4.0"
+  version: "2.5.0"
 when-to-use: "Any .ts/.tsx create/edit/refactor/review/audit/fix in any TS stack (React, Vue sibling .ts or inline script setup lang=ts, Angular, Node); ts-style-audit; ts-style-fix; format TypeScript. Not for .js/.jsx/.mjs/.cjs, Vue template/style, Angular .html, PHP, CSS, SQL-only, or architecture-only consults."
 ---
 
@@ -52,7 +52,8 @@ No vender preferencias de Gian como best practice universal. `references/princip
 - Solo React: `className` no estático (template literal, `+`, ternario, join, prop `className`) → `cn()` del repo en el hunk. No crear otro `cn` ni importar `clsx`/`twMerge` directo. `rg` de cierre sobre los `.tsx` tocados. `references/react-components-jsx.md`
 - Single-statement-if standalone (return/throw/call/assignment/continue/break) sin `{}`; líneas ≠ statements. `references/conditions-guards.md`
 - Solo React: handler con firma 1:1 → referencia directa. `references/callbacks-handlers.md`
-- Secciones de un composable, hook o componente: una línea en blanco entre grupos; declaraciones cortas del mismo tipo juntas. Cada lectura (query, `await` que trae datos) abre su grupo con su complemento pegado; dos lecturas solo van pegadas si la segunda es complemento de la primera (`read-group`). Sin comentarios de sección. `references/vertical-spacing.md`
+- Secciones de un composable, hook o componente: orden y slots de `gian-how-i-code` `04` (dependencias, estado, hooks que leen estado, derivadas, funciones, efectos, `return`). Una línea en blanco entre slots distintos, aunque las líneas sean cortas; las de una línea del mismo slot van juntas. Una sentencia multilínea cierra con línea en blanco. Función, efecto o `useMemo` con cuerpo: línea en blanco antes y después. Cada lectura (query, `await` que trae datos) abre su grupo con su complemento pegado (`read-group`). Dentro de un bloque: pasos de `26`, y el guard pegado a su lectura (`guard-glue`). Sin comentarios de sección. `references/vertical-spacing.md`
+- Self-check: WRITE y FIX no cierran sin correr `node <ruta de esta skill>/assets/self-check.mjs` desde la raíz del repo. Cada FAIL se corrige y se vuelve a correr hasta `Self-check TS: 0 pendientes`. El cierre pega esa línea tal cual sale. Si sale `GAP` (exit 2), se reporta así. Nunca se escribe `0 pendientes` sin la salida del script. `assets/self-check.mjs`
 - Type-only import → `import type`. `references/types-imports.md`
 - Comentarios: WRITE no emite narración/JSDoc. Strip ruido obvio. Conservar directives. `references/comments.md`
 
@@ -79,10 +80,11 @@ No vender preferencias de Gian como best practice universal. `references/princip
 5. AUDIT: TS/TSX relevante; alta confianza; agrupar repeticiones; formato `assets/audit-template.md`.
 6. FIX: solo estilo; SAFE FIX siempre; AST-SENSITIVE solo con gate; NEVER AUTOFIX si puede cambiar semántica; listar GAP omitidos.
 7. No migrar un repo entero salvo audit+fix pedido.
+8. WRITE/FIX: correr `assets/self-check.mjs` (sin argumentos revisa las funciones tocadas en `git diff HEAD` y los archivos nuevos). Corregir cada FAIL del alcance y repetir hasta `0 pendientes`. AUDIT puede correrlo con `--all` como evidencia.
 
 ## Output Contract
 
-- WRITE: TS/TSX del hunk conforme; Prettier del repo intacto como autoridad de wrap; sin instalar ESLint.
+- WRITE: TS/TSX del hunk conforme; Prettier del repo intacto como autoridad de wrap; sin instalar ESLint; la última línea de `assets/self-check.mjs`.
 - AUDIT: lista `[FAIL] path:line` + `Rule:` o `Rules:` + Actual + Expected + Reason; o "no findings".
 - FIX: archivos tocados + reglas aplicadas + ítems inseguros omitidos (`GAP — no corregido automáticamente: …`).
 
@@ -100,5 +102,6 @@ No vender preferencias de Gian como best practice universal. `references/princip
 - `references/comments.md`
 - `references/vertical-spacing.md`
 - `assets/audit-template.md`
+- `assets/self-check.mjs`
 - `evals/trigger-evals.json`
 - `evals/behavioral-evals.json`

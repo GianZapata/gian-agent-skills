@@ -235,15 +235,17 @@ No se agrega una librería. El texto de error y el vacío no se sustituyen.
 
 Aplica a composables Vue, hooks React, services Angular con estado y al cuerpo de un componente React. La línea en blanco entre grupos es formato: `gian-ts-style`. Sin comentarios de sección (`// State`, `// Effects`).
 
-1. Dependencias que no leen estado local: router, route, stores, `inject()`, clientes.
-2. Estado: `ref` / `useState` / `useRef` / `signal`.
-3. Hooks que leen ese estado: query, mutation, debounce, otro composable. Van arriba de cualquier `return`.
+1. Dependencias que no leen estado local: router, route, stores, `inject()`, clientes, `useContext`, `useTranslation`, `useQueryClient`.
+2. Estado: `ref` / `useState` / `useReducer` / `useRef` / `signal`, y `useForm` de React Hook Form.
+3. Hooks que leen ese estado: query, mutation, debounce, `useWatch` / `useFieldArray` / `useFormState`, otro composable. Van arriba de cualquier `return`.
 4. Variables derivadas: `const` desde esos datos, `computed` / `useMemo`, según A–E de `23`.
 5. Funciones: helpers internos y handlers.
 6. Efectos, al final: `watch` / `useEffect` / `effect`, y el ciclo de vida (`onMounted`) si existe.
 7. `return`, o el JSX en un componente.
 
 Un `return` temprano no queda antes de un hook. Si hoy está arriba, baja.
+
+Una derivada que un hook recibe como argumento (un rango, una key) va justo arriba de ese hook, y los hooks que siguen se quedan con él. Es la única derivada que sube. Cada slot es una sección: la línea en blanco entre slots es HARD (`gian-ts-style` `vertical-spacing`), y el orden lo verifica `gian-ts-style` `assets/self-check.mjs` (`slot-order`).
 
 Si el edit entra en ese cuerpo, esa función queda en este orden antes de cerrar el cambio. Se mueven los bloques de primer nivel. No se agrega un guard dentro de un efecto para compensar el movimiento.
 
