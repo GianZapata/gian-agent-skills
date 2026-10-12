@@ -2,7 +2,7 @@
 
 ## 2.4.0 — 2026-10-12
 
-- `read-group` (HARD, `vertical-spacing.md`, `SKILL.md`, audit): cada lectura (query en un componente, hook o composable; `await` a service, repositorio o `fetch` en una función plana) abre su grupo y una línea en blanco lo cierra. Su complemento de una línea (ids, `Map` por id) va pegado debajo. Dos lecturas solo van pegadas si la segunda es complemento de la primera. Las mutations de una línea siguen juntas entre ellas. Una lectura multilínea cierra con línea en blanco antes de su complemento; solo el guard que la valida queda pegado.
+- `read-group` (HARD, `vertical-spacing.md`, `SKILL.md`, audit): cada lectura (query en un componente, hook o composable; `await` que trae datos en una función plana; un `await` que escribe es efecto) abre su grupo y una línea en blanco lo cierra. Su complemento de una línea (ids, `Map` por id) va pegado debajo. Dos lecturas solo van pegadas si la segunda es complemento de la primera. Las mutations de una línea siguen juntas entre ellas. Una lectura multilínea cierra con línea en blanco antes de su complemento; solo el guard que la valida queda pegado.
 
 ## 2.3.0 — 2026-10-09
 

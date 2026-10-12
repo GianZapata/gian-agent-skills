@@ -52,7 +52,7 @@ No vender preferencias de Gian como best practice universal. `references/princip
 - Solo React: `className` no estático (template literal, `+`, ternario, join, prop `className`) → `cn()` del repo en el hunk. No crear otro `cn` ni importar `clsx`/`twMerge` directo. `rg` de cierre sobre los `.tsx` tocados. `references/react-components-jsx.md`
 - Single-statement-if standalone (return/throw/call/assignment/continue/break) sin `{}`; líneas ≠ statements. `references/conditions-guards.md`
 - Solo React: handler con firma 1:1 → referencia directa. `references/callbacks-handlers.md`
-- Secciones de un composable, hook o componente: una línea en blanco entre grupos; declaraciones cortas del mismo tipo juntas. Cada lectura (query, `await` a service o `fetch`) abre su grupo con su complemento pegado; dos lecturas solo van pegadas si la segunda es complemento de la primera (`read-group`). Sin comentarios de sección. `references/vertical-spacing.md`
+- Secciones de un composable, hook o componente: una línea en blanco entre grupos; declaraciones cortas del mismo tipo juntas. Cada lectura (query, `await` que trae datos) abre su grupo con su complemento pegado; dos lecturas solo van pegadas si la segunda es complemento de la primera (`read-group`). Sin comentarios de sección. `references/vertical-spacing.md`
 - Type-only import → `import type`. `references/types-imports.md`
 - Comentarios: WRITE no emite narración/JSDoc. Strip ruido obvio. Conservar directives. `references/comments.md`
 

@@ -39,14 +39,14 @@ Nunca dos líneas en blanco seguidas. Sin comentarios de sección (`// State`, `
 
 ## Una lectura, un grupo (HARD)
 
-`read-group`. Cada lectura abre su propio grupo. Su complemento va pegado debajo. Una línea en blanco cierra el grupo. Dos lecturas solo van pegadas si la segunda es complemento de la primera, aunque cada una quepa en una línea. Gana a "declaraciones de una línea del mismo slot juntas".
+`read-group`. Cada lectura abre su propio grupo. Su complemento va pegado debajo. Una línea en blanco cierra el grupo. Dos lecturas solo van pegadas si la segunda es complemento de la primera, aunque cada una quepa en una línea. Gana a la regla que junta declaraciones cortas del mismo slot.
 
 Lectura: lo que trae datos de una fuente.
 
 - En un componente, hook o composable: cada query (`useQuery`, `useSuspenseQuery`, `useXQuery`, el composable que trae datos).
-- En una función plana: cada `await` a un service, repositorio, `fetch` o cliente HTTP.
+- En una función plana: cada `await` que trae datos de un service, repositorio, `fetch` o cliente HTTP (`get`, `list`, `find`).
 
-Una mutation no es lectura: las mutations de una línea van juntas entre ellas, en su grupo.
+Un write no es lectura. Una mutation de un componente: las de una línea van juntas entre ellas, en su grupo. Un `await` que escribe (`post`, `patch`, `put`, `delete`, `save`) es efecto (`gian-how-i-code` `26`).
 
 Complemento: la sentencia de una línea justo debajo que solo lee esa lectura y existe para completarla: sus ids, su `Map` por id, su detalle cuyo nombre deriva del de la lectura. Otra entidad es otra lectura y abre su grupo. Una línea que combina dos lecturas es una derivada y abre su grupo. En un componente, la derivada barata (`?? []`) vive en el slot de derivadas de `gian-how-i-code` `04`, no como complemento.
 

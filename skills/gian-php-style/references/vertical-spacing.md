@@ -77,7 +77,7 @@ $settlements = $this->settlementRows();
 
 WRITE lo aplica en el método tocado. AUDIT: FAIL si dos lecturas van pegadas y la segunda no es complemento de la primera. Si no es claro que una línea sea lectura o complemento: GAP, sin FAIL.
 
-## Cuatro pasos
+## Corte por pasos
 
 Al cerrar un paso multilínea, una línea en blanco antes del paso siguiente. Las sentencias de una línea del mismo paso quedan juntas. No se parte un array ni los argumentos de una llamada.
 
