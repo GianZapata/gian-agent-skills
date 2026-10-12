@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.32 — 2026-10-12
+
+- `26`: la lectura queda inmediatamente arriba del guard. En PHP van pegadas. En TS, un `const`/`let`/`var` de una línea lleva línea en blanco antes de la sentencia siguiente si no es otra declaración.
+
 ## 1.4.31 — 2026-10-12
 
 - `26` §Alcance: el self-check revisa esta misma unidad. El detalle queda en `gian-ts-style` `vertical-spacing.md` §Aplicar.

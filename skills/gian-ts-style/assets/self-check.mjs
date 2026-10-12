@@ -491,8 +491,8 @@ const check = (file) => {
         report('FAIL', file, at(statement), 'read-group', 'dos lecturas pegadas: cada lectura abre su grupo');
       }
 
-      if (!glued && ts.isVariableStatement(previous) && !isMultiline(previous) && isGuardOf(previous, statement)) {
-        report('FAIL', file, at(statement), 'guard-glue', 'el guard que valida la lectura de arriba va pegado a ella (gian-how-i-code 26)');
+      if (glued && ts.isVariableStatement(previous) && !isMultiline(previous) && isGuardOf(previous, statement)) {
+        report('FAIL', file, at(statement), 'guard-glue', 'const/let/var de una línea y el guard van separados por una línea en blanco');
       }
     });
   };

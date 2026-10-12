@@ -29,13 +29,14 @@ Reglas:
 
 El cuerpo de un handler, `useMemo`, efecto, callback o función plana con varios pasos sigue los pasos de `gian-how-i-code` `26`: normalizar, guards, cargar, decidir, derivar, efecto, `return`. Una línea en blanco entre pasos. Una sentencia multilínea cierra con línea en blanco.
 
-`guard-glue`. La lectura que un guard necesita queda pegada encima de ese guard. El blanco va después del guard.
+`guard-glue`. La lectura queda inmediatamente arriba del guard que la valida. Un `const`/`let`/`var` de una línea lleva una línea en blanco antes de ese guard. El blanco también va después del guard, antes del paso siguiente.
 
 ```ts
 const areaNumber = (value: string | null): number | null => {
   if (value === null || value === '') return null;
 
   const number = Number(value);
+
   if (!Number.isFinite(number)) return null;
 
   return number;
@@ -46,7 +47,6 @@ No:
 
 ```ts
 const number = Number(value);
-
 if (!Number.isFinite(number)) return null;
 ```
 
@@ -195,6 +195,6 @@ const customers = await customerService.list(range);
 
 ## Aplicar
 
-WRITE y FIX aplican estas reglas en la función tocada y cierran con `assets/self-check.mjs` (`SKILL.md` § Self-check). AUDIT: FAIL si dos secciones van pegadas, si una sentencia multilínea no cierra con línea en blanco, si el guard se separa de su lectura, si dos lecturas van pegadas y la segunda no es complemento, o si hay dos líneas en blanco seguidas. La agrupación de derivadas por fuente la aplica el agente; si es dudosa, GAP.
+WRITE y FIX aplican estas reglas en la función tocada y cierran con `assets/self-check.mjs` (`SKILL.md` § Self-check). AUDIT: FAIL si dos secciones van pegadas, si una sentencia multilínea no cierra con línea en blanco, si un `const`/`let`/`var` de una línea va pegado al guard que la valida, si dos lecturas van pegadas y la segunda no es complemento, o si hay dos líneas en blanco seguidas. La agrupación de derivadas por fuente la aplica el agente; si es dudosa, GAP.
 
 El self-check de `gian-ts-style` respeta esta separación: revisa el método tocado, no toda la clase; y el cuerpo completo del componente tocado, no el otro componente. Las declaraciones y propiedades tocadas conservan sus comprobaciones de estilo.

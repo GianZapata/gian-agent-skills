@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.9.0 — 2026-10-12
+
+- `guard-glue`: un `const`/`let`/`var` de una línea y el guard que lo valida van separados por una línea en blanco. El orden no cambia: la lectura queda inmediatamente arriba. Así no pelea con `padding-line-between-statements`.
+
 ## 2.8.0 — 2026-10-12
 
 - `guard-glue`: el resumen distingue bloques planos del cuerpo superior de un componente, hook o composable; los early returns de ese cuerpo conservan la separación de slots de `04`.

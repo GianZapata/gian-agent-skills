@@ -16,7 +16,7 @@ Si mover un bloque cambiaría el comportamiento, no se mueve y queda GAP. Cubre 
 
 ## PHP y función plana
 
-El mismo orden por rol vale para un método PHP y para una función plana `.ts` que no es componente, hook ni composable. La dependencia de datos gana al rol: una lectura que un guard necesita se queda pegada encima de ese guard.
+El mismo orden por rol vale para un método PHP y para una función plana `.ts` que no es componente, hook ni composable. La dependencia de datos gana al rol: la lectura queda inmediatamente arriba del guard que la valida. En PHP van pegadas. En TS, un `const`/`let`/`var` de una línea lleva una línea en blanco antes de la sentencia siguiente si esa sentencia no es otra declaración.
 
 1. Normalizar la entrada: trim, cast, default. Las de una línea del mismo paso van juntas.
 2. Guards: `return` / `throw` tempranos, y `continue` dentro de un bucle. El orden es invalidez, ausencia, conflicto, precondición. El camino feliz queda al nivel del método.
