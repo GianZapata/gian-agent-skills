@@ -322,6 +322,48 @@ No mantener a la vez: constantes SM + backed Enum + strings literales para los *
 
 `as const` + tipo derivado: solo interop JS o valor no compartido entre capas. **No es el default** TS para conjuntos `APP_OWNED`. En arrays runtime `LIBRARY_OWNED`, `satisfies` el tipo de la lib (no `as const` como fuente de un tipo propio).
 
+## Checklist al declarar (HARD)
+
+Antes de escribir un `type`, una unión, un enum, un `Record` o una constante de opciones en una feature:
+
+1. ¿Ya existe un enum de la feature con esos valores (`rg "= '<valor>'" <feature>/enums`)? Se usa ese. Prohibido el alias que lo repite (`type ArrearsTone = 'recent' | 'critical' | 'historic'` junto a `DashboardArrearsBucket`).
+2. ¿Es un conjunto cerrado propio sin enum? String enum en `enums/` de la feature.
+3. ¿Los valores son de una librería (color, variant, size, severity de MUI)? El tipo del componente que los recibe: `NonNullable<ButtonProps['color']>`, `ChipProps['color']`. Sin unión propia.
+4. ¿Varios datos por miembro del enum (copy, color, icono)? Una sola `static readonly Record<Enum, Meta>` en `<entity>.helper.ts`, con `interface <Concepto>Meta`. Nunca dos Records paralelos por la misma key ni la metadata en el `.tsx`.
+5. ¿Un tipo de objeto inline con 2+ campos (`Record<X, { heading: string; detail: string }>`, `Array<{ top: string }>`)? `interface` con nombre.
+
+```ts
+interface ArrearsBucketMeta {
+  emptyHeading: string;
+  emptyDetail: string;
+  buttonColor: NonNullable<ButtonProps['color']>;
+}
+
+export class DashboardHelper {
+  static readonly arrearsBucketMeta: Record<DashboardArrearsBucket, ArrearsBucketMeta> = {
+    [DashboardArrearsBucket.Recent]: {
+      emptyHeading: 'No hay adeudos recientes.',
+      emptyDetail: 'Cuando existan adeudos con poca antigüedad, aparecerán aquí.',
+      buttonColor: 'warning',
+    },
+    // … todos los miembros
+  };
+}
+```
+
+Con i18n en el repo, cada texto es un getter con `i18n.t()` (§Mappings exhaustivos).
+
+No:
+
+```ts
+type ArrearsTone = 'recent' | 'critical' | 'historic';
+
+const ARREARS_EMPTY: Record<ArrearsTone, { heading: string; detail: string }> = { … };
+const BAND_BUTTON_COLOR: Record<ArrearsTone, 'warning' | 'error' | 'inherit'> = { … };
+```
+
+Lo verifica `gian-ts-style` `assets/self-check.mjs`: `enum-ownership`, `library-shadow-type`, `named-interface`, `interface-object-shape`, `display-meta-location`, `parallel-meta`. Las excepciones de §Excepciones (generado, externo, discriminated) se reportan como GAP en el cierre.
+
 ## Hallazgos típicos
 
 | Observado | Tipo |

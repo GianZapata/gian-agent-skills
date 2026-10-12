@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.4.28"
+  version: "1.4.29"
 ---
 
 # gian-how-i-code
@@ -30,7 +30,7 @@ No usar como única skill para: explicación genérica de React/Vue/Angular/Lara
 - Tests/contratos ejecutables del repo no se rompen para imponer estilo.
 - Tests siguen al requisito, no al borrado (`17`). Si el requisito desaparece: borrar el código y sus tests exclusivos; no agregar un test de "ya no existe". Si sigue: conservar o adaptar sus tests. Si la eliminación crea una garantía vigente: probar esa garantía.
 - String enum (TS) para conjuntos cerrados; PHP: backed Enum por default, o constantes `public const` en State Machine string-based (`asantibanez`) como fuente única — ver `07`. `Record<Enum, V>` en mappings FE exhaustivos. Membresía 2+: `.includes()` / `in_array(..., true)` / `in (A, B)` en Python, no `=== || ===` — ver `07`.
-- Ownership **antes** de declarar `type`/union/enum/mapping: `APP_OWNED` \| `LIBRARY_OWNED` \| `EXTERNAL_GENERATED` \| `UNION LEGÍTIMA` — ver `07`.
+- Ownership **antes** de declarar `type`/union/enum/mapping: `APP_OWNED` \| `LIBRARY_OWNED` \| `EXTERNAL_GENERATED` \| `UNION LEGÍTIMA` — ver `07`. Antes de crear un enum, buscar en `enums/` de la feature uno con los mismos valores; si existe, se usa ese. Lo verifica `gian-ts-style` `assets/self-check.mjs` (`enum-ownership`, `library-shadow-type`, `named-interface`, `interface-object-shape`, `display-meta-location`, `parallel-meta`).
 - `APP_OWNED` cerrado y nombrado (incl. modos/estados de UI de feature) → string enum por default. `LIBRARY_OWNED` → tipo oficial de la lib; no shadow types.
 - Memoización React según `23` (A–E): no ceremonial (A); STYLE_GIAN multi-rama (C) y MRT/`11` (E) sí.
 - Styling (adaptador React, `04`/`23`): Tailwind-first cuando existe una utility o un token bridge real equivalente; `cn()` cuando las clases se componen o varían por estado/props runtime; sin constantes locales `*_SX` / `get*Sx` ni strings de clases (`const cardClass = '…'`): las clases van inline y, si el bloque se repite, se extrae un componente; template literal, concatenación, ternario o join en `className` → el `cn()` del repo, sin crear otro ni importar `clsx`/`twMerge` directo; `sx={(theme) => ({ … theme.palette })}` como escape hatch sin equivalencia limpia; `useTheme()` solo si el theme sale de `sx`. En otro stack, las clases se componen con el mecanismo del framework. No se exige `cn()`, MUI ni `sx`.
@@ -126,7 +126,7 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 | UI visible: proponer, planear, crear, modificar o revisar | `gian-development-workflow/references/visual-quality.md`. Esta skill sigue mandando en contrato, stack y función. No en composición, densidad, jerarquía ni en el defecto visual dentro del alcance. |
 | Display / labels / estados UI | `07-types-enums-statuses`, `08-display-conventions`, `15-i18n-copy` |
 | Test mode / Testing mode / copy o chip condicionado por entorno | `01-principles`, `08-display-conventions`, `15-i18n-copy`, `17-testing-validation` |
-| Ownership / enum vs union / shadow MUI / membresía includes | `07-types-enums-statuses` |
+| Declarar un `type`, unión de strings, enum, interface, `Record` o constante de opciones / labels / colores, aunque la tarea no hable de tipos; ownership; shadow MUI; membresía includes | `07-types-enums-statuses`, `08-display-conventions` (siempre) |
 | cn / dayjs / utils vs helpers / memoización | `23-ts-style-helpers` |
 | Memoización React (`useMemo` / `useCallback` / `memo`) | `23-ts-style-helpers` (A–E) |
 | Formato visual TS/TSX (arrows, braces, JSX) | **no esta skill** — cargar `gian-ts-style` |

@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.6.0 — 2026-10-12
+
+- `self-check.mjs` marca FAIL (antes GAP o nada): `enum-ownership` (unión de strings propia; detecta cuando repite un enum que ya existe, resolviendo los imports con el `tsconfig` del repo), `library-shadow-type` (unión de colores, variants, sizes o severities de MUI), `named-interface` (objeto inline con 2+ campos), `interface-object-shape`, `display-meta-location` (Record o copy de opciones en un `.tsx`) y `parallel-meta` (dos Records por la misma key).
+- `types-imports.md`: §Named interface y §Library and enum types. `SKILL.md`: línea de tipos en Hard Rules.
+
 ## 2.5.0 — 2026-10-12
 
 - `assets/self-check.mjs` (nuevo): verificador con el parser de TypeScript del repo. Revisa las funciones tocadas en `git diff HEAD` (o `--all`): `slot-order`, `vertical-spacing`, `read-group`, `guard-glue`, `single-statement-if`, `arrow-implicit-return`, `classname-cn`, `boolean-prop-shorthand`, `fragment-shorthand`, `self-closing-jsx`, `handler-naming`, `data-hook-location`, `no-local-style-constants`, `comments-noise`; GAP para `enum-ownership` y bloques repetidos. WRITE y FIX no cierran sin su salida. Antes el cierre pedía un `self-check.sh` que no existía.

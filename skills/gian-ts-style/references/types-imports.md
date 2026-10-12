@@ -46,3 +46,35 @@ No contradice `gian-how-i-code` `07`:
 - props/object shapes propios → `interface` default
 
 AST-SENSITIVE. WRITE emite `interface`. AUDIT FAIL `type` de object shape propio en hunk tocado. No migrar unions ni `z.infer`.
+
+## Named interface (HARD)
+
+`named-interface`. Un tipo de objeto inline con 2+ campos se nombra con `interface`, también dentro de un genérico o de otra interface.
+
+```ts
+interface ChartTick {
+  top: string;
+  label: string;
+}
+
+interface IncomeChartProps {
+  ticks: ChartTick[];
+}
+```
+
+No:
+
+```ts
+ticks: Array<{ top: string; label: string }>;
+const ARREARS_EMPTY: Record<ArrearsTone, { heading: string; detail: string }> = { … };
+```
+
+Un campo suelto (`isValidElement<{ className?: string }>`) puede quedarse inline.
+
+## Library and enum types (HARD)
+
+`library-shadow-type`. Una unión de colores, variants, sizes o severities de MUI se escribe con el tipo del componente que la recibe: `NonNullable<ButtonProps['color']>`, `ChipProps['color']`, `AlertProps['severity']`.
+
+`enum-ownership`. Una unión de strings propia de la app es un string enum de la feature. Si la feature ya tiene un enum con esos valores, se usa ese (`gian-how-i-code` `07` §Checklist al declarar).
+
+WRITE los aplica en el alcance. `assets/self-check.mjs` los marca FAIL; generado, externo o discriminated → GAP en el cierre.

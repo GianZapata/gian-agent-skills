@@ -98,6 +98,85 @@ const isClassList = (value) => {
   return tokens.length > 0 && tokens.every((token) => /^[!a-z0-9[:\-][\w:/[\]\-.#%(),!]*$/i.test(token)) && tokens.some((token) => UTILITY.test(token)) && !/^[A-ZÁÉÍÓÚÑ]/.test(value.trim());
 };
 
+const LIBRARY_SETS = [
+  { what: 'el color', use: "ChipProps['color'] / ButtonProps['color']", values: new Set(['default', 'primary', 'secondary', 'error', 'warning', 'info', 'success', 'inherit']) },
+  { what: 'el variant', use: "ButtonProps['variant']", values: new Set(['text', 'outlined', 'contained']) },
+  { what: 'el variant', use: "ChipProps['variant'] / TextFieldProps['variant']", values: new Set(['filled', 'outlined', 'standard']) },
+  { what: 'el size', use: "<Componente>Props['size']", values: new Set(['small', 'medium', 'large']) },
+  { what: 'la severidad', use: "AlertProps['severity']", values: new Set(['error', 'warning', 'info', 'success']) },
+];
+
+const tsconfigCache = new Map();
+
+const compilerOptions = () => {
+  const cwd = process.cwd();
+
+  if (tsconfigCache.has(cwd)) return tsconfigCache.get(cwd);
+
+  let options = {};
+  const configPath = ts.findConfigFile(cwd, ts.sys.fileExists, 'tsconfig.json');
+
+  if (configPath) {
+    const read = ts.readConfigFile(configPath, ts.sys.readFile);
+    const parsed = ts.parseJsonConfigFileContent(read.config ?? {}, ts.sys, path.dirname(configPath));
+    const appConfig = ['tsconfig.app.json'].map((name) => path.join(path.dirname(configPath), name)).find((candidate) => existsSync(candidate));
+
+    options = parsed.options;
+
+    if (!options.paths && appConfig) {
+      const app = ts.readConfigFile(appConfig, ts.sys.readFile);
+
+      options = ts.parseJsonConfigFileContent(app.config ?? {}, ts.sys, path.dirname(appConfig)).options;
+    }
+  }
+
+  tsconfigCache.set(cwd, options);
+
+  return options;
+};
+
+const enumsIn = (source, into) => {
+  const visit = (node) => {
+    if (ts.isEnumDeclaration(node)) {
+      const values = new Set();
+
+      for (const member of node.members) {
+        if (member.initializer && ts.isStringLiteral(member.initializer)) values.add(member.initializer.text);
+      }
+
+      if (values.size > 0) into.set(node.name.text, values);
+    }
+
+    ts.forEachChild(node, visit);
+  };
+
+  visit(source);
+};
+
+const collectEnums = (sf, file) => {
+  const found = new Map();
+
+  enumsIn(sf, found);
+
+  const options = compilerOptions();
+
+  for (const statement of sf.statements) {
+    if (!ts.isImportDeclaration(statement) || !/^[@.~/]|^src\//.test(statement.moduleSpecifier.text)) continue;
+
+    const resolved = ts.resolveModuleName(statement.moduleSpecifier.text, path.resolve(file), options, ts.sys).resolvedModule;
+
+    if (!resolved || resolved.isExternalLibraryImport || !existsSync(resolved.resolvedFileName)) continue;
+
+    const text = readFileSync(resolved.resolvedFileName, 'utf8');
+
+    if (!/\benum\b/.test(text)) continue;
+
+    enumsIn(ts.createSourceFile(resolved.resolvedFileName, text, ts.ScriptTarget.Latest, true), found);
+  }
+
+  return found;
+};
+
 const SLOT_NAMES = ['macros', 'dependencias', 'estado', 'hooks que leen estado', 'derivadas', 'funciones', 'efectos', 'return'];
 
 const check = (file) => {
@@ -376,6 +455,42 @@ const check = (file) => {
   const isHookName = (name) => /^use[A-Z]/.test(name);
 
   const isFeatureDataFile = /\.(queries|mutations)\.ts$/.test(file) || /[\\/]hooks[\\/]use[A-Z]\w*\.ts$/.test(file);
+  const isUiFile = /\.(tsx|vue)$/.test(file);
+  const isGenerated = /generated|\.gen\.|openapi|schema\.d/i.test(file);
+  const importsMui = sf.statements.some((statement) => ts.isImportDeclaration(statement) && /^@mui\//.test(statement.moduleSpecifier.text));
+  const recordKeys = new Map();
+
+  const stringUnionValues = (node) => {
+    const members = node.types.filter((type) => !(ts.isLiteralTypeNode(type) && type.literal.kind === ts.SyntaxKind.NullKeyword) && type.kind !== ts.SyntaxKind.UndefinedKeyword);
+
+    if (members.length < 2 || !members.every((type) => ts.isLiteralTypeNode(type) && ts.isStringLiteral(type.literal))) return null;
+
+    return members.map((type) => type.literal.text);
+  };
+
+  const libraryShadow = (values) => {
+    for (const set of LIBRARY_SETS) {
+      if (values.every((value) => set.values.has(value))) return set;
+    }
+
+    return null;
+  };
+
+  let enumCache = null;
+
+  const enumMatching = (values) => {
+    if (enumCache === null) enumCache = collectEnums(sf, file);
+
+    const wanted = new Set(values.map((value) => value.toLowerCase()));
+
+    for (const [name, members] of enumCache) {
+      const lower = new Set([...members].map((value) => value.toLowerCase()));
+
+      if ([...wanted].every((value) => lower.has(value))) return name;
+    }
+
+    return null;
+  };
 
   const checkNode = (node) => {
     if (ts.isCallExpression(node) && !isFeatureDataFile && /^(useMutation|useQuery|useSuspenseQuery|useInfiniteQuery)$/.test(calleeName(node) ?? '')) {
@@ -438,8 +553,64 @@ const check = (file) => {
       report('FAIL', file, at(node), 'handler-naming', `${node.name.text}: handle* prohibido en handlers (gian-how-i-code 04); usar on*/verbo`);
     }
 
-    if (ts.isTypeAliasDeclaration(node) && ts.isUnionTypeNode(node.type) && node.type.types.length > 1 && node.type.types.every((type) => ts.isLiteralTypeNode(type) && ts.isStringLiteral(type.literal))) {
-      report('GAP', file, at(node), 'enum-ownership', `type ${node.name.text} es unión de strings: si es APP_OWNED va string enum (gian-how-i-code 07)`);
+    if (ts.isUnionTypeNode(node) && !ts.isUnionTypeNode(node.parent)) {
+      const values = stringUnionValues(node);
+
+      if (values) {
+        const library = libraryShadow(values);
+        const alias = ts.isTypeAliasDeclaration(node.parent) ? node.parent.name.text : null;
+        const label = alias ? `type ${alias}` : `'${values.join("' | '")}'`;
+
+        if (library && importsMui) {
+          report('FAIL', file, at(node), 'library-shadow-type', `${label} recrea ${library.what} de MUI: usar ${library.use} del componente que lo recibe, sin unión propia (gian-how-i-code 07 §LIBRARY_OWNED)`);
+        } else if (!library && !isGenerated) {
+          const duplicate = enumMatching(values);
+
+          if (duplicate) {
+            report('FAIL', file, at(node), 'enum-ownership', `${label} duplica el enum ${duplicate}: usar ${duplicate} (gian-how-i-code 07 §Regla de no duplicación)`);
+          } else {
+            report('FAIL', file, at(node), 'enum-ownership', `${label} es un conjunto cerrado de la app: string enum en enums/ de la feature (gian-how-i-code 07 §APP_OWNED)`);
+          }
+        }
+      }
+    }
+
+    if (ts.isTypeLiteralNode(node) && node.members.length >= 2) {
+      if (ts.isTypeAliasDeclaration(node.parent)) {
+        report('FAIL', file, at(node), 'interface-object-shape', `type ${node.parent.name.text} = { … } → interface ${node.parent.name.text}`);
+      } else {
+        report('FAIL', file, at(node), 'named-interface', 'tipo de objeto inline: crear una interface con nombre (p. ej. <Concepto>Meta) y usarla aquí');
+      }
+    }
+
+    if (ts.isVariableStatement(node) && ts.isSourceFile(node.parent) && isUiFile) {
+      const declaration = node.declarationList.declarations[0];
+      const type = declaration?.type;
+      const isRecord = type && ts.isTypeReferenceNode(type) && type.typeName.getText(sf) === 'Record';
+      const init = declaration?.initializer;
+      const copy = [];
+      const collectCopy = (child) => {
+        if ((ts.isStringLiteral(child) || ts.isNoSubstitutionTemplateLiteral(child)) && /\p{L}{2,}\s+\p{L}/u.test(child.text) && !isClassList(child.text)) copy.push(child.text);
+
+        ts.forEachChild(child, collectCopy);
+      };
+
+      if (init && (ts.isArrayLiteralExpression(init) || ts.isObjectLiteralExpression(init))) ts.forEachChild(init, collectCopy);
+
+      if (isRecord || copy.length > 0) {
+        report('FAIL', file, at(node), 'display-meta-location', `${declaration.name.getText(sf)}: metadata o copy de un conjunto cerrado en la UI → una sola static readonly Record<Enum, Meta> en <entity>.helper.ts, con interface Meta (gian-how-i-code 07 §Mappings, 08)`);
+      }
+
+      if (isRecord && type.typeArguments?.length) {
+        const key = type.typeArguments[0].getText(sf);
+        const previous = recordKeys.get(key);
+
+        if (previous) {
+          report('FAIL', file, at(node), 'parallel-meta', `segundo Record por ${key} (el primero en la línea ${previous}): unir en un solo Meta (gian-how-i-code 07)`);
+        } else {
+          recordKeys.set(key, at(node));
+        }
+      }
     }
 
     if (ts.isBlock(node) || ts.isSourceFile(node) || ts.isModuleBlock(node) || ts.isCaseClause(node) || ts.isDefaultClause(node)) {

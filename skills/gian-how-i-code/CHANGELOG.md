@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.29 — 2026-10-12
+
+- `07` §Checklist al declarar (HARD): antes de un `type`, unión, enum, `Record` o constante de opciones, buscar el enum que ya existe en la feature; conjunto propio → string enum; valores de MUI → `XProps['prop']`; varios datos por miembro → una `static readonly Record<Enum, Meta>` en el helper con su interface; objeto inline 2+ campos → interface. Lo verifica `gian-ts-style` `self-check.mjs`.
+- Routing: `07` y `08` se cargan siempre que el edit declara un tipo, unión, enum, interface, `Record` o constante de opciones, aunque la tarea no hable de tipos.
+
 ## 1.4.28 — 2026-10-12
 
 - `04` §Orden: los slots nombran `useContext`, `useTranslation` y `useQueryClient` (dependencias), `useReducer` y `useForm` (estado), y `useWatch`, `useFieldArray` y `useFormState` (hooks que leen estado). La derivada que un hook recibe como argumento va justo arriba de él y es la única que sube. La línea en blanco entre slots es HARD y la verifica `gian-ts-style` `assets/self-check.mjs`.
