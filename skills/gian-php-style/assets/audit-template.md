@@ -27,7 +27,7 @@ Rules:
 
 Deprecated alias: `single-return` in old reports means `single-statement-if`. Do not emit `single-return` in new AUDIT.
 
-Rule ids: `indent-spaces`, `construct-spacing`, `negation-spacing`, `single-statement-if`, `boolean-operator-position`, `brace-same-line`, `multiline-delimiter-indent`, `array-arrow-alignment`, `named-argument-colon`, `chain-arrow-position`, `concat-spacing`, `ternary-break`, `null-coalesce-break`, `vertical-spacing`, `class-method-separation`, `comments-phpdoc`, `elseif-keyword`, `control-continuation`, `switch-case-spacing`, `arrow-fn-spacing`, `arrow-fn-break`, `closure-use-geometry`, `multiline-params`, `single-param-signature`, `promoted-constructor-multiline`, `empty-promoted-constructor`, `multiline-trailing-comma`, `modifier-keyword-order`, `attribute-empty-parentheses`, `single-class-element-per-statement`, `match-arrow-alignment`, `compound-type-operator-position`, `attribute-one-per-line`, `parameter-attribute-inline`, `property-hook-geometry`, `empty-class-compact`, `import-groups`, `unused-imports`, `grouped-imports`, `laravel-validation-rule-array`, `heredoc-nowdoc-preserve`, `strict-types-preserve`, `alternative-syntax-preserve`.
+Rule ids: `indent-spaces`, `construct-spacing`, `negation-spacing`, `single-statement-if`, `boolean-operator-position`, `brace-same-line`, `multiline-delimiter-indent`, `array-arrow-alignment`, `named-argument-colon`, `chain-arrow-position`, `concat-spacing`, `ternary-break`, `null-coalesce-break`, `vertical-spacing`, `read-group`, `class-method-separation`, `comments-phpdoc`, `elseif-keyword`, `control-continuation`, `switch-case-spacing`, `arrow-fn-spacing`, `arrow-fn-break`, `closure-use-geometry`, `multiline-params`, `single-param-signature`, `promoted-constructor-multiline`, `empty-promoted-constructor`, `multiline-trailing-comma`, `modifier-keyword-order`, `attribute-empty-parentheses`, `single-class-element-per-statement`, `match-arrow-alignment`, `compound-type-operator-position`, `attribute-one-per-line`, `parameter-attribute-inline`, `property-hook-geometry`, `empty-class-compact`, `import-groups`, `unused-imports`, `grouped-imports`, `laravel-validation-rule-array`, `heredoc-nowdoc-preserve`, `strict-types-preserve`, `alternative-syntax-preserve`.
 
 Do not FAIL: Blade/HTML/`wire:*`/`{{ }}`/`@if`; adding missing `declare(strict_types=1)`; compact `if/else` chains (GAP); dangling-else (do not recommend unsafe compact); grouped-import conversion when ungrouped (GAP); pipe-string validation lists; single-line trailing comma (out of scope for `multiline-trailing-comma`).
 
@@ -44,6 +44,8 @@ Do not FAIL: Blade/HTML/`wire:*`/`{{ }}`/`@if`; adding missing `declare(strict_t
 `multiline-trailing-comma`: multiline lists (arrays, arguments, parameters, match, destructuring) must have trailing comma. Does not govern single-line lists.
 
 `class-method-separation`: exactly one blank line between consecutive class methods. PHPDoc/attributes belong to the next method. Not between individual properties.
+
+`read-group`: each read (query, repository, service, HTTP client, cache) opens its own group; a one-line complement (its ids, history, `keyBy`) stays right below; one blank line closes the group. FAIL two reads glued when the second is not a complement of the first. A multiline read closes with a blank line before its complement; only the guard that validates it stays glued. Doubtful read/complement: GAP.
 
 `laravel-validation-rule-array`: 2+ rules inline → FAIL. One rule inline OK. Do not FAIL Blade markup.
 

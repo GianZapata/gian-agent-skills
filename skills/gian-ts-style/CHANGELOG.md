@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.0 — 2026-10-12
+
+- `read-group` (HARD, `vertical-spacing.md`, `SKILL.md`, audit): cada lectura (query en un componente, hook o composable; `await` a service, repositorio o `fetch` en una función plana) abre su grupo y una línea en blanco lo cierra. Su complemento de una línea (ids, `Map` por id) va pegado debajo. Dos lecturas solo van pegadas si la segunda es complemento de la primera. Las mutations de una línea siguen juntas entre ellas. Una lectura multilínea cierra con línea en blanco antes de su complemento; solo el guard que la valida queda pegado.
+
 ## 2.3.0 — 2026-10-09
 
 - `react-component-fc-props`: la interface se llama `<Componente>Props` (`HomePage` → `HomePageProps`). `Props` a secas, una abreviatura o el nombre de otro componente es error; FIX la renombra en el componente tocado. Cada componente del archivo tiene la suya. El ejemplo de drawer usa `isOpen` (`gian-how-i-code` `09`).

@@ -26,6 +26,7 @@ gian-php-style = PHP baseline + decisiones Gian + deliberate overrides + autofix
 | `attribute-empty-parentheses` | HARD | AUTOFIXABLE | `attribute_empty_parentheses` | |
 | `single-class-element-per-statement` | HARD | AUTOFIXABLE | `single_class_element_per_statement` | |
 | `class-method-separation` | HARD | AUTOFIXABLE | `class_attributes_separation` | |
+| `read-group` | HARD | AGENT-ENFORCED | — | blank line closes each read with its complement |
 | `single-statement-if` | HARD | AGENT-ENFORCED | — | DELIBERATE-OVERRIDE vs PER-CS |
 | `boolean-operator-position` | HARD | AGENT-ENFORCED | — | DELIBERATE-OVERRIDE vs PER-CS |
 | `compound-type-operator-position` | HARD | AGENT-ENFORCED | — | DELIBERATE-OVERRIDE vs PER-CS |

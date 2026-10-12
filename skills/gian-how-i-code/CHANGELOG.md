@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.27 — 2026-10-12
+
+- `26` §Cargar: las lecturas que no se necesitan entre sí ya no son "el mismo paso" pegado. Cada lectura es su grupo visual; la línea en blanco la pone `read-group` de `gian-php-style` 1.3.0 / `gian-ts-style` 2.4.0. Los ejemplos PHP y React de `26` separan cada lectura.
+
 ## 1.4.26 — 2026-10-09
 
 - `no-local-style-constants` (`04`, `23`, `SKILL.md`): también cubre los strings de clases (`const cardClass = '…'`). Las clases van inline con `cn()`; si el bloque se repite, se extrae un componente. Template literal, concatenación, ternario o join en `className` → el `cn()` del repo. La mecánica por hunk vive en `gian-ts-style` 2.2.0 (`classname-cn`).

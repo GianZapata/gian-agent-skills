@@ -4,7 +4,7 @@ description: "Mandatory visual PHP/Laravel style. Load whenever creating, editin
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.2.3"
+  version: "1.3.0"
 when-to-use: "Any PHP create/edit/refactor/review/audit/fix; Laravel Boost pint; format PHP; php-style-audit; php-style-fix. Not for CSS, TypeScript, SQL-only, or conversation without PHP."
 ---
 
@@ -51,6 +51,7 @@ Overrides y enforcement (`AUTOFIXABLE` / `AGENT-ENFORCED` / `DELIBERATE-OVERRIDE
 - Una property/const por sentencia. `references/classes-functions.md`
 - Entre métodos de clase: exactamente una línea vacía (metadata del siguiente método incluido). `references/vertical-spacing.md`
 - Al cerrar un paso multilínea, una línea en blanco antes del paso siguiente; las sentencias de una línea del mismo paso quedan juntas; no se parte un array ni los argumentos de una llamada. `references/vertical-spacing.md`
+- Cada lectura (query, repositorio, service, API) abre su grupo; su complemento de una línea (ids, historial, `keyBy`) va pegado debajo; una línea en blanco lo cierra. Dos lecturas solo van pegadas si la segunda es complemento de la primera (`read-group`). `references/vertical-spacing.md`
 - Arrays multilínea: alinear `=>` entre hermanos del mismo nivel. Match: región propia. `references/delimiters-arrays.md`
 - Validation Laravel 2+ reglas → una por línea (`laravel-validation-rule-array`). HARD. `references/delimiters-arrays.md`
 - Comentarios / PHPDoc: no emitir; strip PHPDoc y comentarios fuera de cuerpo; intra-cuerpo útil se conserva. `references/principles.md`

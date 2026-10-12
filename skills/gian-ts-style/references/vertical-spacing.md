@@ -6,7 +6,7 @@ WRITE aplica la línea en blanco en el hunk. AUDIT marca FAIL solo si es objetiv
 
 ## Juntas
 
-Declaraciones cortas del mismo tipo van seguidas, sin línea en blanco.
+Declaraciones cortas del mismo tipo van seguidas, sin línea en blanco, salvo dos lecturas (`read-group`, abajo).
 
 ```ts
 const draft = ref('');
@@ -36,3 +36,54 @@ watch(query, (value) => {
 ```
 
 Nunca dos líneas en blanco seguidas. Sin comentarios de sección (`// State`, `// Effects`): los prohíbe `comments.md`. El espacio marca la sección.
+
+## Una lectura, un grupo (HARD)
+
+`read-group`. Cada lectura abre su propio grupo. Su complemento va pegado debajo. Una línea en blanco cierra el grupo. Dos lecturas solo van pegadas si la segunda es complemento de la primera, aunque cada una quepa en una línea. Gana a "declaraciones de una línea del mismo slot juntas".
+
+Lectura: lo que trae datos de una fuente.
+
+- En un componente, hook o composable: cada query (`useQuery`, `useSuspenseQuery`, `useXQuery`, el composable que trae datos).
+- En una función plana: cada `await` a un service, repositorio, `fetch` o cliente HTTP.
+
+Una mutation no es lectura: las mutations de una línea van juntas entre ellas, en su grupo.
+
+Complemento: la sentencia de una línea justo debajo que solo lee esa lectura y existe para completarla: sus ids, su `Map` por id, su detalle cuyo nombre deriva del de la lectura. Otra entidad es otra lectura y abre su grupo. Una línea que combina dos lecturas es una derivada y abre su grupo. En un componente, la derivada barata (`?? []`) vive en el slot de derivadas de `gian-how-i-code` `04`, no como complemento.
+
+Si la lectura es multilínea, la línea en blanco va al cerrarla. Su complemento queda en su propio grupo. Única excepción: el guard que la valida se queda pegado (`gian-how-i-code` `26`).
+
+```tsx
+const invoice = useInvoiceQuery(id);
+
+const payments = usePaymentsQuery(id);
+
+const pay = usePayInvoice(id);
+const cancel = useCancelInvoice(id);
+```
+
+```ts
+export const loadDashboard = async (from: string, to: string) => {
+  const range = { from, to };
+
+  const orders = await orderService.list(range);
+  const orderIds = orders.map((order) => order.id);
+
+  const invoices = await invoiceService.list({ orderIds });
+
+  const customers = await customerService.list(range);
+  const customerById = new Map(customers.map((customer) => [customer.id, customer]));
+
+  return buildDashboard(orders, invoices, customerById);
+};
+```
+
+No:
+
+```ts
+const orders = await orderService.list(range);
+const orderIds = orders.map((order) => order.id);
+const invoices = await invoiceService.list({ orderIds });
+const customers = await customerService.list(range);
+```
+
+WRITE lo aplica en la función tocada. AUDIT: FAIL si dos lecturas van pegadas y la segunda no es complemento de la primera. Si no es claro que una línea sea lectura o complemento: GAP, sin FAIL.

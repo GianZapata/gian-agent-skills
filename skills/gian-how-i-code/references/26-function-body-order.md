@@ -18,7 +18,7 @@ El mismo orden por rol vale para un método PHP y para una función plana `.ts` 
 
 1. Normalizar la entrada: trim, cast, default. Las de una línea del mismo paso van juntas.
 2. Guards: `return` / `throw` tempranos, y `continue` dentro de un bucle. El orden es invalidez, ausencia, conflicto, precondición. El camino feliz queda al nivel del método.
-3. Cargar. Las lecturas consecutivas que no se necesitan entre sí son el mismo paso. La que usa el resultado de la anterior va debajo. Una query no sube por encima del id que usa.
+3. Cargar. Las lecturas que no se necesitan entre sí no tienen orden forzado. Cada lectura es su propio grupo visual (`read-group` en `gian-php-style` / `gian-ts-style`). La que usa el resultado de la anterior va debajo. Una query no sube por encima del id que usa.
 4. Decidir: `match`, `if` / `else` que elige un valor. Un anidado profundo se queda, o se extrae a un método privado. No se reordenan sus ramas.
 5. Derivar: mapas, reducciones y transforms de lo cargado.
 6. Efecto: writes, eventos, jobs. Un write no queda arriba del guard que lo habría saltado.
@@ -26,12 +26,13 @@ El mismo orden por rol vale para un método PHP y para una función plana `.ts` 
 
 ```php
 $invoice = $this->invoices->find($id);
+
 $payments = $this->payments->forInvoice($id);
 
 $customer = $this->customers->find($invoice->customerId);
 ```
 
-`$invoice` y `$payments` solo usan `$id`, así que van juntas. `$customer` usa `$invoice`, así que baja.
+`$invoice` y `$payments` solo usan `$id`: ninguna baja por la otra, y cada una va en su grupo. `$customer` usa `$invoice`, así que va debajo, en su propio grupo.
 
 La transacción envuelve el efecto. Los guards y la lectura que decide entrar quedan afuera. Si el lock exige que esa lectura viva adentro, la sección crítica se queda entera adentro.
 
@@ -60,7 +61,7 @@ Los slots son los de `04`. Aquí solo el orden dentro de cada uno.
 
 - Dependencias que no leen estado local: router y route, luego stores, luego clientes.
 - Estado: primero ids y lo que sale de la ruta, luego el input del usuario, luego el chrome (`open`, tab). Un par `search` / `setSearch` es una declaración. El orden en que el resto del cuerpo los lee gana al alfabético.
-- Hooks que leen ese estado: queries que el render necesita, luego mutations, luego el resto. El que consume a otro va debajo. Ninguno debajo de un `return` ni de un efecto.
+- Hooks que leen ese estado: queries que el render necesita, luego mutations, luego el resto. Cada query es su grupo (`read-group` en `gian-ts-style`). El que consume a otro va debajo. Ninguno debajo de un `return` ni de un efecto.
 - Derivadas: cada `const` debajo de lo que lee. Las baratas (`?? []`, un boolean) siguen juntas y en una línea. Un `useMemo` de varias ramas (`23`, caso C) es un solo bloque.
 - Funciones: helpers que los handlers llaman, luego handlers en el orden en que el JSX los lee. El handler que solo usa un efecto queda inmediatamente arriba de ese efecto, en el slot de funciones. Extraer un handler ceremonial, o envolver una referencia directa, lo decide `gian-ts-style`.
 - Efectos: al final del cuerpo, antes de cualquier `return`. Varios efectos siguen el orden en que se declaró el estado que leen. Primero los que sincronizan datos, después DOM o título, después el ciclo de vida (`onMounted`).
@@ -74,6 +75,7 @@ export const InvoicePage: FC = () => {
   const [note, setNote] = useState('');
 
   const invoice = useInvoiceQuery(id);
+
   const pay = usePayInvoiceMutation();
 
   const rows = invoice.data?.lines ?? [];

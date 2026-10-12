@@ -4,7 +4,7 @@ description: "Mandatory visual TS/TSX style for any TS stack. Load when creating
 license: Apache-2.0
 metadata:
   author: gian
-  version: "2.3.0"
+  version: "2.4.0"
 when-to-use: "Any .ts/.tsx create/edit/refactor/review/audit/fix in any TS stack (React, Vue sibling .ts or inline script setup lang=ts, Angular, Node); ts-style-audit; ts-style-fix; format TypeScript. Not for .js/.jsx/.mjs/.cjs, Vue template/style, Angular .html, PHP, CSS, SQL-only, or architecture-only consults."
 ---
 
@@ -52,7 +52,7 @@ No vender preferencias de Gian como best practice universal. `references/princip
 - Solo React: `className` no estático (template literal, `+`, ternario, join, prop `className`) → `cn()` del repo en el hunk. No crear otro `cn` ni importar `clsx`/`twMerge` directo. `rg` de cierre sobre los `.tsx` tocados. `references/react-components-jsx.md`
 - Single-statement-if standalone (return/throw/call/assignment/continue/break) sin `{}`; líneas ≠ statements. `references/conditions-guards.md`
 - Solo React: handler con firma 1:1 → referencia directa. `references/callbacks-handlers.md`
-- Secciones de un composable, hook o componente: una línea en blanco entre grupos; declaraciones cortas del mismo tipo juntas. Sin comentarios de sección. `references/vertical-spacing.md`
+- Secciones de un composable, hook o componente: una línea en blanco entre grupos; declaraciones cortas del mismo tipo juntas. Cada lectura (query, `await` a service o `fetch`) abre su grupo con su complemento pegado; dos lecturas solo van pegadas si la segunda es complemento de la primera (`read-group`). Sin comentarios de sección. `references/vertical-spacing.md`
 - Type-only import → `import type`. `references/types-imports.md`
 - Comentarios: WRITE no emite narración/JSDoc. Strip ruido obvio. Conservar directives. `references/comments.md`
 
