@@ -16,8 +16,8 @@ No usar `useMemo`, `useCallback` o `memo` por costumbre de performance.
 | Caso | Qué hacer |
 |---|---|
 | A. expresión derivada sencilla | cálculo directo; no `useMemo` |
-| B. 2 ramas | ternario, o `&&` boolean-safe en JSX (`gian-ts-style`) |
-| C. valor derivado multi-rama (evitaría nested ternary) | `useMemo` + `if` + early return — STYLE_GIAN de claridad, **no** claim de performance (`derived-multi-branch`) |
+| B. 2 ramas con una condición de 1 o 2 partes | ternario, o `&&` boolean-safe en JSX (`gian-ts-style`) |
+| C. valor derivado con 3+ ramas, o ternario cuya condición junta 3+ partes con `&&` / `||` | `useMemo` + `if` + early return, obligatorio en componente y hook (Vue: `computed`) — claridad, **no** claim de performance (`derived-multi-branch`) |
 | D. JSX multi-rama en render | `if` / early return en el componente (`08`); no `useMemo` |
 | E. performance / identidad referencial | frontera ya memoizada (p. ej. `columns` MRT, `11`) o evidencia real |
 
@@ -39,7 +39,20 @@ const statusLabel = useMemo(() => {
 }, [hasError, isLoading, t]);
 ```
 
-No crear helpers de display (`08` es autoridad). **No** está prohibido `useMemo` en C o E.
+No crear helpers de display (`08` es autoridad). En C, `useMemo` es obligatorio aunque el valor tenga solo dos resultados. En E, solo con la evidencia de la tabla.
+
+```ts
+// C — sí: dos resultados, pero la condición junta 5 partes
+const orderMessage = useMemo(() => {
+  if (fromMessage !== null || toMessage !== null) return null;
+  if (localFrom === null || localTo === null) return null;
+  if (!localTo.startOf('day').isBefore(localFrom.startOf('day'))) return null;
+
+  return DashboardHelper.periodMessages.order;
+}, [fromMessage, toMessage, localFrom, localTo]);
+```
+
+Lo verifica `gian-ts-style` `assets/self-check.mjs` (`derived-multi-branch`, `no-nested-ternary`; `memo-ceremonial` como GAP).
 
 ## `cn()` y styling local
 

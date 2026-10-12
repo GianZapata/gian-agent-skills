@@ -4,7 +4,7 @@ description: "Mandatory visual TS/TSX style for any TS stack. Load when creating
 license: Apache-2.0
 metadata:
   author: gian
-  version: "2.6.0"
+  version: "2.7.0"
 when-to-use: "Any .ts/.tsx create/edit/refactor/review/audit/fix in any TS stack (React, Vue sibling .ts or inline script setup lang=ts, Angular, Node); ts-style-audit; ts-style-fix; format TypeScript. Not for .js/.jsx/.mjs/.cjs, Vue template/style, Angular .html, PHP, CSS, SQL-only, or architecture-only consults."
 ---
 
@@ -54,6 +54,7 @@ No vender preferencias de Gian como best practice universal. `references/princip
 - Solo React: handler con firma 1:1 → referencia directa. `references/callbacks-handlers.md`
 - Secciones de un composable, hook o componente: orden y slots de `gian-how-i-code` `04` (dependencias, estado, hooks que leen estado, derivadas, funciones, efectos, `return`). Una línea en blanco entre slots distintos, aunque las líneas sean cortas; las de una línea del mismo slot van juntas. Una sentencia multilínea cierra con línea en blanco. Función, efecto o `useMemo` con cuerpo: línea en blanco antes y después. Cada lectura (query, `await` que trae datos) abre su grupo con su complemento pegado (`read-group`). Dentro de un bloque: pasos de `26`, y el guard pegado a su lectura (`guard-glue`). Sin comentarios de sección. `references/vertical-spacing.md`
 - Self-check: WRITE y FIX no cierran sin correr `node <ruta de esta skill>/assets/self-check.mjs` desde la raíz del repo. Cada FAIL se corrige y se vuelve a correr hasta `Self-check TS: 0 pendientes`. El cierre pega esa línea tal cual sale. Si sale `GAP` (exit 2), se reporta así. Nunca se escribe `0 pendientes` sin la salida del script. `assets/self-check.mjs`
+- Derivado con 3+ ramas, o ternario cuya condición junta 3+ partes con `&&` / `||`: en componente o hook, `useMemo` + `if` + early return (`gian-how-i-code` `23` C); fuera, `if` / `return`. Prohibidos el ternario anidado y la IIFE. `references/expressions-ternaries.md`
 - Type-only import → `import type`. `references/types-imports.md`
 - Tipos (verifica `self-check.mjs`): unión de strings propia → enum de la feature, y si ya existe uno con esos valores, ese; color / variant / size de MUI → `NonNullable<XProps['prop']>`; objeto inline con 2+ campos → `interface` con nombre; metadata por miembro de enum → una `Record<Enum, Meta>` en el helper, no en el `.tsx`. `references/types-imports.md`, `gian-how-i-code` `07`
 - Comentarios: WRITE no emite narración/JSDoc. Strip ruido obvio. Conservar directives. `references/comments.md`

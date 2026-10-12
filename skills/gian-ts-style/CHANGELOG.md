@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.7.0 — 2026-10-12
+
+- `derived-multi-branch` (HARD): un ternario cuya condición junta 3+ partes con `&&` / `||` también entra, aunque tenga dos resultados. En componente o hook va `useMemo` + `if` + early return (`gian-how-i-code` `23` C), en Vue `computed`; fuera, `if` / `return`. Se quita la forma `getX()` que contradecía a `23`.
+- `self-check.mjs`: FAIL `derived-multi-branch` (incluida la IIFE) y `no-nested-ternary` (JSX → if / early return o subcomponente; valor → useMemo); GAP `memo-ceremonial` para un `useMemo` de una sola expresión sin ramas.
+
 ## 2.6.0 — 2026-10-12
 
 - `self-check.mjs` marca FAIL (antes GAP o nada): `enum-ownership` (unión de strings propia; detecta cuando repite un enum que ya existe, resolviendo los imports con el `tsconfig` del repo), `library-shadow-type` (unión de colores, variants, sizes o severities de MUI), `named-interface` (objeto inline con 2+ campos), `interface-object-shape`, `display-meta-location` (Record o copy de opciones en un `.tsx`) y `parallel-meta` (dos Records por la misma key).

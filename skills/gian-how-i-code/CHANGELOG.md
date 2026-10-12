@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.30 — 2026-10-12
+
+- `23` caso C: también un ternario cuya condición junta 3+ partes con `&&` / `||`, aunque tenga dos resultados. `useMemo` + `if` + early return es obligatorio en componente y hook (Vue: `computed`). Ejemplo `orderMessage`. B queda para dos resultados con una condición de 1 o 2 partes. Lo verifica `gian-ts-style` `self-check.mjs`.
+
 ## 1.4.29 — 2026-10-12
 
 - `07` §Checklist al declarar (HARD): antes de un `type`, unión, enum, `Record` o constante de opciones, buscar el enum que ya existe en la feature; conjunto propio → string enum; valores de MUI → `XProps['prop']`; varios datos por miembro → una `static readonly Record<Enum, Meta>` en el helper con su interface; objeto inline 2+ campos → interface. Lo verifica `gian-ts-style` `self-check.mjs`.

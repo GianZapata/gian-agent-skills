@@ -286,6 +286,26 @@ const check = (file) => {
     return declarations.length === 1 ? declarations[0].initializer ?? null : null;
   };
 
+  const strip = (node) => {
+    let current = node;
+
+    while (current && (ts.isParenthesizedExpression(current) || ts.isAsExpression(current) || ts.isNonNullExpression(current))) current = current.expression;
+
+    return current;
+  };
+
+  const operandCount = (expression) => {
+    const node = strip(expression);
+
+    if (ts.isBinaryExpression(node) && (node.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken || node.operatorToken.kind === ts.SyntaxKind.BarBarToken)) {
+      return operandCount(node.left) + operandCount(node.right);
+    }
+
+    return 1;
+  };
+
+  const isNestedTernary = (node) => ts.isConditionalExpression(strip(node.whenTrue)) || ts.isConditionalExpression(strip(node.whenFalse));
+
   const isFunctionLike = (node) => node && (ts.isArrowFunction(node) || ts.isFunctionExpression(node));
   const hasBlockBody = (node) => isFunctionLike(node) && ts.isBlock(node.body);
 
@@ -381,6 +401,31 @@ const check = (file) => {
 
     statements.forEach((statement, index) => {
       const slot = slotOf(statement);
+      const derived = initializer(statement);
+
+      if (derived) {
+        const value = strip(derived);
+        const name = ts.isVariableStatement(statement) ? statement.declarationList.declarations[0].name.getText(sf) : '';
+
+        if (ts.isConditionalExpression(value) && !isNestedTernary(value) && operandCount(value.condition) >= 3) {
+          report('FAIL', file, at(statement), 'derived-multi-branch', `${name}: ternario con una condición de ${operandCount(value.condition)} partes → useMemo (Vue: computed) con if y early return (gian-how-i-code 23 caso C)`);
+        }
+
+        if (ts.isCallExpression(value) && value.arguments.length === 0 && isFunctionLike(strip(value.expression))) {
+          report('FAIL', file, at(statement), 'derived-multi-branch', `${name}: IIFE prohibida → useMemo con if y early return (gian-how-i-code 23 caso C)`);
+        }
+
+        if (calleeName(value) === 'useMemo' && ts.isCallExpression(value)) {
+          const callback = value.arguments[0];
+          const body = callback && isFunctionLike(callback) ? callback.body : null;
+          const single = body && (!ts.isBlock(body) || (body.statements.length === 1 && ts.isReturnStatement(body.statements[0])));
+          const returned = body && (ts.isBlock(body) ? body.statements[0]?.expression : body);
+
+          if (single && returned && !ts.isConditionalExpression(strip(returned))) {
+            report('GAP', file, at(statement), 'memo-ceremonial', `${name}: useMemo de una sola expresión es caso A (sin useMemo) salvo evidencia del caso E citada en el cierre (gian-how-i-code 23)`);
+          }
+        }
+      }
 
       if (slot !== null) {
         const higher = seenSlots.filter((entry) => entry.slot > slot && slot !== 7);
@@ -513,6 +558,23 @@ const check = (file) => {
           report('FAIL', file, at(node), 'no-local-style-constants', 'constante de clases Tailwind: clases inline con cn(); si se repite, extraer componente (gian-how-i-code 04/23)');
         }
       }
+    }
+
+    if (ts.isConditionalExpression(node) && isNestedTernary(node) && !ts.isConditionalExpression(node.parent) && !(ts.isParenthesizedExpression(node.parent) && ts.isConditionalExpression(node.parent.parent))) {
+      let inJsx = false;
+
+      for (let parent = node.parent; parent && !ts.isSourceFile(parent); parent = parent.parent) {
+        if (ts.isJsxExpression(parent)) {
+          inJsx = true;
+          break;
+        }
+
+        if (isFunctionLike(parent) || ts.isFunctionDeclaration(parent)) break;
+      }
+
+      report('FAIL', file, at(node), 'no-nested-ternary', inJsx
+        ? 'ternario anidado en JSX → if / early return o un subcomponente por rama (gian-how-i-code 08)'
+        : 'ternario anidado → en componente o hook useMemo con if y early return (23 caso C); fuera, if / return');
     }
 
     if (ts.isIfStatement(node) && !node.elseStatement && !ts.isBlock(node.thenStatement) && isMultiline(node)) {
