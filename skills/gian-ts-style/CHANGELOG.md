@@ -4,6 +4,7 @@
 
 - `guard-glue`: el resumen distingue bloques planos del cuerpo superior de un componente, hook o composable; los early returns de ese cuerpo conservan la separación de slots de `04`.
 - `self-check.mjs`: el diff selecciona miembros de clase individualmente, incluidas propiedades sin función, sin revisar métodos hermanos. El cuerpo seleccionado se comprueba completo. `--all` y archivos nuevos conservan la revisión completa.
+- `vertical-spacing.md` §Aplicar: el self-check revisa el método tocado, no toda la clase, y el cuerpo completo del componente tocado, no el otro componente.
 
 ## 2.7.0 — 2026-10-12
 

@@ -196,3 +196,5 @@ const customers = await customerService.list(range);
 ## Aplicar
 
 WRITE y FIX aplican estas reglas en la función tocada y cierran con `assets/self-check.mjs` (`SKILL.md` § Self-check). AUDIT: FAIL si dos secciones van pegadas, si una sentencia multilínea no cierra con línea en blanco, si el guard se separa de su lectura, si dos lecturas van pegadas y la segunda no es complemento, o si hay dos líneas en blanco seguidas. La agrupación de derivadas por fuente la aplica el agente; si es dudosa, GAP.
+
+El self-check de `gian-ts-style` respeta esta separación: revisa el método tocado, no toda la clase; y el cuerpo completo del componente tocado, no el otro componente. Las declaraciones y propiedades tocadas conservan sus comprobaciones de estilo.

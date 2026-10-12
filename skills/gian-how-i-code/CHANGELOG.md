@@ -2,7 +2,7 @@
 
 ## 1.4.31 — 2026-10-12
 
-- `26` §Alcance: el self-check conserva la separación por método o componente tocado; no abre sus hermanos ni omite las declaraciones y propiedades tocadas.
+- `26` §Alcance: el self-check revisa esta misma unidad. El detalle queda en `gian-ts-style` `vertical-spacing.md` §Aplicar.
 
 ## 1.4.30 — 2026-10-12
 

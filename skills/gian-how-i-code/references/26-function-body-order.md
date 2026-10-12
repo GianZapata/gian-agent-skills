@@ -10,7 +10,7 @@ Entra la función que el edit toca: método PHP público o privado, componente, 
 
 El otro método o el otro componente del archivo queda como está. Imports, la interface de props y el orden de los miembros de la clase quedan fuera. Un closure, el callback de `map` / `filter` / `array_map`, y un arrow de una expresión son el algoritmo de esa línea: su cuerpo no se reordena.
 
-El self-check de `gian-ts-style` respeta esta separación: revisa el método tocado, no toda la clase; y el cuerpo completo del componente tocado, no el otro componente. Las declaraciones y propiedades tocadas conservan sus comprobaciones de estilo.
+El self-check de `gian-ts-style` revisa esta misma unidad.
 
 Si mover un bloque cambiaría el comportamiento, no se mueve y queda GAP. Cubre un efecto cuyo lugar importa, un lock, una transacción que no se puede partir, un temporal dead zone y las rules of hooks. No se mete un guard dentro de un efecto para forzar el orden.
 
