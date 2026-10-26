@@ -109,10 +109,11 @@ Un string estático sigue sin `cn()`: `className="flex gap-2"`.
 
 Antes de escribir, localizar el `cn` existente: `rg "export (const|function) cn\b"`. No crear otro. No importar `clsx` ni `twMerge` directo si `cn` existe.
 
-Antes de cerrar, sobre los `.tsx` tocados:
+Antes de cerrar, sobre los `.tsx` tocados corre `node <ruta de gian-ts-style>/assets/self-check.mjs`. El script cubre `classname-cn`, pero no detecta `clsx`/`classnames`/`twMerge` directo ni `const xClass = '…'`. Esos dos `rg` se siguen corriendo a mano:
 
 ```bash
 rg -n 'className=\{(`|[^}]*\+|[^}]*\?|[^}]*join\()' <archivos tocados>
+rg -n '\b(clsx|classnames|twMerge)\(' <archivos tocados>
 rg -n "const [A-Za-z_]*(Class|CLASS|Classes|CLASSES)[A-Za-z_]* = ['\`]" <archivos tocados>
 ```
 

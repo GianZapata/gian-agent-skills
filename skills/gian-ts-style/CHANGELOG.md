@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.9.1 — 2026-10-26
+
+- §className y `assets/audit-template.md`: el cierre corre `self-check.mjs`, no un script de shell. El script cubre `classname-cn`, pero no detecta `clsx`/`classnames`/`twMerge` directo ni `const xClass = '…'`. Esos dos `rg` se siguen corriendo a mano.
+
 ## 2.9.0 — 2026-10-12
 
 - `guard-glue`: un `const`/`let`/`var` de una línea y el guard que lo valida van separados por una línea en blanco. El orden no cambia: la lectura queda inmediatamente arriba. Así no pelea con `padding-line-between-statements`.
@@ -22,7 +26,7 @@
 
 ## 2.5.0 — 2026-10-12
 
-- `assets/self-check.mjs` (nuevo): verificador con el parser de TypeScript del repo. Revisa las funciones tocadas en `git diff HEAD` (o `--all`): `slot-order`, `vertical-spacing`, `read-group`, `guard-glue`, `single-statement-if`, `arrow-implicit-return`, `classname-cn`, `boolean-prop-shorthand`, `fragment-shorthand`, `self-closing-jsx`, `handler-naming`, `data-hook-location`, `no-local-style-constants`, `comments-noise`; GAP para `enum-ownership` y bloques repetidos. WRITE y FIX no cierran sin su salida. Antes el cierre pedía un `self-check.sh` que no existía.
+- `assets/self-check.mjs` (nuevo): verificador con el parser de TypeScript del repo. Revisa las funciones tocadas en `git diff HEAD` (o `--all`): `slot-order`, `vertical-spacing`, `read-group`, `guard-glue`, `single-statement-if`, `arrow-implicit-return`, `classname-cn`, `boolean-prop-shorthand`, `fragment-shorthand`, `self-closing-jsx`, `handler-naming`, `data-hook-location`, `no-local-style-constants`, `comments-noise`; GAP para `enum-ownership` y bloques repetidos. WRITE y FIX no cierran sin su salida. Antes el cierre pedía un script de self-check que no existía.
 - `vertical-spacing` pasa a HARD con lista cerrada de secciones: dos slots distintos nunca van pegados; una sentencia multilínea cierra con línea en blanco; función, efecto o `useMemo` con cuerpo llevan blanco antes y después; derivadas agrupadas por fuente. Nuevo § Dentro de un bloque: pasos de `26` y `guard-glue` (el guard queda pegado a su lectura). Ejemplo React y ejemplo "No".
 - La línea de `SKILL.md` ya no dice "del mismo tipo": nombra los slots de `04`, para que funcione sin abrir la reference.
 

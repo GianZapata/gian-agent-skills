@@ -48,4 +48,4 @@ Cases: dangling-else; nested if+else; guard rewrite inseguro; entity/DTO spread;
 
 ## WRITE vs AUDIT vs FIX
 
-WRITE/FIX **apply** SAFE FIX on the touched hunk. AUDIT only lists FAIL. Do not say “violates `arrow-implicit-return`” and leave `{ return x }` if the mode is WRITE/FIX.
+WRITE/FIX **apply** SAFE FIX on the touched hunk. AUDIT only lists FAIL. WRITE/FIX close with `node <ruta de gian-ts-style>/assets/self-check.mjs` on the touched files. El script cubre `classname-cn`, pero no detecta `clsx`/`classnames`/`twMerge` directo ni `const xClass = '…'`. Esos dos `rg` se siguen corriendo a mano. Do not say “violates `arrow-implicit-return`” and leave `{ return x }` if the mode is WRITE/FIX.
