@@ -1,0 +1,15 @@
+<?php
+
+// ADAPTAR: namespace y nombre de la entidad.
+
+namespace App\Http\Requests\Entity;
+
+final class UpdateEntityRequest extends EntityRequest {
+    protected function presence(): array {
+        // ADAPTAR: PUT → ['required']
+        return [
+            'sometimes',
+            'required',
+        ];
+    }
+}

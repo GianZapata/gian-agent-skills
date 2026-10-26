@@ -1,17 +1,13 @@
 <?php
 
-/**
- * ADAPTAR:
- * - usar backed Enum para tipos cerrados NO controlados por una SM string-based
- * - si el status vive en EntityStatusStateMachine, NO duplicar aquí los mismos valores
- * - usar solo para tipos de dominio / casts Eloquent explícitos y testeados
- * - eliminar este bloque ADAPTAR al materializar
- */
+// ADAPTAR: usar backed Enum para tipos cerrados NO controlados por una SM string-based.
+// ADAPTAR: si el status vive en EntityStatusStateMachine, NO duplicar aquí los mismos valores.
+// ADAPTAR: usar solo para tipos de dominio / casts Eloquent explícitos y testeados.
+// ADAPTAR: eliminar estos marcadores al materializar.
 
 namespace App\Enums;
 
-enum EntityType: string
-{
+enum EntityType: string {
     case Standard = 'standard';
     case Special = 'special';
 }

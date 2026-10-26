@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.33 — 2026-10-26
+
+- Store y Update de una entidad (`05`): reglas y mensajes en una base abstracta `<Entity>Request`; Store y Update solo implementan `presence()`. Prohibido el loop que inyecta `sometimes`/`required` y el trait para ese par. `unique` vive una vez, con `->ignore($this->route('<param>'))`. Una key anidada no lleva `sometimes`.
+- Un bloque de reglas reutilizado por entidades distintas: trait en `app/Traits/Requests/`, sin `rules()` ni `$this->route()`.
+- `18`: Alta si `sometimes` cae en una key anidada con `required_with`, o si el Store deja un obligatorio sin `required`. Media si hay loop de presencia, regla redefinida, trait de ese par, o `unique` solo en uno.
+- Templates `assets/backend/`: llaves en la misma línea, `handle` en la Action, `use` en lugar de FQCN, y marcadores ADAPTAR como `//`. Requests: `EntityRequest`, `StoreEntityRequest` y `UpdateEntityRequest`.
+- `21` §Implementar: el self-check de TS es la última línea de `self-check.mjs`; PHP es `Self-check PHP: manual` más las reglas revisadas en el método tocado.
+
 ## 1.4.32 — 2026-10-12
 
 - `26`: la lectura queda inmediatamente arriba del guard. En PHP van pegadas. En TS, un `const`/`let`/`var` de una línea lleva línea en blanco antes de la sentencia siguiente si no es otra declaración.

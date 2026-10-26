@@ -1,27 +1,21 @@
 <?php
 
-/**
- * ADAPTAR:
- * - fields reales del Resource
- * - whenLoaded para relaciones
- * - null si relación no cargada en accessors del Model
- */
+// ADAPTAR: fields reales del Resource.
+// ADAPTAR: whenLoaded para relaciones.
+// ADAPTAR: null si relación no cargada en accessors del Model.
 
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin \App\Models\Entity */
-final class EntityResource extends JsonResource
-{
-    public function toArray(Request $request): array
-    {
+final class EntityResource extends JsonResource {
+    public function toArray(Request $request): array {
         return [
             'id' => $this->id,
-            // 'status' => $this->status,
-            // 'city' => new CityResource($this->whenLoaded('city')),
-            // 'items' => ItemResource::collection($this->whenLoaded('items')),
+            // ADAPTAR: 'status' => $this->status,
+            // ADAPTAR: 'city' => new CityResource($this->whenLoaded('city')),
+            // ADAPTAR: 'items' => ItemResource::collection($this->whenLoaded('items')),
         ];
     }
 }

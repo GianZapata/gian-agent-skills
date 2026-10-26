@@ -57,7 +57,8 @@ Antes de crear el archivo, nombrar qué es. No agregarlo a `Support` o `Supports
 | Lo usa un solo dueño | Método privado de ese dueño. `private static` si no usa `$this` |
 | Solo lo usan un test o un seeder | Fixture. No código de producto |
 | Solo agrupa variables, sin comportamiento ni invariante | No se crea. Ni en `Support` ni en `Helpers` |
-| Trait horizontal | `app/Traits/<anfitrión>/`. Un solo nivel. Modelos: `app/Traits/Models/`, namespace `App\Traits\Models` |
+| Reglas y mensajes compartidos por el Store y el Update de una entidad | Clase base abstracta `<Entity>Request` en `app/Http/Requests/<Entity>/` (§Form Requests) |
+| Trait horizontal | `app/Traits/<anfitrión>/`. Un solo nivel. Modelos: `app/Traits/Models/`, namespace `App\Traits\Models`. Un bloque de reglas reutilizado por requests de entidades distintas: `app/Traits/Requests/` |
 
 No se crea una clase solo para agrupar variables. Una clase que ya existe y solo declara constructor no se borra por eso: mirar consumidores, herencia, si el constructor valida un invariante, y si el comportamiento viene del padre. Estar en `Support` incumple el molde. Es desviación de convención, no un nivel de severidad. La gravedad depende del impacto, la frecuencia y el riesgo sustentados por evidencia (`18`, `24`). No se migra esa carpeta en silencio.
 
@@ -143,6 +144,74 @@ GAP: alias en `with()` / eager load — no FAIL. Lateral joins / CTEs si el nive
 ## Form Requests
 
 Store/Update definen validación y autorización. DTOs FE alineados al Request, no al Resource completo. Status de SM: `Rule::in(EntityStatusStateMachine::values())`.
+
+### Store y Update de la misma entidad (HARD)
+
+Si existen el Store y el Update de una entidad, sus reglas y mensajes viven una sola vez, en una clase base abstracta `<Entity>Request` en `app/Http/Requests/<Entity>/`. Si solo existe uno, no hay base (`22`: sin abstracta de una sola implementación).
+
+La base declara `authorize()`, `rules()`, `messages()` y, si hace falta, `attributes()`. Store y Update solo implementan `presence(): array`, que se esparce en cada campo obligatorio de la raíz.
+
+```php
+use App\Models\Invoice;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+abstract class InvoiceRequest extends FormRequest {
+    public function authorize(): bool {
+        return true;
+    }
+
+    abstract protected function presence(): array;
+
+    public function rules(): array {
+        return [
+            'number'      => [
+                ...$this->presence(),
+                'string',
+            ],
+            'code'        => [
+                'string',
+                Rule::unique(Invoice::class)->ignore($this->route('invoice')),
+            ],
+            'note'        => [
+                'nullable',
+                'string',
+            ],
+            'items.*.qty' => [
+                'required_with:items.*.price',
+                'integer',
+            ],
+        ];
+    }
+}
+
+final class StoreInvoiceRequest extends InvoiceRequest {
+    protected function presence(): array {
+        return ['required'];
+    }
+}
+
+final class UpdateInvoiceRequest extends InvoiceRequest {
+    protected function presence(): array {
+        return [
+            'sometimes',
+            'required',
+        ];
+    }
+}
+```
+
+- `presence()` va solo en campos obligatorios de la raíz. Un campo opcional no lleva `sometimes`: las reglas no implícitas no corren sobre un campo ausente.
+- Una key anidada (`items.*.qty`) nunca lleva `sometimes`: un item enviado sin esa key pasaría el `required_with`.
+- Update parcial (PATCH): `['sometimes', 'required']`. Update que reemplaza todo (PUT): `['required']`.
+- `unique` vive una vez en la base, con `->ignore($this->route('<param>'))`. En el Store la ruta no trae el parámetro e `ignore(null)` no excluye nada.
+- Una diferencia que no es de presencia (por ejemplo, un campo inmutable al editar) se escribe en la subclase: `[...parent::rules(), 'status' => ['prohibited']]`.
+- Prohibido: recorrer las reglas para inyectar `sometimes` o `required` (`foreach` + `array_unshift`, filtros por nombre de key con `Str::contains`), redefinir en el Update una regla que ya está en la base, y usar un trait para compartir reglas entre el Store y el Update de una misma entidad.
+- Al tocar un Store o Update que comparte reglas con un trait o un loop, se reemplaza por la base en ese par. El trait se borra si queda sin uso. No se conserva el loop por compatibilidad.
+
+### Bloque de reglas en entidades distintas
+
+Si el mismo bloque (dirección, contacto, periodo) se valida en requests de entidades distintas: trait en `app/Traits/Requests/<Eje>Rules.php`, namespace `App\Traits\Requests`. Expone métodos con el nombre del eje (`addressRules(string $prefix = '')`, `addressMessages(string $prefix = '')`). No declara `rules()`, `messages()` ni `authorize()`, y no lee `$this->route()`. Cada request arma su `rules()` con `...$this->addressRules('billing.')` y su `messages()` con `...$this->addressMessages('billing.')`.
 
 ### User-Facing Validation Contracts (HARD)
 
@@ -233,5 +302,6 @@ Una tarea que modifica formularios o validación user-facing no puede declararse
 - [ ] Tests focalizados si cambia comportamiento
 - [ ] Joins/SQL: alias `t1`/`t2`; subquery `st1`/`sst1` (no `users u`)
 - [ ] User-facing validation (`05`): no done solo con `rules()`; completion gate si toca FormRequest/form
+- [ ] Store/Update de la misma entidad: base `<Entity>Request` + `presence()`; sin loop de presencia ni reglas redefinidas
 
 Ver `assets/backend/`.

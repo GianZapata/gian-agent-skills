@@ -10,6 +10,7 @@ Cargar cuando: cerrar un modo; formato de reportes.
 - Si se partió de una referencia o un plan: *Sin datos todavía* con `archivo:línea` de cada `TODO(datos)` (desde `rg`), y *Texto de la referencia que no publiqué* (original → qué se hizo). Va aunque nadie lo pida. Si no hubo casos, no se agrega (`15`)
 - Validación ejecutada o motivo
 - Si toca formularios o validación user-facing: no declarar done sin el completion gate de `05` (`rules` / `messages` / copy / cobertura semántica / attributes si aplica / 422 BE / consumo FE)
+- **Self-check de estilo**: por cada lenguaje tocado. TS: la salida de `node <ruta de gian-ts-style>/assets/self-check.mjs`, con su última línea tal cual (`Self-check TS: 0 pendientes` o GAP). PHP: `Self-check PHP: manual` y las reglas de gian-php-style revisadas en el método tocado (igual que gian-development-workflow §Self-check). Ejemplo: `Self-check TS: 0 pendientes` / `Self-check PHP: manual — brace-same-line, laravel-validation-rule-array (PayInvoice.php:18)`
 
 ## Auditar — feature / módulo
 

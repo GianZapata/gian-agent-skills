@@ -1,18 +1,15 @@
 <?php
 
-/**
- * ADAPTAR:
- * - namespace App\Http\Actions\…
- * - Form Request DTO / validated array
- * - transacciones y side effects
- */
+// ADAPTAR: namespace App\Http\Actions\…
+// ADAPTAR: Form Request DTO / validated array.
+// ADAPTAR: transacciones y side effects.
 
 namespace App\Http\Actions\Entities;
 
-final class CreateEntityAction
-{
-    public function execute(array $data): \App\Models\Entity
-    {
-        return \App\Models\Entity::query()->create($data);
+use App\Models\Entity;
+
+final class CreateEntityAction {
+    public function handle(array $data): Entity {
+        return Entity::query()->create($data);
     }
 }

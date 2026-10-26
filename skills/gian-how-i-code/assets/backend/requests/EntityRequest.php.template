@@ -1,0 +1,45 @@
+<?php
+
+// ADAPTAR: reglas, mensajes y attributes de la entidad.
+// ADAPTAR: el parámetro de ignore() es el de la ruta, no un id del body.
+
+namespace App\Http\Requests\Entity;
+
+use App\Models\Entity;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+abstract class EntityRequest extends FormRequest {
+    public function authorize(): bool {
+        return true;
+    }
+
+    abstract protected function presence(): array;
+
+    public function rules(): array {
+        return [
+            'name' => [
+                ...$this->presence(),
+                'string',
+                'max:255',
+            ],
+            'code' => [
+                'nullable',
+                'string',
+                Rule::unique(Entity::class)->ignore($this->route('entity')),
+            ],
+        ];
+    }
+
+    public function messages(): array {
+        return [
+            'name.required' => 'Ingresa el nombre',
+        ];
+    }
+
+    public function attributes(): array {
+        return [
+            'name' => 'nombre',
+        ];
+    }
+}

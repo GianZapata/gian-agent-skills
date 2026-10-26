@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.4.32"
+  version: "1.4.33"
 ---
 
 # gian-how-i-code
@@ -36,6 +36,7 @@ No usar como única skill para: explicación genérica de React/Vue/Angular/Lara
 - Styling (adaptador React, `04`/`23`): Tailwind-first cuando existe una utility o un token bridge real equivalente; `cn()` cuando las clases se componen o varían por estado/props runtime; sin constantes locales `*_SX` / `get*Sx` ni strings de clases (`const cardClass = '…'`): las clases van inline y, si el bloque se repite, se extrae un componente; template literal, concatenación, ternario o join en `className` → el `cn()` del repo, sin crear otro ni importar `clsx`/`twMerge` directo; `sx={(theme) => ({ … theme.palette })}` como escape hatch sin equivalencia limpia; `useTheme()` solo si el theme sale de `sx`. En otro stack, las clases se componen con el mecanismo del framework. No se exige `cn()`, MUI ni `sx`.
 - Comentarios `ADAPTAR` solo en templates de `assets/`; eliminarlos al materializar código productivo. Template-only `ADAPTAR` MUST resolverse o quitarse al instanciar; MUST NOT sobrevivir en código de producto.
 - Validación user-facing (núcleo): cada regla del borde tiene un mensaje de dominio, y el 422 llega por campo a la UI existente. Cobertura semántica regla→mensaje. En Laravel: FormRequest con `messages()` y, si hace falta, `attributes()`; no se da por terminado solo con `rules()`. En Python: el body model de Pydantic, con un handler de `RequestValidationError` que devuelve el mismo copy. En Node: el schema del handler — ver `01`/`05`/`10`/`14`.
+- Store/Update de una entidad (`05`): reglas y mensajes en una base abstracta `<Entity>Request`; Store y Update solo implementan `presence()`. Prohibido el loop que inyecta `sometimes`/`required` y el trait para ese par. Un trait de reglas solo vale para un bloque compartido entre entidades distintas.
 - Display FE: metadata exhaustiva en una propiedad pública `static readonly Record<Enum, Meta>` de `<entity>.helper.ts`; getter de `label` con `i18n.t()` para resolver el locale al leer; `getXMeta(Enum | null | undefined)` como API preferida cuando el consumidor puede recibir ausencia, con `unknownMeta` y resolver privados. El acceso directo al Record queda para enums garantizados o iteración. No ampliar a `string`, usar casts ni fallbacks para ocultar drift. If-chain ad-hoc en el componente con `t()`. Prohibido `*.display.config.ts`, inyectar `TFunction`, `labelKey` diferido — ver `07`/`08`/`15`.
 - Contrato de lectura (núcleo): el serializer no dispara queries; las relaciones se cargan antes, sin N+1. En Laravel: `new XResource($this->whenLoaded('rel'))` / `::collection($this->whenLoaded('rels'))`, sin callback `fn() => new X($this->rel)` salvo lógica extra — ver `06`. En Python: `response_model` o un serializer sobre datos ya cargados.
 - Mutaciones: IDs de ruta nunca se mezclan con el DTO del body. 1 ID: `(id, data: TDto)`; 2+: `(params, data: TDto)`. El DTO sale de un schema nombrado; en TypeScript ese schema es Zod, en Python un body model de Pydantic. El envelope `*Variables` es del adaptador React Query o Vue Query (`13`). UI no arma FormData — ver `13`/`10`/`23`.
@@ -88,6 +89,7 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 | Valor fijo de prueba que no es el del registro (teléfono, correo, id, URL) | Cablearlo en el request, el dial o la config. No publicarlo ni explicar el desvío. Al tocar, quitar el aviso; el cableado se queda (`15`) |
 | Implementar desde HTML, captura, Figma, spec o plan de referencia | Título por la tarea. Sin rótulo de referencia, fase ni muestra. Sección sin datos: constante + `TODO(datos)`, nada visible. Fuera de alcance: no se monta. Avisar ambas listas en el plan y en el cierre (`15`/`21`) |
 | Trait nuevo, o un trait que se toca | Lugar del archivo en `05`; cuándo usarlo en `22` |
+| Store y Update de la misma entidad, o trait/loop que comparte reglas | Base `<Entity>Request` + `presence()` (`05`). Trait solo entre entidades distintas (`05`/`22`) |
 
 ## Execution Steps
 

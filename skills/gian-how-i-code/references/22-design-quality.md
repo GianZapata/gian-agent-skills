@@ -10,9 +10,9 @@ No es permiso para sobrearquitectar. Preferir el cambio más pequeño que mejore
 
 Usar traits solo para comportamiento **horizontal, cohesivo y reutilizado** por varias clases.
 
-**Buenos casos:** auditoría técnica, integración con un paquete, scopes cohesivos, tenancy, metadata compartida, adaptación exigida por framework (p. ej. `HasStateMachines`).
+**Buenos casos:** auditoría técnica, integración con un paquete, scopes cohesivos, tenancy, metadata compartida, adaptación exigida por framework (p. ej. `HasStateMachines`), bloque de validación de un eje reutilizado por requests de entidades distintas (`05`).
 
-**No usar traits para:** esconder reglas de negocio; evitar una Action; compartir código entre dos clases sin abstracción clara; service locator; side effects ocultos; simular herencia múltiple; cajones de métodos no relacionados.
+**No usar traits para:** esconder reglas de negocio; evitar una Action; compartir código entre dos clases sin abstracción clara; service locator; side effects ocultos; simular herencia múltiple; cajones de métodos no relacionados; compartir reglas entre el Store y el Update de una misma entidad (base abstracta, `05`).
 
 **Señales de hallazgo:** muchas dependencias implícitas; varios dominios; queries/eventos no evidentes; conflictos de métodos; tests solo vía modelo consumidor.
 

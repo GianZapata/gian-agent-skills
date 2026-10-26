@@ -1,29 +1,23 @@
 <?php
 
-/**
- * ADAPTAR:
- * - estados y transitions reales
- * - registrar bootHasStateMachines en el Model
- * - eliminar este bloque ADAPTAR al materializar
- *
- * Fuente única de estados para SM string-based (asantibanez).
- * No duplicar con un backed Enum paralelo salvo necesidad demostrada.
- */
+// ADAPTAR: estados y transitions reales.
+// ADAPTAR: registrar bootHasStateMachines en el Model.
+// ADAPTAR: eliminar estos marcadores al materializar.
+// Fuente única de estados para SM string-based (asantibanez).
+// No duplicar con un backed Enum paralelo salvo necesidad demostrada.
 
 namespace App\StateMachines;
 
 use Asantibanez\LaravelEloquentStateMachines\StateMachines\StateMachine;
 
-final class EntityStatusStateMachine extends StateMachine
-{
+final class EntityStatusStateMachine extends StateMachine {
     public const PENDING = 'pending';
 
     public const ACTIVE = 'active';
 
     public const CANCELLED = 'cancelled';
 
-    public static function values(): array
-    {
+    public static function values(): array {
         return [
             self::PENDING,
             self::ACTIVE,
@@ -31,26 +25,23 @@ final class EntityStatusStateMachine extends StateMachine
         ];
     }
 
-    public function recordHistory(): bool
-    {
+    public function recordHistory(): bool {
         return true;
     }
 
-    public function transitions(): array
-    {
+    public function transitions(): array {
         return [
             self::PENDING => [
                 self::ACTIVE,
                 self::CANCELLED,
             ],
-            self::ACTIVE => [
+            self::ACTIVE  => [
                 self::CANCELLED,
             ],
         ];
     }
 
-    public function defaultState(): ?string
-    {
+    public function defaultState(): ?string {
         return self::PENDING;
     }
 }
