@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.4.33"
+  version: "1.4.34"
 ---
 
 # gian-how-i-code
@@ -143,6 +143,7 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 | State UI (Zustand, Pinia, etc.) | `12-state-management` |
 | Laravel Action/Query/Resource/Request, Job o comando | `05-backend-mold`, `06-api-contracts` |
 | Joins / Query Builder / SQL table aliases | `05-backend-mold` (t1/t2, st1 por nivel) |
+| State Machine: transición, `recordHistory`, historial (`was`, `snapshotWhen`, `whereHasStatus`), custom properties, responsible | `05-backend-mold` §Historial de estados (API real; no inventar métodos), `07-types-enums-statuses` |
 | Formato visual PHP (indent, braces, guards, arrays) | **no esta skill** — cargar `gian-php-style` |
 | Contratos HTTP / envelopes / whenLoaded Resource | `06-api-contracts` |
 | Errores / toasts / cliente HTTP compartido + mapper de errores (`apiFetcher` en React) | `14-errors-feedback` |

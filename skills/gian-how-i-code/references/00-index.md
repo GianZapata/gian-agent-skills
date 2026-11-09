@@ -8,7 +8,7 @@ Cargar cuando: arranque humano, modo Consultar, orientación general.
 | 02 | `02-repository-discovery.md` | Fase 0 |
 | 03 | `03-feature-mold.md` | Molde de carpetas FE; checklist núcleo y adaptador React |
 | 04 | `04-frontend-architecture.md` | Naming (núcleo); arquitectura FE y styling MUI+Tailwind (adaptador React) |
-| 05 | `05-backend-mold.md` | Molde Laravel (adaptador); FormRequest `rules`/`messages`/`attributes` |
+| 05 | `05-backend-mold.md` | Molde Laravel (adaptador); FormRequest `rules`/`messages`/`attributes`; State Machine + historial (`asantibanez`) |
 | 06 | `06-api-contracts.md` | Contratos HTTP; whenLoaded → Resource ctor (adaptador Laravel) |
 | 07 | `07-types-enums-statuses.md` | Enums, ownership, membresía includes / in_array / in |
 | 08 | `08-display-conventions.md` | Display inline **o** `static readonly Record` con labels dinámicos en helper; el entorno no es un chip |

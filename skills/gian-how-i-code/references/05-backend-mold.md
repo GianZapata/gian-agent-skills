@@ -152,6 +152,29 @@ Se reportan como `GAP` con `archivo:línea` y el alias propuesto. No se reescrib
 - Prohibido un backed Enum PHP paralelo para los mismos estados, salvo la excepción única de `07` §Excepción — backed Enum paralelo
 - Membresía 2+ estados: `in_array(..., true)` / `.includes()` — ver `07`
 
+### Historial de estados (`recordHistory`)
+
+API real de `asantibanez/laravel-eloquent-state-machines` (README del paquete). Usar solo estos métodos; prohibido inventar uno, consultar `state_histories` a mano o duplicar el historial en columnas propias. El argumento `$state` siempre es la constante de la SM, nunca un string literal (`07`).
+
+Habilitar: `recordHistory(): bool` devuelve `true` en la SM. Transición con datos: `transitionTo($state, $customProperties = [], $responsible = null)`; `responsible` es `auth()->user()` por default y `null` en jobs sin usuario.
+
+Accessor del campo (`$model->status()`):
+
+| Método | Retorno | Qué responde |
+|---|---|---|
+| `was($state)` | `bool` | Alguna vez transicionó a ese estado |
+| `timesWas($state)` | `int` | Cuántas veces |
+| `whenWas($state)` | `?Carbon` | Última vez |
+| `snapshotWhen($state)` | `?StateHistory` | Último registro de esa transición |
+| `snapshotsWhen($state)` | `Collection` | Todos los registros de esa transición |
+| `history()` | relación Eloquent | Historial completo; scopes `from($state)`, `to($state)`, `withCustomProperty($property, $operator, $value)` |
+| `getCustomProperty($key)` | `mixed` | Custom property del estado actual; del anterior vía `snapshotWhen($state)->getCustomProperty($key)` |
+| `responsible()` | `?User` | Responsable del estado actual; del anterior vía `snapshotWhen($state)->responsible` |
+
+Modelo (trait `HasStateMachines`): `whereHas{Field}(fn ($query) => ...)` (`whereHasStatus`) con `withTransition($from, $to)`, `transitionedFrom($state)`, `transitionedTo($state)`, `withResponsible($responsible|$id)`, `withCustomProperty($property, $operator, $value)`. Atributos cambiados en la transición, también en el modelo: `changedAttributesNames()`, `changedAttributeOldValue($attribute)`, `changedAttributeNewValue($attribute)`.
+
+`postponeTransitionTo(...)` y `hasPendingTransitions()` son transiciones programadas (`pending_transitions` + `PendingTransitionsDispatcher`), no historial.
+
 ## Form Requests
 
 Store/Update definen validación y autorización. DTOs FE alineados al Request, no al Resource completo. Status de SM: `Rule::in(EntityStatusStateMachine::values())`.
@@ -316,6 +339,7 @@ Una tarea que modifica formularios o validación user-facing no puede declararse
 - [ ] Includes/filters/sorts explícitos
 - [ ] Tipos cerrados: backed Enum **o** constantes SM (no ambos para lo mismo, salvo `07` §Excepción — backed Enum paralelo)
 - [ ] SM con const + transitions + defaultState + bootHasStateMachines
+- [ ] Historial de SM: solo la API de §Historial de estados, con constantes de la SM; sin query a `state_histories`
 - [ ] Tests focalizados si cambia comportamiento
 - [ ] Toda query con join o subquery: alias `t1`/`t2`; subquery `st1`/`sst1` (no `users u`)
 - [ ] User-facing validation (`05`): no done solo con `rules()`; completion gate si toca FormRequest/form

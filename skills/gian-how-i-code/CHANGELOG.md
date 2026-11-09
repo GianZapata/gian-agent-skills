@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.34 — 2026-11-09
+
+- `05` §Historial de estados: API real de `asantibanez/laravel-eloquent-state-machines` verificada contra el README (`was`, `timesWas`, `whenWas`, `snapshotWhen`, `snapshotsWhen`, `history()` + scopes, `getCustomProperty`, `responsible`, `whereHas{Field}` + scopes, `changedAttributes*`). Prohibido inventar métodos, consultar `state_histories` a mano o pasar strings literales en lugar de constantes de la SM. `postponeTransitionTo` / `hasPendingTransitions` quedan fuera del historial. Checklist BE y routing en `SKILL.md`.
+
 ## 1.4.33 — 2026-10-26
 
 - Store y Update de una entidad (`05`): reglas y mensajes en una base abstracta `<Entity>Request`; Store y Update solo implementan `presence()`. Prohibido el loop que inyecta `sometimes`/`required` y el trait para ese par. `unique` vive una vez, con `->ignore($this->route('<param>'))`. Una key anidada no lleva `sometimes`.
