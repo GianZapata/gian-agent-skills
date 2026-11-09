@@ -1,0 +1,304 @@
+{
+  "skill": "gian-ts-style",
+  "description": "Behavioral fixtures: before → after. WRITE/FIX apply SAFE FIX; GAP must not be rewritten.",
+  "cases": [
+    {
+      "id": "b01",
+      "rule": "arrow-implicit-return",
+      "fixture": "fixtures/arrow-implicit-return.ts"
+    },
+    {
+      "id": "b02",
+      "rule": "arrow-implicit-return",
+      "note": "map callback",
+      "fixture": "fixtures/arrow-implicit-return.ts"
+    },
+    {
+      "id": "b03",
+      "rule": "arrow-implicit-return",
+      "note": "object literal ({ })",
+      "fixture": "fixtures/arrow-implicit-return.ts"
+    },
+    {
+      "id": "b04",
+      "rule": "react-component-explicit-return",
+      "fixture": "fixtures/react-component-explicit-return.tsx"
+    },
+    {
+      "id": "b05",
+      "rule": "single-statement-if",
+      "note": "return",
+      "fixture": "fixtures/single-statement-if.ts"
+    },
+    {
+      "id": "b06",
+      "rule": "single-statement-if",
+      "note": "throw",
+      "fixture": "fixtures/single-statement-if.ts"
+    },
+    {
+      "id": "b07",
+      "rule": "single-statement-if",
+      "note": "call",
+      "fixture": "fixtures/single-statement-if.ts"
+    },
+    {
+      "id": "b08",
+      "rule": "single-statement-if",
+      "note": "assignment",
+      "fixture": "fixtures/single-statement-if.ts"
+    },
+    {
+      "id": "b09",
+      "rule": "single-statement-if",
+      "note": "multiline JSX still one statement",
+      "fixture": "fixtures/single-statement-multiline.tsx"
+    },
+    {
+      "id": "b10",
+      "rule": "single-statement-if",
+      "note": "multiline throw",
+      "fixture": "fixtures/single-statement-multiline.tsx"
+    },
+    {
+      "id": "b11",
+      "rule": "compact-if-else",
+      "fixture": "fixtures/compact-if-else.ts"
+    },
+    {
+      "id": "b12",
+      "rule": "single-statement-if",
+      "expect": "GAP",
+      "note": "dangling-else NEVER AUTOFIX",
+      "fixture": "fixtures/dangling-else.ts"
+    },
+    {
+      "id": "b13",
+      "rule": "guard-clause-over-nesting",
+      "fixture": "fixtures/guard-clauses.ts"
+    },
+    {
+      "id": "b14",
+      "rule": "guard-clause-over-nesting",
+      "expect": "GAP",
+      "note": "nested if with else",
+      "fixture": "fixtures/guard-clauses.ts"
+    },
+    {
+      "id": "b15",
+      "rule": "conditional-and-render",
+      "fixture": "fixtures/jsx-conditional.tsx"
+    },
+    {
+      "id": "b16",
+      "rule": "conditional-and-render",
+      "expect": "GAP",
+      "note": "count && unsafe",
+      "fixture": "fixtures/jsx-conditional.tsx"
+    },
+    {
+      "id": "b17",
+      "rule": "simple-jsx-ternary",
+      "expect": "PASS",
+      "note": "two real JSX branches KEEP",
+      "fixture": "fixtures/jsx-conditional.tsx"
+    },
+    {
+      "id": "b18",
+      "rule": "derived-multi-branch",
+      "note": "nested ternary value → useMemo + if + early return",
+      "fixture": "fixtures/nested-ternary.tsx"
+    },
+    {
+      "id": "b19",
+      "rule": "derived-multi-branch",
+      "note": "if-chain is the style fix; useMemo/computed is decided by gian-how-i-code 23",
+      "fixture": "fixtures/nested-ternary.tsx"
+    },
+    {
+      "id": "b20",
+      "rule": "direct-handler-reference",
+      "fixture": "fixtures/handlers.tsx"
+    },
+    {
+      "id": "b21",
+      "rule": "inline-argument-handler",
+      "expect": "PASS",
+      "fixture": "fixtures/handlers.tsx"
+    },
+    {
+      "id": "b22",
+      "rule": "no-ceremonial-handler-extraction",
+      "expect": "PASS",
+      "fixture": "fixtures/handlers.tsx"
+    },
+    {
+      "id": "b23",
+      "rule": "boolean-prop-shorthand",
+      "fixture": "fixtures/boolean-fragment-selfclose.tsx"
+    },
+    {
+      "id": "b24",
+      "rule": "fragment-shorthand",
+      "fixture": "fixtures/boolean-fragment-selfclose.tsx"
+    },
+    {
+      "id": "b25",
+      "rule": "fragment-shorthand",
+      "expect": "PASS",
+      "note": "Fragment with key KEEP",
+      "fixture": "fixtures/boolean-fragment-selfclose.tsx"
+    },
+    {
+      "id": "b26",
+      "rule": "self-closing-jsx",
+      "fixture": "fixtures/boolean-fragment-selfclose.tsx"
+    },
+    {
+      "id": "b27",
+      "rule": "intentional-prop-spread",
+      "expect": "PASS",
+      "fixture": "fixtures/prop-spread.tsx"
+    },
+    {
+      "id": "b28",
+      "rule": "intentional-prop-spread",
+      "expect": "GAP",
+      "note": "entity spread do not encourage",
+      "fixture": "fixtures/prop-spread.tsx"
+    },
+    {
+      "id": "b29",
+      "rule": "type-only-import",
+      "fixture": "fixtures/type-imports.ts"
+    },
+    {
+      "id": "b30",
+      "rule": "interface-object-shape",
+      "fixture": "fixtures/interface-object-shape.ts"
+    },
+    {
+      "id": "b31",
+      "rule": "interface-object-shape",
+      "expect": "PASS",
+      "note": "union stays type",
+      "fixture": "fixtures/interface-object-shape.ts"
+    },
+    {
+      "id": "b32",
+      "rule": "query-data-alias",
+      "expect": "PASS",
+      "fixture": "fixtures/query-data-alias.ts"
+    },
+    {
+      "id": "b33",
+      "rule": "list-data-default",
+      "expect": "PASS",
+      "fixture": "fixtures/query-data-alias.ts"
+    },
+    {
+      "id": "b34",
+      "rule": "list-data-default",
+      "expect": "GAP",
+      "note": "detail must not default []",
+      "fixture": "fixtures/query-data-alias.ts"
+    },
+    {
+      "id": "b35",
+      "rule": "comments-noise",
+      "fixture": "fixtures/comments.ts"
+    },
+    {
+      "id": "b36",
+      "rule": "comments-noise",
+      "expect": "PASS",
+      "note": "ts-expect-error preserved",
+      "fixture": "fixtures/comments.ts"
+    },
+    {
+      "id": "b37",
+      "rule": "prettier-owned",
+      "expect": "PASS",
+      "fixture": "fixtures/prettier-owned.ts"
+    },
+    {
+      "id": "b38",
+      "rule": "exported-arrow-default",
+      "fixture": "fixtures/exported-arrow.ts"
+    },
+    {
+      "id": "b39",
+      "rule": "exported-arrow-default",
+      "expect": "PASS",
+      "note": "overload KEEP function",
+      "fixture": "fixtures/exported-arrow.ts"
+    },
+    {
+      "id": "b40",
+      "rule": "react-component-explicit-return",
+      "expect": "GAP",
+      "note": "renderFoo ambiguous",
+      "fixture": "fixtures/react-component-explicit-return.tsx"
+    },
+    {
+      "id": "b41",
+      "rule": "vertical-spacing",
+      "note": "blank line between sections; short same-type decls stay together; strip // State",
+      "fixture": "fixtures/vertical-spacing.ts"
+    },
+    {
+      "id": "b42",
+      "rule": "react-component-fc-props",
+      "note": "new component -> interface InvoiceDrawerProps + FC<InvoiceDrawerProps>, import type { FC }",
+      "fixture": "fixtures/react-component-fc-props.tsx"
+    },
+    {
+      "id": "b43",
+      "rule": "react-component-fc-props",
+      "note": "touched ({...}: Props) -> interface ClientCardProps + FC<ClientCardProps>; sibling untouched",
+      "fixture": "fixtures/react-component-fc-props.tsx"
+    },
+    {
+      "id": "b44",
+      "rule": "react-component-fc-props",
+      "note": "generic component KEEP GAP",
+      "fixture": "fixtures/react-component-fc-props.tsx"
+    },
+    {
+      "id": "b45",
+      "rule": "classname-cn",
+      "note": "template literal with condition -> cn(base, cond && extra)",
+      "fixture": "fixtures/classname-cn.tsx"
+    },
+    {
+      "id": "b46",
+      "rule": "classname-cn",
+      "note": "ternary between class constants -> inline cn; local class string removed",
+      "fixture": "fixtures/classname-cn.tsx"
+    },
+    {
+      "id": "b47",
+      "rule": "classname-cn",
+      "note": "className prop -> cn(base, className)",
+      "fixture": "fixtures/classname-cn.tsx"
+    },
+    {
+      "id": "b48",
+      "rule": "classname-cn",
+      "note": "repo without cn -> GAP, do not create cn",
+      "fixture": "fixtures/classname-cn.tsx"
+    },
+    {
+      "id": "b49",
+      "rule": "react-component-fc-props",
+      "note": "HomePage with interface Props -> HomePageProps",
+      "fixture": "fixtures/react-component-fc-props.tsx"
+    },
+    {
+      "id": "b50",
+      "rule": "read-group",
+      "note": "each query / awaited read opens its group; ids or Map complement glued; mutations stay together",
+      "fixture": "fixtures/read-group.ts"
+    }
+  ]
+}

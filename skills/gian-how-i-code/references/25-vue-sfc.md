@@ -14,11 +14,11 @@ Los nombres los elige el núcleo (`04` Naming, `23`). La forma del binding (no d
 <script setup lang="ts">
 import { useEntityPage } from '../composables/useEntityPage';
 
-interface Props {
+interface EntityPageProps {
   entityId: string;
 }
 
-const props = defineProps<Props>();
+const props = defineProps<EntityPageProps>();
 const { label, onConfirm } = useEntityPage(props);
 </script>
 
@@ -41,30 +41,30 @@ El orden dentro del composable es el de `04`. Los casos dentro de cada slot est�
 
 ## Props y emits
 
-`interface Props` e `interface Emits` viven en el `<script setup>` del `.vue`. No se exportan a `features/*/interfaces`. El JSON de la API sigue en `<entity>.interface.ts`.
+La interface se llama `<Componente>Props` / `<Componente>Emits`, igual que en React (`gian-ts-style`, `react-components-jsx`): `HomePage.vue` → `interface HomePageProps`, `defineProps<HomePageProps>()`, `interface HomePageEmits`, `defineEmits<HomePageEmits>()`. Viven en el `<script setup>` del `.vue`. No se exportan a `features/*/interfaces`. El JSON de la API sigue en `<entity>.interface.ts`.
 
 ```ts
-interface Props {
+interface EntityPageProps {
   entityId: string;
 }
 
-const props = defineProps<Props>();
+const props = defineProps<EntityPageProps>();
 ```
 
 ```ts
-interface Emits {
+interface EntityPageEmits {
   confirm: [];
   cancel: [];
 }
 
-const emit = defineEmits<Emits>();
+const emit = defineEmits<EntityPageEmits>();
 ```
 
-Prohibido `defineProps<{ entityId: string }>()` y `defineEmits<{ confirm: [] }>()`.
+Prohibido `defineProps<{ entityId: string }>()` y `defineEmits<{ confirm: [] }>()`. Prohibido `interface Props` / `interface Emits` sin el nombre del componente.
 
 Sin destructurar: se lee `props.entityId` y se llama `emit('confirm')`. El destructurado reactivo de Vue 3.5 no se usa por rutina: pasar la variable a `watch` o a un composable pide un getter.
 
-Defaults: `withDefaults(defineProps<Props>(), { ... })`.
+Defaults: `withDefaults(defineProps<EntityPageProps>(), { ... })`.
 
 El template usa los nombres que expone `defineProps`. `$props` solo si hay colisión de nombre.
 
@@ -74,23 +74,24 @@ El template usa los nombres que expone `defineProps`. `$props` solo si hay colis
 - El overlay dueño de su mutación se monta con `v-if`, no con `v-show` (`09`).
 - `computed` sigue los casos A–E de `23`, y vive en el composable. Una `const` derivada de props en `script setup` no es reactiva. A: la expresión va en el template, o en un `computed` del composable si el script la usa. C: `computed` con `if` y early return. D: `v-if` / `v-else-if` en el template.
 - `<style scoped>` se queda en el `.vue`, con el template.
-- Componentes en PascalCase en el template. Emits en camelCase en `interface Emits`.
-- `defineSlots`, `defineExpose` y `generic="T"` cuando hagan falta. Sus tipos (`interface Slots`, la forma de `T`) son locales, igual que `Props`. `generic="T"` va en la etiqueta `<script setup>` del `.vue`.
+- Componentes en PascalCase en el template. Emits en camelCase en `interface <Componente>Emits`.
+- `defineSlots` es obligatorio si el componente renderiza un slot con props. `defineExpose` es obligatorio si un padre usa un ref al componente. `generic="T"` cuando una prop, emit o slot depende de un tipo que elige el padre. Sus tipos (`interface <Componente>Slots`, la forma de `T`) son locales, igual que `<Componente>Props`. `generic="T"` va en la etiqueta `<script setup>` del `.vue`.
+- Clases condicionales: `:class` con array u objeto (`:class="['flex', { 'font-semibold': isActive }]"`). Prohibido interpolar o concatenar clases (`23`).
 
 ```vue
 <script setup lang="ts">
 import { useEntityPage } from '../composables/useEntityPage';
 
-interface Props {
+interface EntityPageProps {
   isLoading: boolean;
 }
 
-interface Emits {
+interface EntityPageEmits {
   searchCleared: [];
 }
 
-const props = defineProps<Props>();
-const emit = defineEmits<Emits>();
+const props = defineProps<EntityPageProps>();
+const emit = defineEmits<EntityPageEmits>();
 const search = defineModel<string>('search', { required: true });
 
 const { summary, onClear } = useEntityPage(props, emit, search);
@@ -101,13 +102,17 @@ const { summary, onClear } = useEntityPage(props, emit, search);
 import { computed, type Ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-interface EntityPageProps {
+interface UseEntityPageProps {
   isLoading: boolean;
 }
 
+interface UseEntityPageEmits {
+  (event: 'searchCleared'): void;
+}
+
 export const useEntityPage = (
-  props: EntityPageProps,
-  emit: (event: 'searchCleared') => void,
+  props: UseEntityPageProps,
+  emit: UseEntityPageEmits,
   search: Ref<string>,
 ) => {
   const { t } = useI18n();
@@ -127,6 +132,12 @@ export const useEntityPage = (
 };
 ```
 
+Tipos del composable, forma fija:
+
+- `interface <Composable>Props` (`useEntityPage` → `UseEntityPageProps`) repite el shape de `<Componente>Props`.
+- `interface <Composable>Emits` declara una call signature por cada evento de `<Componente>Emits`: `searchCleared: []` → `(event: 'searchCleared'): void`; `select: [id: string]` → `(event: 'select', id: string): void`.
+- Prohibido tipar `props` o `emit` del composable con `any`, un genérico anónimo o una firma inline.
+
 ## Delta de nombres
 
 Solo cambia la carpeta. El resto es `03` y `04`.
@@ -135,7 +146,8 @@ Solo cambia la carpeta. El resto es `03` y `04`.
 |---|---|
 | Composables | `composables/useEntityPage.ts` (`use` + componente, camelCase). Nunca `use-thing.ts` ni `hooks/` |
 | SFC | `EntityPage.vue`. El script setup va dentro |
-| Props / emits | `interface Props` / `interface Emits`, locales |
+| Props / emits | `interface EntityPageProps` / `interface EntityPageEmits`, locales |
+| Tipos del composable | `interface UseEntityPageProps` / `interface UseEntityPageEmits` |
 
 El call site llama al método de la clase de área (`DateHelper.formatCalendarDate`). Sin función local que arme fecha, número, dinero o etiqueta. Sin una segunda función al lado de la clase para la misma área.
 
@@ -145,7 +157,7 @@ En la vista, `t()` de `useI18n` o `$t`. Fuera de la vista, `i18n.t()` (`15`). No
 
 ## Styling y datos
 
-Tailwind en el template (`class`) si el repo lo usa. No exigir Tailwind, `cn()`, MUI ni `sx` si el repo no los tiene.
+Tailwind en el template (`class`) si el repo lo usa. No exigir Tailwind, `cn()`, MUI ni `sx` si el repo no los tiene. Las clases condicionales usan `:class` con array u objeto en cualquier caso. Prohibido interpolar o concatenar clases.
 
 No instalar Vue Router, Pinia ni TanStack Vue Query porque un ejemplo los use. El server state es el cliente de datos que el repo ya tiene (`01`). El service sigue `14`.
 
@@ -162,12 +174,14 @@ No instalar Vue Router, Pinia ni TanStack Vue Query porque un ejemplo los use. E
 
 - [ ] Núcleo cargado (`01`); este archivo solo suma el delta
 - [ ] `.vue` con `<script setup lang="ts">` inline. Sin `src`. Solo macros, imports y la llamada al composable
-- [ ] `interface Props` / `interface Emits`; sin genérico anónimo
-- [ ] `const props = defineProps<Props>()` y `const emit = defineEmits<Emits>()`, sin destructurar
+- [ ] `interface <Componente>Props` / `interface <Componente>Emits`; sin genérico anónimo ni `interface Props` suelto
+- [ ] `const props = defineProps<EntityPageProps>()` y `const emit = defineEmits<EntityPageEmits>()`, sin destructurar
+- [ ] Composable con `interface <Composable>Props` (mismo shape) e `interface <Composable>Emits` (call signatures de `<Componente>Emits`)
 - [ ] `defineModel` solo para un `v-model` real; overlay con `isOpen` + emit, montado con `v-if`
 - [ ] `computed` según A–E de `23`
 - [ ] `<style scoped>` en el `.vue`; componentes PascalCase en el template; emits camelCase
-- [ ] `defineSlots` / `defineExpose` / `generic="T"` con `interface` local si hacen falta
+- [ ] `defineSlots` si renderiza un slot con props; `defineExpose` si un padre usa un ref; `generic="T"` si el padre elige el tipo; con `interface <Componente>Slots` local
+- [ ] Clases condicionales con `:class` array u objeto; sin interpolar ni concatenar
 - [ ] Computed, handler, `watch` o llamada al service en `composables/useEntityPage.ts`. El script inline no los contiene
 - [ ] Orden del composable según `04`; línea en blanco entre secciones según `gian-ts-style`
 - [ ] clase de área (`23`); sin wrapper local ni función suelta de la misma área

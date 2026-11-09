@@ -1,0 +1,839 @@
+{
+  "skill": "gian-how-i-code",
+  "version": "1.4.6",
+  "cases": [
+    {
+      "id": "impl-entity-crud",
+      "prompt": "Crea una feature de entidades con listado, filtros, formulario, mutations y endpoint Laravel. Usa los patrones existentes del repositorio y mi estándar how i code.",
+      "expect": [
+        "Fase 0 discovery antes de diseñar",
+        "Inventario FE (dayjs/fetcher/ErrorMapper/QueryClient) y reutiliza infra existente",
+        "Identifica FE y BE",
+        "Reutiliza estructura existente del repo",
+        "Busca helpers/utils existentes antes de crear",
+        "gian-ts-style en hunks .ts/.tsx; dayjs vía módulo del proyecto si existe",
+        "Styling 04: Tailwind-first si existe utility/bridge real equivalente; no CONTROL_SX/toggleButtonSx; cn() cuando las clases se componen o varían; sx(theme) hatch sin equivalencia limpia o por API MUI",
+        "Query *QueryProps + Mutation Use*MutationOptions solo mutationFn",
+        "Mutations 13: ruta ≠ body; TVariables DTO o envelope *Variables; useMutation con 3 genéricos",
+        "DTO Zod nombrado = body; IDs de ruta fuera del schema",
+        "DTO/form vía z.infer; sin interface Input paralela",
+        "FormRequest: rules + revisión de mensajes visibles (coverage semántico); no done solo con rules()",
+        "422: mapear a campos con mensaje human-facing del backend según patrón del repo",
+        "No instala dependencias sin OK",
+        "Ejecuta validaciones reales del repo",
+        "No menciona proyectos de procedencia en la salida"
+      ]
+    },
+    {
+      "id": "impl-formrequest-user-facing",
+      "prompt": "Crea StoreUserRequest con is_active (required|boolean) y phone (regex). Hay UI de formulario que consume el 422.",
+      "expect": [
+        "Carga 05, 10 y 14",
+        "Revisa rules y el mensaje resultante de cada fallo alcanzable (coverage semántico)",
+        "Mensajes human-facing: estatus/teléfono de dominio, no 'booleano' ni 'regex' ni 'campo is_active'",
+        "attributes() solo si :attribute llegaría al usuario o el copy lo necesita; no FAIL por ausencia del método si el copy ya es humano",
+        "No exige una entrada en messages() por cada regla",
+        "No declara el Request terminado solo porque existe rules()",
+        "Comprueba 422 → campos en la UI existente; no crea ErrorMapper nuevo"
+      ],
+      "forbid": [
+        "El estatus debe ser un valor booleano",
+        "El campo is_active es obligatorio",
+        "El teléfono no cumple con el regex",
+        "count(rules) === count(messages)",
+        "FAIL únicamente porque falta attributes()",
+        "PASS únicamente porque existe attributes()"
+      ]
+    },
+    {
+      "id": "impl-422-show-backend-messages",
+      "prompt": "El FormRequest ya devuelve mensajes human-facing en 422. El formulario RHF muestra un toast genérico y no setea errores por campo. El repo ya mapea 422 a setError vía ErrorMapper.",
+      "expect": [
+        "Sigue el patrón existente del repo (ErrorMapper/setError)",
+        "Asigna errores 422 a los inputs correspondientes",
+        "Muestra el mensaje human-facing del backend",
+        "No sustituye por un error genérico",
+        "No introduce una arquitectura nueva de errores"
+      ],
+      "forbid": [
+        "Toast genérico como único feedback del 422",
+        "Descartar error.errors del backend",
+        "Crear un segundo ErrorMapper o cliente HTTP"
+      ]
+    },
+    {
+      "id": "impl-table-filters-styling",
+      "prompt": "Agrega filtros a la tabla de usuarios. Hay ToggleButtons selected y un TextField de búsqueda.",
+      "expect": [
+        "Carga 04 y 23",
+        "className Tailwind en el punto de uso; cn() si las clases cambian por selected/estado",
+        "No CONTROL_SX ni toggleButtonSx ni SxProps locales de layout",
+        "Resuelve tokens según 04: utility/bridge real verificado primero; sx(theme) solo sin equivalencia limpia o si la API MUI lo requiere",
+        "No crea useTheme() huérfano",
+        "gian-ts-style en el hunk TSX"
+      ]
+    },
+    {
+      "id": "impl-runtime-selected-cn",
+      "prompt": "Este ToggleButton cambia clases de texto y hover según selected. Alinea únicamente el styling; variant/color de MUI también pueden depender de isSelected.",
+      "expect": [
+        "Usa cn() porque las clases cambian por estado runtime",
+        "Escribe las clases base estáticas una sola vez",
+        "Expresa text-text-secondary y hover:bg-white como clases condicionales según selected",
+        "No crea toggleButtonSx ni otro *_SX/get*Sx cosmético",
+        "No usa un ternario completo de strings para className",
+        "No duplica dos árboles JSX para evitar cn()",
+        "Puede conservar variant/color de MUI para el estado que esas props resuelven"
+      ],
+      "forbid": [
+        "className con dos strings completos y la base duplicada",
+        "Concatenación o template condicional de className",
+        "toggleButtonSx",
+        "Dos ToggleButton alternativos solo por styling"
+      ]
+    },
+    {
+      "id": "impl-static-class-no-cn",
+      "prompt": "Alinea este componente al estándar sin cambios visuales: <Button className=\"h-8 px-2\" />.",
+      "expect": [
+        "Conserva className=\"h-8 px-2\"",
+        "Reconoce que las clases son completamente estáticas",
+        "No introduce cn() ceremonial"
+      ],
+      "forbid": [
+        "className={cn('h-8 px-2')}",
+        "Hallazgo por faltar cn()"
+      ]
+    },
+    {
+      "id": "impl-tailwind-bridge-over-theme-sx",
+      "prompt": "El repo define --color-success-light: var(--mui-palette-success-light), --color-success-dark: var(--mui-palette-success-dark), --color-divider: var(--mui-palette-divider) y --color-text-secondary: var(--mui-palette-text-secondary). Alinea: <Chip sx={(theme) => ({ bgcolor: active ? theme.palette.success.light : theme.palette.divider, color: active ? theme.palette.success.dark : theme.palette.text.secondary })} />.",
+      "expect": [
+        "Verifica en la configuración real del repo que el bridge y las utilities equivalentes existen",
+        "Si todas las equivalencias están demostradas, prefiere cn() con bg-success-light/text-success-dark y bg-divider/text-text-secondary",
+        "Mantiene el MUI theme como source of truth consumido por el bridge",
+        "No conserva sx(theme) por ceremonia cuando las cuatro equivalencias están verificadas"
+      ],
+      "forbid": [
+        "bg-[#",
+        "text-[#",
+        "Inventar nombres de utilities no definidos",
+        "Editar theme o Tailwind CSS silenciosamente",
+        "Conservar sx(theme) solo porque el token nació en palette"
+      ]
+    },
+    {
+      "id": "impl-keep-theme-sx-without-bridge",
+      "prompt": "theme.palette.custom.special existe, pero la configuración real del repo NO expone ninguna utility Tailwind equivalente. Alinea <Box sx={(theme) => ({ color: theme.palette.custom.special })} />.",
+      "expect": [
+        "Conserva sx={(theme) => ({ color: theme.palette.custom.special })}",
+        "Reconoce que falta una equivalencia Tailwind limpia y demostrable",
+        "No introduce useTheme() solo para alimentar sx"
+      ],
+      "forbid": [
+        "Inventar text-custom-special u otra utility",
+        "Usar un color hexadecimal arbitrario",
+        "Crear const theme = useTheme() por ceremonia",
+        "Editar la configuración del theme/Tailwind sin aprobación"
+      ]
+    },
+    {
+      "id": "impl-keep-use-theme-outside-sx",
+      "prompt": "El componente usa const theme = useTheme() y pasa theme.palette.primary.main a chart.setColor(). No usa theme para sx. Alinea el componente.",
+      "expect": [
+        "Conserva useTheme() porque el theme participa en una API/lógica JS fuera de sx",
+        "No migra chart.setColor() a Tailwind",
+        "No reporta useTheme() como ceremonial"
+      ],
+      "forbid": [
+        "Eliminar useTheme()",
+        "Reemplazar el color de la API del chart con className"
+      ]
+    },
+    {
+      "id": "impl-mui-state-props-static-class",
+      "prompt": "Este Button cambia variant={isSelected ? 'contained' : 'text'} y color={isSelected ? 'primary' : 'inherit'}, pero className=\"h-[30px] rounded-lg px-2\" es idéntico en ambos estados. Alinea el styling.",
+      "expect": [
+        "Conserva className estático porque las clases no varían",
+        "No introduce cn() ceremonial",
+        "Conserva variant/color oficiales de MUI resolviendo el estado visual"
+      ],
+      "forbid": [
+        "className={cn('h-[30px] rounded-lg px-2')}",
+        "Duplicar el Button por estado",
+        "Migrar variant/color de MUI a clases sin necesidad"
+      ]
+    },
+    {
+      "id": "impl-mui-slot-classname",
+      "prompt": "Este TextField usa sx con '& .MuiOutlinedInput-root' solo para height y layout. Alinea el estilo al estándar.",
+      "expect": [
+        "Revisa la API real del componente; no inventa nombres de slot",
+        "Si el slot existe: slotProps.*.className con Tailwind para height/layout",
+        "No mantiene el selector interno si el slot cubre el caso"
+      ]
+    },
+    {
+      "id": "variant-drawer-store",
+      "prompt": "Agrega un drawer de edición usando el patrón de store de drawers que ya utiliza el repositorio.",
+      "expect": [
+        "No fuerza useState de overlays si hay Zustand drawer store",
+        "Detecta variante reconocida",
+        "Diálogo dueño de mutación se mantiene"
+      ]
+    },
+    {
+      "id": "audit-no-write",
+      "prompt": "Audita este módulo contra mi forma de programar y genera un plan de migración, pero no modifiques archivos.",
+      "expect": [
+        "No escribe código ni manifests",
+        "Separa Hallazgos y Propuestas en español",
+        "Evidencia por archivo/línea",
+        "Lotes por severidad"
+      ]
+    },
+    {
+      "id": "apply-scoped",
+      "prompt": "Aplica únicamente los hallazgos H-001 y H-003. No instales las dependencias propuestas.",
+      "expect": [
+        "Solo H-001 y H-003",
+        "No aplica H-002",
+        "No modifica package.json/composer.lock"
+      ]
+    },
+    {
+      "id": "api-contract-standard",
+      "prompt": "El frontend espera data directa y el backend devuelve un envelope. Corrige el contrato completo según mi estándar.",
+      "expect": [
+        "Usa references/06-api-contracts.md dentro de gian-how-i-code",
+        "No trata skills externas como autoridad",
+        "Integra resultado en feature (service/hooks)"
+      ]
+    },
+    {
+      "id": "abstain-generic-react",
+      "prompt": "Explícame por qué React vuelve a renderizar un componente.",
+      "expect": [
+        "No requiere activar gian-how-i-code salvo que pidan aplicar el estándar a un repo"
+      ]
+    },
+    {
+      "id": "rq-keys-invalidation",
+      "prompt": "Revisa las query keys y las invalidaciones de esta feature según mi estándar de React Query.",
+      "expect": [
+        "Carga 13-data-fetching",
+        "Verifica variables del queryFn en la key",
+        "Prefiere invalidate vía _def/queryKey del store",
+        "No propone invalidateQueries() global"
+      ]
+    },
+    {
+      "id": "stack-lib-missing",
+      "prompt": "Esta feature hace fetch en useEffect y no hay TanStack Query. Audita y propón la mejora.",
+      "expect": [
+        "PROP de librería faltante con evidencia",
+        "Muestra comando de install sin ejecutarlo",
+        "Espera aprobación"
+      ]
+    },
+    {
+      "id": "stack-lib-installed",
+      "prompt": "El package.json ya tiene @tanstack/react-query. ¿Debo instalarlo de nuevo?",
+      "expect": [
+        "Detecta dependencia existente",
+        "No propone reinstalar",
+        "Clasifica No requiere cambio o subutilizada según evidencia"
+      ]
+    },
+    {
+      "id": "stack-lib-underutilized",
+      "prompt": "El repositorio ya usa TanStack Query y query-key-factory, pero cada feature crea keys manuales y realiza invalidaciones con arrays sueltos. Audita y propón la mejora apropiada.",
+      "expect": [
+        "Detecta las dependencias existentes",
+        "No propone volver a instalarlas",
+        "Explica cómo aprovechar la infraestructura instalada",
+        "Propone migración incremental",
+        "Revisa invalidaciones y tipado",
+        "Evalúa @tanstack/eslint-plugin-query solo si no existe"
+      ],
+      "forbid": [
+        "Ejecutar instalaciones",
+        "Recomendar otra librería equivalente sin necesidad",
+        "Migrar todo el repositorio automáticamente"
+      ]
+    },
+    {
+      "id": "stack-lib-unnecessary",
+      "prompt": "¿Agregamos una lib de state management global para cachear los listados que ya están en React Query?",
+      "expect": [
+        "Rechaza o clasifica Sustitución no recomendable / No requiere cambio",
+        "Explica que server state vive en Query"
+      ]
+    },
+    {
+      "id": "query-table-aliases",
+      "prompt": "Escribe un query con join users/orders usando alias y un whereIn con subquery.",
+      "expect": [
+        "Carga 05-backend-mold",
+        "Alias raíz t1/t2 no users u ni orders o",
+        "Subquery st1; segundo nivel sst1 si aplica",
+        "No fuerza alias en from de una sola tabla sin join"
+      ]
+    },
+    {
+      "id": "consult-no-provenance",
+      "prompt": "¿Cómo suelo estructurar una mutation y las query keys?",
+      "expect": [
+        "Modo Consultar",
+        "Cita references/13",
+        "Si habla de IDs vs DTO, cita 13 (y 10 para el schema); no inventa un capítulo 25",
+        "No menciona nombres de proyectos de procedencia"
+      ]
+    },
+    {
+      "id": "impl-app-owned-enums",
+      "prompt": "Alineá estos tipos a how i code:\n\ntype Status = \"active\" | \"inactive\";\ntype TableMode = \"normal\" | \"loading\" | \"error\";",
+      "expect": [
+        "Carga 07; ownership APP_OWNED",
+        "String enum Status y TableMode",
+        "No deja las unions como contrato"
+      ],
+      "forbid": [
+        "as const como default para estos conjuntos",
+        "Dejar TableMode como union porque es UI"
+      ]
+    },
+    {
+      "id": "impl-record-enum-meta",
+      "prompt": "Hay export enum Status { Active = \"active\", Inactive = \"inactive\" } y const META: Record<string, Meta> = { active: { label: \"Activo\", color: \"success\" }, inactive: { label: \"Inactivo\", color: \"default\" } }. Corregí el mapping.",
+      "expect": [
+        "Propiedad pública static readonly Record<Status, Meta> en el entity helper",
+        "Keys Status.Active / Status.Inactive",
+        "Metadata exhaustiva: agregar un miembro a Status exige agregar su entrada",
+        "Consumo directo Helper.statusMeta[status] porque Status está garantizado; getStatusMeta cuando el valor puede llegar ausente"
+      ],
+      "forbid": [
+        "Record<string, Meta>",
+        "static statusMeta()",
+        "?.[status]",
+        "??"
+      ]
+    },
+    {
+      "id": "impl-mui-shadow-chip",
+      "prompt": "Este wrapper pinta <Chip color={tone} /> con:\n\ntype StatusTone = \"success\" | \"warning\" | \"error\";\ninterface StatusChipProps { tone: StatusTone }\n\nAlinealo a how i code.",
+      "expect": [
+        "Elimina StatusTone y tone",
+        "Usa ChipProps[\"color\"] o equivalente",
+        "No crea enum StatusTone",
+        "Carga 07 LIBRARY_OWNED"
+      ],
+      "forbid": [
+        "export enum StatusTone",
+        "Conservar type StatusTone"
+      ]
+    },
+    {
+      "id": "impl-runtime-button-variants",
+      "prompt": "const BUTTON_VARIANTS = [\"contained\", \"outlined\", \"text\"] as const se usa en .map para botones MUI. Tipalo según how i code.",
+      "expect": [
+        "Conserva el array runtime para .map",
+        "satisfies readonly NonNullable<ButtonProps[\"variant\"]>[] o equivalente",
+        "No crea type ButtonVariant ni enum ButtonVariant"
+      ]
+    },
+    {
+      "id": "impl-upload-state-enum",
+      "prompt": "type UploadState = \"default\" | \"uploading\" | \"success\" | \"error\". Es el estado del demo de upload de la feature. Alinealo.",
+      "expect": [
+        "APP_OWNED; string enum UploadState",
+        "No lo trata como LIBRARY_OWNED"
+      ]
+    },
+    {
+      "id": "impl-dialog-kind-nullable",
+      "prompt": "type DialogKind = \"create\" | \"edit\" | \"delete\" | null; useState<DialogKind>(null). Alinealo.",
+      "expect": [
+        "enum DialogKind solo create/edit/delete",
+        "useState<DialogKind | null>(null)",
+        "null no es miembro del enum"
+      ],
+      "forbid": [
+        "None = \"null\"",
+        "case Null"
+      ]
+    },
+    {
+      "id": "impl-keep-discriminated-union",
+      "prompt": "Tenemos type Result = { ok: true; data: User } | { ok: false; error: string }. ¿Enum o union según how i code?",
+      "expect": [
+        "UNION LEGÍTIMA / discriminated union",
+        "Conserva las variantes con shapes distintas",
+        "No convierte Result a enum"
+      ]
+    },
+    {
+      "id": "impl-drop-ceremonial-usememo",
+      "prompt": "Simplificá según how i code:\n\nconst displayFile = useMemo(() => {\n  if (state === \"default\") return null;\n  if (state === \"error\") return { name: \"x.exe\", sizeLabel: \"1 MB\" };\n  return selected ?? { name: \"a.pdf\", sizeLabel: \"2 MB\" };\n}, [selected, state]);",
+      "expect": [
+        "Identifica useMemo ceremonial",
+        "Cálculo local directo / bloque local; sin useMemo; no extrae a display.config ni helper de UI",
+        "Carga 23"
+      ]
+    },
+    {
+      "id": "impl-keep-justified-usememo",
+      "prompt": "CustomTable/MRT pide columns estables. El código tiene const columns = useMemo<MRT_ColumnDef<Row>[]>(() => [...], []). ¿Lo quito?",
+      "expect": [
+        "Conserva useMemo",
+        "Justifica estabilidad referencial / frontera memoizada",
+        "No aplica la regla de forma mecánica"
+      ],
+      "forbid": [
+        "Quitar useMemo de columns"
+      ]
+    },
+    {
+      "id": "impl-hook-file-camelcase",
+      "prompt": "Crea un hook use-dashboard para el dashboard de esta feature.",
+      "expect": [
+        "Carga 04 Naming",
+        "Archivo useDashboard.ts",
+        "Export e import specifier camelCase useDashboard"
+      ],
+      "forbid": [
+        "Crear use-dashboard.ts",
+        "Crear use-dashboard/",
+        "from './use-dashboard'"
+      ]
+    },
+    {
+      "id": "impl-hook-kebab-rename",
+      "prompt": "En el alcance está hooks/use-dashboard.ts importado con from './use-dashboard'. Alinea al estándar how i code.",
+      "expect": [
+        "Renombra a useDashboard.ts",
+        "Actualiza imports a './useDashboard'",
+        "No barre el repo entero buscando otros kebab"
+      ],
+      "forbid": [
+        "Dejar use-dashboard.ts",
+        "Migrar todos los hooks del repo"
+      ]
+    },
+    {
+      "id": "impl-keep-query-barrel",
+      "prompt": "Renombra entity.queries.ts al estilo how i code. Exporta useEntitiesQuery.",
+      "expect": [
+        "Conserva entity.queries.ts",
+        "Cita 03 y/o 04",
+        "No lo trata como hook custom 1:1"
+      ],
+      "forbid": [
+        "Renombrar a useEntitiesQuery.ts",
+        "use-entities-query.ts"
+      ]
+    },
+    {
+      "id": "impl-reject-display-config-t-inject",
+      "prompt": "Extrae los status chips de WarehouseTable a warehouse-display.config.ts. getWarehouseStatusConfig(t: TFunction) y pásale t desde useTranslation.",
+      "expect": [
+        "Rechaza *.display.config.ts",
+        "Record en warehouse.helper.ts",
+        "i18n.t() en el helper; no inyecta TFunction",
+        "Carga 08 y 15"
+      ],
+      "forbid": [
+        "Crear warehouse-display.config.ts",
+        "getWarehouseStatusConfig(t: TFunction",
+        "t: TFunction"
+      ]
+    },
+    {
+      "id": "impl-enum-meta-in-helper",
+      "prompt": "La tabla y los filtros de warehouses comparten color/icon/label por WarehouseType. Implementalo según how i code.",
+      "expect": [
+        "Una propiedad pública static readonly Record<WarehouseType, Meta> en WarehouseHelper / warehouse.helper.ts",
+        "Getter label que ejecuta i18n.t('…') al leer",
+        "Consumo directo WarehouseHelper.typeMeta[type] o spread al Chip",
+        "t() solo en el componente para copy ad-hoc",
+        "Carga 07, 08 y 15"
+      ],
+      "forbid": [
+        "display.config.ts",
+        "labelKey",
+        "createXSchema(t)",
+        "STATUS_COLOR y STATUS_LABEL en paralelo",
+        "Método que retorna o reconstruye el Record",
+        "label: i18n.t(",
+        "?.[type]",
+        "??"
+      ]
+    },
+    {
+      "id": "impl-enum-meta-dynamic-locale",
+      "prompt": "OrderHelper.statusMeta se comparte entre módulos y el usuario puede cambiar el locale después de importar el helper. Implementa metadata para OrderStatus con label, color e icon.",
+      "expect": [
+        "Propiedad pública static readonly statusMeta: Record<OrderStatus, StatusMeta>",
+        "Un solo mapa con label, color e icon",
+        "Getter label por entrada que llama i18n.t() en tiempo de lectura",
+        "Cambiar locale no deja labels congelados",
+        "Lookup directo OrderHelper.statusMeta[status]"
+      ],
+      "forbid": [
+        "static statusMeta()",
+        "label: i18n.t(",
+        "labelKey",
+        "STATUS_LABEL",
+        "OrderHelper.statusMeta[status] ??"
+      ]
+    },
+    {
+      "id": "impl-enum-meta-nullable-external",
+      "prompt": "La UI recibe currentStatus: OrderStatus | null y legacyStatus: string desde una API antigua. Usa OrderHelper.statusMeta sin debilitar el contrato canónico.",
+      "expect": [
+        "Mantiene static readonly Record<OrderStatus, StatusMeta>",
+        "Expone getStatusMeta(OrderStatus | null | undefined): StatusMeta con unknownMeta y getMeta privados",
+        "currentStatus usa getStatusMeta(currentStatus) y no repite ?. / ?? en el componente",
+        "legacyStatus se valida o normaliza en la frontera antes de indexar",
+        "El lookup directo de OrderStatus queda reservado para valores garantizados o iteración",
+        "El resolver solo trata null/undefined como ausencia"
+      ],
+      "forbid": [
+        "Record<string, StatusMeta>",
+        "Partial<Record<OrderStatus",
+        "OrderHelper.statusMeta?.[status]",
+        "OrderHelper.statusMeta[status] ?? fallback",
+        "value: string | null | undefined",
+        "meta[value as OrderStatus]",
+        "Ocultar legacy desconocido con fallback en cada consumo"
+      ]
+    },
+    {
+      "id": "impl-dialog-mount-typed-props",
+      "prompt": "La tabla abre un drawer de password del usuario. Alineá el overlay a how i code.",
+      "expect": [
+        "Montaje {isOpen && user && (",
+        "Props isOpen + user={user} + onClose",
+        "Carga 09",
+        "Mutación: hook solo mutationFn; onSuccess/onError en el drawer"
+      ],
+      "forbid": [
+        "open={",
+        "entity={",
+        "data={",
+        "isOpenXDialog && entity"
+      ]
+    },
+    {
+      "id": "impl-mutation-route-vs-dto",
+      "prompt": "PATCH /contracts/:contractId/documents/:documentId con body { body: string }. Escribí service, schema, hook y el mutateAsync desde el form.",
+      "expect": [
+        "Carga 13 y 10",
+        "Schema updateContractDocumentSchema + UpdateContractDocumentDto; no IDs en el schema",
+        "Service (params: { contractId, documentId }, data: UpdateContractDocumentDto)",
+        "TVariables { params, data } con interface *Variables",
+        "mutateAsync({ params: { contractId, documentId }, data: { body } })",
+        "useMutation con TData, CustomError, TVariables"
+      ],
+      "forbid": [
+        "{ contractId, documentId, body }",
+        "interface UpdateContractDocumentDto a mano sin zod",
+        "meter contractId en el z.object"
+      ]
+    },
+    {
+      "id": "impl-mutation-bind-id-at-hook",
+      "prompt": "Dialog para registrar un pago ya conocido (current.id) con DTO de form (monto, evidencia File | null). Alineá hook y submit.",
+      "expect": [
+        "useRegisterPayment(current.id) o equivalente; TVariables = RegisterPaymentDto",
+        "onSubmit: mutation.mutate(data) solo DTO",
+        "Service (paymentId, data); si hay File: FormDataHelper.toFormData(data) en el service",
+        "Dialog no new FormData() ni formatea fechas"
+      ],
+      "forbid": [
+        "new FormData() en el dialog",
+        "mutate({ paymentId, ...data })",
+        "TVariables híbrido con id + campos de form"
+      ]
+    },
+    {
+      "id": "impl-named-dto-not-anonymous",
+      "prompt": "La mutation de preparar documento manda { contract_template_id: number }. Tipala a how i code.",
+      "expect": [
+        "prepareXSchema + PrepareXDto vía z.infer",
+        "Si el contractId se conoce solo al guardar: TVariables { contractId, data: PrepareXDto }",
+        "Service (contractId, data)"
+      ],
+      "forbid": [
+        "mutateAsync({ contractId, contract_template_id })",
+        "TVariables anónimo sin schema"
+      ]
+    },
+    {
+      "id": "impl-status-membership-includes",
+      "prompt": "if (status === OrderStatus.Pending || status === OrderStatus.Cancelled) return. Alinealo a how i code.",
+      "expect": [
+        "[OrderStatus.Pending, OrderStatus.Cancelled].includes(status)",
+        "Carga 07",
+        "No extrae helper si el set no se repite"
+      ],
+      "forbid": [
+        "status === OrderStatus.Pending || status === OrderStatus.Cancelled"
+      ]
+    },
+    {
+      "id": "impl-php-status-in-array",
+      "prompt": "En una Action PHP: if ($status === OrderStatusStateMachine::PENDING || $status === OrderStatusStateMachine::CANCELLED). Alinealo.",
+      "expect": [
+        "in_array($status, [",
+        "OrderStatusStateMachine::PENDING",
+        "true)",
+        "Carga 07 (y 05 si SM)"
+      ],
+      "forbid": [
+        "$status === OrderStatusStateMachine::PENDING || $status === OrderStatusStateMachine::CANCELLED"
+      ]
+    },
+    {
+      "id": "impl-whenloaded-resource-ctor",
+      "prompt": "En CityResource, la relación city está así: 'city' => $this->whenLoaded('city', fn() => new CityResource($this->city)). Alinealo a how i code.",
+      "expect": [
+        "new CityResource($this->whenLoaded('city'))",
+        "Carga 06",
+        "KEEP callback solo si hay lógica extra"
+      ],
+      "forbid": [
+        "fn() => new CityResource($this->city)"
+      ]
+    },
+    {
+      "id": "impl-vue-fase0-no-react-libs",
+      "prompt": "Agrega el filtro de la cartera en este frontend Vue. package.json tiene vue, axios, dayjs y zod. No tiene React, TanStack Query, RHF ni MUI. Seguí how i code.",
+      "expect": [
+        "Fase 0 por capacidad, no por librería React",
+        "Carga el núcleo (01) y el delta Vue (25)",
+        "No PROP de instalar TanStack Query, RHF ni MUI",
+        "Server state y forms con el equivalente que el repo Vue ya tiene",
+        "Helpers de área en clase (23); nombres del núcleo"
+      ],
+      "forbid": [
+        "Instalar @tanstack/vue-query",
+        "Instalar react-hook-form",
+        "Instalar @mui/material",
+        "Migrar el repo a React"
+      ]
+    },
+    {
+      "id": "impl-angular-kebab-file-core-names",
+      "prompt": "En un componente Angular user-list.component.ts, el archivo debe seguir el kebab que pide Angular. Adentro hay una función suelta formatStartedAt y una clase userhelper. Alinealo a how i code.",
+      "expect": [
+        "El nombre de archivo kebab que impone Angular es LIBRARY_OWNED (01); se conserva user-list.component.ts",
+        "Clases, métodos y helpers siguen 04 Naming: UserHelper, no userhelper",
+        "formatStartedAt no es un helper de área suelto; la fecha va en la clase de área (23)",
+        "Carga el núcleo (01); no escribe un capítulo Angular"
+      ],
+      "forbid": [
+        "Renombrar el archivo a UserList.component.ts porque 04 pide PascalCase",
+        "Aprobar la función suelta porque el repo es Angular",
+        "Escribir un capítulo Angular nuevo"
+      ]
+    },
+    {
+      "id": "impl-python-membership-422",
+      "prompt": "Un handler FastAPI comprueba status == \"pending\" or status == \"cancelled\" y, ante errores de validación, devuelve HTTPException(detail=str(exc)). Alinealo a how i code.",
+      "expect": [
+        "status in (OrderStatus.PENDING, OrderStatus.CANCELLED)",
+        "Handler de RequestValidationError que devuelve 422 por campo con copy de dominio",
+        "Body model separado del path param",
+        "Carga 01 y 07"
+      ],
+      "forbid": [
+        "Proponer instalar librerías de Laravel o React",
+        "Escribir un capítulo de Python"
+      ]
+    },
+    {
+      "id": "impl-vue-no-destructure-props",
+      "prompt": "En el script setup hay const { entityId } = defineProps<{ entityId: string }>(). Alinealo a how i code.",
+      "expect": [
+        "interface Props local",
+        "const props = defineProps<Props>() sin destructurar",
+        "Carga 25 y gian-ts-style"
+      ],
+      "forbid": [
+        "Aprobar el destructurado porque Vue 3.5 lo hace reactivo"
+      ]
+    },
+    {
+      "id": "impl-vue-logic-in-composable",
+      "prompt": "En el <script setup> de EntityPage.vue hay un computed summary y un handler onClear junto a defineProps. Alinealo a how i code.",
+      "expect": [
+        "computed y onClear salen a composables/useEntityPage.ts",
+        "El script inline se queda con macros, imports y la llamada al composable",
+        "El composable no llama a defineProps",
+        "Carga 25"
+      ],
+      "forbid": [
+        "Dejar el computed o el handler en el <script setup>",
+        "Crear EntityPage.ts como src del script setup"
+      ]
+    },
+    {
+      "id": "impl-composable-section-order",
+      "prompt": "En useEntityPage el watch está arriba, pegado a useRoute(), y el computed va después. Alinealo a how i code.",
+      "expect": [
+        "Orden: dependencias, estado, derivados, funciones, efectos, return (04)",
+        "El watch no va antes del computed",
+        "Dependencias y estado en bloques separados",
+        "La línea en blanco entre secciones es gian-ts-style"
+      ],
+      "forbid": [
+        "Dejar el watch antes de los computed",
+        "Comentarios // State o // Effects"
+      ]
+    },
+    {
+      "id": "impl-delete-requirement-drops-tests",
+      "prompt": "Se elimina el helper formatLabel porque ya nadie lo usa. Agrega un test que compruebe que formatLabel ya no existe.",
+      "expect": [
+        "Borrar formatLabel y sus tests exclusivos",
+        "Borrar fixtures, mocks y factories que queden sin uso",
+        "Carga 17"
+      ],
+      "forbid": [
+        "Crear un test que afirme que formatLabel ya no existe"
+      ]
+    },
+    {
+      "id": "impl-keep-test-when-requirement-stays",
+      "prompt": "formatLabel se reemplaza por otra implementación. El valor debe seguir llegando completo y sin redondeo. Alinea los tests a how i code.",
+      "expect": [
+        "Conservar o adaptar el test del valor completo y sin redondeo",
+        "Borrar solo los tests exclusivos de la implementación vieja",
+        "Carga 17"
+      ],
+      "forbid": [
+        "Borrar el test del requisito que sigue",
+        "Sustituirlo por un test de que formatLabel ya no existe"
+      ]
+    },
+    {
+      "id": "impl-deletion-creates-guarantee",
+      "prompt": "El payload deja de incluir el documento del cliente. Ese dato no debe volver a salir. Alinea los tests a how i code.",
+      "expect": [
+        "Probar la garantía: el documento no va en el payload",
+        "En términos del comportamiento, no de que un símbolo fue borrado",
+        "Carga 17"
+      ],
+      "forbid": [
+        "Limitarse a borrar el test viejo sin cubrir la garantía",
+        "Un test cuya única afirmación es que la función ya no existe"
+      ]
+    },
+    {
+      "id": "impl-email-field-semantics",
+      "prompt": "El campo de correo es type=\"text\" y el schema no normaliza. Alinealo a how i code, en el form y en el backend.",
+      "expect": [
+        "Pasa a type=\"email\" con autocomplete=\"email\"",
+        "trim y minúsculas en el form y antes de validar en el backend",
+        "La misma regla de email en el schema del form y en el borde",
+        "Carga 10"
+      ],
+      "forbid": [
+        "Dejar type=\"text\"",
+        "Rechazar el pegado en lugar de normalizar"
+      ]
+    },
+    {
+      "id": "impl-surname-no-digits-is-proposal",
+      "prompt": "El campo de apellidos acepta cualquier texto. Alinealo a how i code.",
+      "expect": [
+        "PROP de apellidos sin dígitos, porque puede rechazar datos ya guardados",
+        "No aplica el rechazo en silencio",
+        "Carga 10"
+      ],
+      "forbid": [
+        "Agregar la regla de sin dígitos sin proponerla",
+        "Recorrer el resto del formulario"
+      ]
+    },
+    {
+      "id": "impl-money-decimal-no-float",
+      "prompt": "El monto es type=\"number\" libre. Alinealo a how i code.",
+      "expect": [
+        "Pasa a decimal con 2 decimales",
+        "Sin redondeo por float: schema de dinero o decimal del repo",
+        "inputmode=\"decimal\"",
+        "Carga 10"
+      ],
+      "forbid": [
+        "Dejar type=\"number\" libre",
+        "Parsear el monto con un float"
+      ]
+    },
+    {
+      "id": "impl-currency-mask-library-not-carpentry",
+      "prompt": "Hay que mostrar el monto con máscara de moneda por locale. El repo no tiene un campo de moneda. Escribí la máscara a mano.",
+      "expect": [
+        "No escribe la máscara, el parser ni el picker a mano",
+        "Si el repo ya tiene el componente, lo usa",
+        "Si no existe, PROP de una librería del framework del repo, con costo y riesgo",
+        "No instala sin OK",
+        "Mientras tanto, el campo queda con el tipo y la validación de 10",
+        "Carga 10 y 19"
+      ],
+      "forbid": [
+        "Implementar la máscara casera",
+        "Instalar la librería sin aprobación",
+        "Proponer una librería de otro framework"
+      ]
+    },
+    {
+      "id": "impl-request-base-presence",
+      "prompt": "Crea StoreInvoiceRequest y UpdateInvoiceRequest. Los dos validan number, code unique y note opcional.",
+      "expect": [
+        "Base abstracta InvoiceRequest en app/Http/Requests/Invoice/",
+        "rules() y messages() viven una sola vez en la base",
+        "Store y Update solo implementan presence()",
+        "Store devuelve ['required']",
+        "Update parcial devuelve ['sometimes', 'required']",
+        "Sin loop que inyecte sometimes o required"
+      ],
+      "forbid": [
+        "foreach sobre las reglas",
+        "array_unshift",
+        "Str::contains para inyectar presencia",
+        "trait para el Store y el Update de Invoice"
+      ]
+    },
+    {
+      "id": "impl-request-replace-trait-loop",
+      "prompt": "Este par Store/Update comparte reglas con un trait y un loop que hace Str::contains sobre el nombre de la key para inyectar sometimes. Alinea ese par.",
+      "expect": [
+        "Reemplaza el trait y el loop por una base InvoiceRequest + presence()",
+        "Borra el trait si queda sin uso",
+        "No conserva el loop por compatibilidad"
+      ],
+      "forbid": [
+        "Conservar el foreach",
+        "Conservar Str::contains",
+        "Dejar el trait para ese par"
+      ]
+    },
+    {
+      "id": "impl-address-rules-trait",
+      "prompt": "Invoice y Entity validan el mismo bloque de dirección. Extrae esas reglas.",
+      "expect": [
+        "Trait en app/Traits/Requests/AddressRules.php",
+        "Namespace App\\Traits\\Requests",
+        "Métodos addressRules y addressMessages con prefix",
+        "Cada request arma rules() con ...addressRules y messages() con ...addressMessages",
+        "El trait no declara rules(), messages() ni authorize(), y no lee route()"
+      ],
+      "forbid": [
+        "Base abstracta compartida entre Invoice y Entity solo por la dirección",
+        "Trait que declara rules() o lee $this->route()"
+      ]
+    }
+  ]
+}

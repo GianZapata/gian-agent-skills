@@ -1,0 +1,354 @@
+{
+  "skill": "gian-how-i-code",
+  "version": "1.4.6",
+  "cases": [
+    {
+      "id": "audit-mold",
+      "prompt": "Audita esta feature contra mis convenciones how i code.",
+      "expect": [
+        "Modo Auditar",
+        "un solo docs/pattern-audit/YYYY-MM-DD-<alcance>-auditoria.md en español",
+        "Sin editar código",
+        "Sin nombres de proyectos de procedencia"
+      ]
+    },
+    {
+      "id": "audit-with-proposals",
+      "prompt": "Revisa si este módulo debería usar enums en vez de typed strings y si falta React Query.",
+      "expect": [
+        "Hallazgos y/o PROP con evidencia de package.json",
+        "No instalar sin OK"
+      ]
+    },
+    {
+      "id": "audit-underutilized-rq",
+      "prompt": "Ya tenemos TanStack Query y query-key-factory, pero las invalidaciones usan arrays sueltos. Audita.",
+      "expect": [
+        "Tipo: Librería instalada pero subutilizada o Abstracción interna",
+        "No propone reinstalar Query",
+        "Migración incremental hacia store central"
+      ]
+    },
+    {
+      "id": "audit-dayjs-style",
+      "prompt": "Esta feature formatea fechas con new Date y concatena className a mano. No hay dayjs en package.json. Audita.",
+      "expect": [
+        "Hallazgo Alto por falta de dayjs y/o new Date de negocio",
+        "PROP librería faltante dayjs sin instalar",
+        "Carga 23-ts-style-helpers",
+        "Menciona cn() y/o helpers clase vs utils"
+      ]
+    },
+    {
+      "id": "audit-mutation-options-zod",
+      "prompt": "El hook useCreateEntity mete onSuccess e invalidate adentro y hay una interface CreateEntityInput aparte del zod schema. Audita.",
+      "expect": [
+        "Hallazgo: mutation debe ser solo mutationFn + UseMutationOptions interface",
+        "Hallazgo: input vía z.infer, no interface Input paralela",
+        "Si el ejemplo mezcla id+body en un plano, hallazgo de híbrido ruta+body (13)",
+        "Carga 13 y/o 10",
+        "Toast/invalidate en el caller (diálogo/página)"
+      ]
+    },
+    {
+      "id": "audit-hybrid-mutation-vars",
+      "prompt": "useUpdateContractDocumentMutation usa TVariables { contractId, documentId, body: string } y el dialog hace new FormData() con la fecha en string. Audita.",
+      "expect": [
+        "Hallazgo Media: híbrido ruta+body (13)",
+        "Hallazgo: payload anónimo vs DTO Zod (10)",
+        "Hallazgo: FormData/fechas en UI (09/23)",
+        "Corrección: params + UpdateContractDocumentDto; FormDataHelper en service",
+        "Sin editar código"
+      ]
+    },
+    {
+      "id": "audit-fe-infra-inventory",
+      "prompt": "Audita el client: hay axios.create en features, no hay ErrorMapper, dayjs está en package.json pero se importa crudo, y new Date en listados.",
+      "expect": [
+        "Inventario Fase 0 / checklist 02",
+        "Hallazgos o PROP por ErrorMapper/apiFetcher faltante",
+        "Hallazgo dayjs subutilizado o abstracción módulo; new Date",
+        "No reinstala dayjs si ya está en deps",
+        "No instalar sin OK"
+      ]
+    },
+    {
+      "id": "audit-helper-duplication",
+      "prompt": "Existe shared DateHelper.format pero sales-orders define formatOrderDate con dayjs que hace lo mismo. Audita.",
+      "expect": [
+        "Hallazgo Media: duplicación vs DateHelper existente",
+        "Corrección: reutilizar/extender DateHelper; eliminar función local",
+        "No propone instalar lib nueva",
+        "No trata display labels duplicados como el mismo hallazgo"
+      ]
+    },
+    {
+      "id": "audit-full-repo",
+      "prompt": "Audita todo el proyecto contra how i code. Quiero cobertura completa, no solo un módulo.",
+      "expect": [
+        "Alcance repositorio completo; carga 24-full-repo-audit",
+        "Inventario de archivos/features; no muestreo de 2 features como cierre",
+        "Gate de cobertura + disposición; categorías sin hallazgos con evidencia",
+        "Registro de búsquedas; sin concluir altamente alineado sin gate",
+        "Lee versión actual de SKILL.md; no inventa reglas hardcodeadas",
+        "Un solo docs/pattern-audit/…-auditoria.md; ledger auxiliar solo si hace falta"
+      ]
+    },
+    {
+      "id": "audit-prop-honesty",
+      "prompt": "Propón query-key-factory y eslint-plugin-query para este repo en la auditoría.",
+      "expect": [
+        "PROP con costos y riesgos reales (no Ninguno)",
+        "No afirma que el plugin garantiza CI sin verificar ESLint scripts y pipeline",
+        "No instala sin OK"
+      ]
+    },
+    {
+      "id": "audit-ownership-shadow-chip",
+      "prompt": "Audita: type StatusTone = \"success\" | \"warning\" | \"info\"; el Chip usa color={tone}. También type TableMode = \"normal\" | \"loading\" | \"error\".",
+      "expect": [
+        "Hallazgo LIBRARY_OWNED: eliminar StatusTone; ChipProps[\"color\"]",
+        "No propone enum StatusTone",
+        "Hallazgo APP_OWNED: TableMode string enum",
+        "Carga 07"
+      ]
+    },
+    {
+      "id": "audit-ceremonial-usememo",
+      "prompt": "Audita un componente que envuelve 3 ifs y un objeto { name, size } en useMemo. Las columns de MRT también están en useMemo.",
+      "expect": [
+        "Hallazgo useMemo ceremonial en el display trivial",
+        "No marca el useMemo de columns como hallazgo",
+        "Carga 23"
+      ]
+    },
+    {
+      "id": "audit-local-sx-constants",
+      "prompt": "Audita: const CONTROL_SX: SxProps<Theme> = { height: 38 }; className={'flex ' + (on ? 'gap-2' : '')}; const theme = useTheme(); sx={{ color: theme.palette.primary.main }}. También <Box className=\"flex gap-2\" /> estático.",
+      "expect": [
+        "Hallazgo Media constantes *_SX locales (04 no-local-style-constants)",
+        "Hallazgo Media concat de className; pide cn()",
+        "Hallazgo Media useTheme ceremonial; pide sx={theme => …}",
+        "No marca className estático sin cn como hallazgo",
+        "Carga 04 y 23"
+      ]
+    },
+    {
+      "id": "audit-focused-styling-runtime-token-scope",
+      "prompt": "Auditoría focalizada SOLO de styling. Evidencia: (1) ToggleButton usa className={selected ? 'h-8 px-2' : 'h-8 px-2 text-text-secondary hover:bg-white'}; (2) <Button className=\"h-8 px-2\" />; (3) Chip usa sx(theme) con success.light/divider y el repo confirma bridges --color-success-light/--color-divider; (4) Box usa theme.palette.custom.special y el repo confirma que NO hay bridge/utility; (5) la query usa una key suelta y no propaga AbortSignal. Clasifica sin ampliar el scope.",
+      "expect": [
+        "Hallazgo de styling por clases runtime selected sin cn(); corrección con base única y clases condicionales",
+        "No marca el className estático como hallazgo",
+        "Marca sx(theme) con bridge real verificado como candidato/hallazgo Tailwind según la regla aplicable",
+        "KEEP/no hallazgo para sx(theme) con custom.special sin bridge demostrable",
+        "Clasifica la key suelta y AbortSignal como Fuera de alcance, no como GAP de styling",
+        "No convierte automáticamente los problemas Query fuera de alcance en PROP",
+        "Carga 04, 23 y la nota de scope de 18"
+      ],
+      "forbid": [
+        "Exigir cn() para el Button estático",
+        "Inventar utility para custom.special",
+        "Clasificar Query o AbortSignal como GAP de styling",
+        "Crear PROP de Query sin una auditoría más amplia solicitada"
+      ]
+    },
+    {
+      "id": "audit-formrequest-rules-only",
+      "prompt": "Audita este StoreUserRequest: solo rules() con is_active required|boolean y phone regex. Los defaults visibles son 'El campo is_active es obligatorio' y 'El estatus debe ser un valor booleano'. La UI descarta el 422 y muestra un error genérico. Alcance: validación user-facing de este Request y su form.",
+      "expect": [
+        "Hallazgo FAIL (no GAP) por contrato user-facing incompleto: rules() no basta",
+        "Pide revisar mensajes resultantes (coverage semántico), no una entrada messages() por regla",
+        "Marca copy que expone is_active/boolean/regex",
+        "attributes() solo si hace falta para copy humano; no FAIL solo por ausencia del método",
+        "Hallazgo de 422 no mapeado a campos / mensaje BE no mostrado",
+        "Carga 05, 10 y 14"
+      ],
+      "forbid": [
+        "Cerrar como alineado porque rules() existe",
+        "FAIL únicamente porque falta public function attributes()",
+        "Exigir count(rules) === count(messages)",
+        "Clasificar el copy interno como Fuera de alcance en una auditoría de validación user-facing"
+      ]
+    },
+    {
+      "id": "audit-hook-kebab-file",
+      "prompt": "Audita esta feature: hooks/use-dashboard.ts exporta useDashboard. Alcance: naming de hooks de este módulo.",
+      "expect": [
+        "Modo Auditar",
+        "Hallazgo FAIL: archivo kebab use-* vs camelCase useDashboard (04)",
+        "Sin editar código ni renombrar"
+      ],
+      "forbid": [
+        "git mv use-dashboard",
+        "Renombrar el archivo en esta auditoría",
+        "Tratar entity.queries.ts como el mismo hallazgo"
+      ]
+    },
+    {
+      "id": "audit-display-config-tfunction",
+      "prompt": "Audita: components/machine-display.config.ts exporta getMachineStatusConfig(t: TFunction<'machines'>) con Record de color/icon/label. MachineTable hace const { t } = useTranslation(); getMachineStatusConfig(t).",
+      "expect": [
+        "Hallazgo: *.display.config.ts no es canónico",
+        "Hallazgo: inyectar TFunction; corrección a propiedad pública static readonly Record en machine.helper.ts",
+        "Getter label con i18n.t() para traducción en tiempo de lectura",
+        "Carga 08 y 15",
+        "Sin editar código"
+      ],
+      "forbid": [
+        "Relocate to feature-level display configs",
+        "Aprobar getXConfig(t)"
+      ]
+    },
+    {
+      "id": "audit-labelkey-indirection",
+      "prompt": "Audita CustomerOrderHelper: humanStatusesKeys, statusChipColors y statusIcons en paralelo; el Chip hace t(config.labelKey).",
+      "expect": [
+        "Hallazgo: labelKey diferido",
+        "Hallazgo: mappings paralelos; una propiedad pública static readonly Record en el helper",
+        "Corrección: getter label con i18n.t() y consumo directo",
+        "Carga 07 y 08"
+      ],
+      "forbid": [
+        "Crear customer-order-display.config.ts",
+        "Pedir getStatusConfig(t: TFunction)"
+      ]
+    },
+    {
+      "id": "audit-enum-meta-method-rebuild",
+      "prompt": "Audita OrderHelper: static statusMeta(): Record<OrderStatus, StatusMeta> { return { ...todos los statuses... }; }. OrderTable llama OrderHelper.statusMeta()[status].",
+      "expect": [
+        "Hallazgo Medio: el método reconstruye el Record en cada llamada",
+        "Corrección: propiedad pública static readonly Record<OrderStatus, StatusMeta>",
+        "Getter label con i18n.t() dentro de cada entrada",
+        "Consumo directo OrderHelper.statusMeta[status]",
+        "Conserva exhaustividad del Record"
+      ],
+      "forbid": [
+        "Aprobar static statusMeta()",
+        "Mantener OrderHelper.statusMeta()[status]",
+        "Convertir a Record<string, StatusMeta>"
+      ]
+    },
+    {
+      "id": "audit-enum-meta-frozen-label-fallback",
+      "prompt": "Audita: static readonly statusMeta: Record<OrderStatus, StatusMeta> = { [OrderStatus.Pending]: { label: i18n.t('orders:pending'), color: 'warning' }, ... }; el Chip usa OrderHelper.statusMeta?.[status] ?? DEFAULT_META. status es OrderStatus no nullable.",
+      "expect": [
+        "Hallazgo Medio: label traducido durante inicialización y locale congelado",
+        "Corrección: getter label que llama i18n.t() al leer",
+        "Hallazgo Medio: optional chaining y fallback innecesarios para enum cerrado",
+        "Corrección: OrderHelper.statusMeta[status] o spread directo",
+        "No inventa manejo de unknown para el contrato normal"
+      ],
+      "forbid": [
+        "Aprobar label: i18n.t(",
+        "Conservar ?.[status]",
+        "Conservar ?? DEFAULT_META"
+      ]
+    },
+    {
+      "id": "audit-enum-meta-external-boundary",
+      "prompt": "Audita el consumo de OrderHelper.statusMeta para dos inputs: status: OrderStatus y legacyStatus: string | null. El primero usa fallback; el segundo se indexa sin validar.",
+      "expect": [
+        "Hallazgo: status OrderStatus debe usar lookup directo sin fallback",
+        "Hallazgo separado: legacyStatus requiere validación/normalización o rama explícita",
+        "Si status puede ser nullable, recomienda getStatusMeta(OrderStatus | null | undefined) con unknownMeta y getMeta privados",
+        "No debilita el Record canónico a Record<string, Meta> ni Partial",
+        "Distingue contrato cerrado normal de nullable/external/legacy",
+        "No recomienda string, casts ni fallback por consumidor"
+      ],
+      "forbid": [
+        "Un único fallback silencioso para ambos inputs",
+        "Record<string, Meta>",
+        "Partial<Record<OrderStatus",
+        "Proponer value: string como resolver genérico",
+        "Proponer meta[value as OrderStatus]"
+      ]
+    },
+    {
+      "id": "audit-dialog-entity-open",
+      "prompt": "Audita: {open && row && <EditDialog open={open} entity={row} data={row} onConfirm={onSave} />}. Alcance: overlays de esta tabla.",
+      "expect": [
+        "Hallazgo: open vs isOpen (09)",
+        "Hallazgo: entity=/data= vs prop por tipo",
+        "Hallazgo: onConfirm de acción en el padre",
+        "Carga 09",
+        "Sin editar código"
+      ],
+      "forbid": [
+        "Aprobar entity={row}",
+        "Aprobar open={"
+      ]
+    },
+    {
+      "id": "audit-status-or-chain",
+      "prompt": "Audita: if (status === OrderStatus.Pending || status === OrderStatus.Cancelled) { … }. Alcance: tipos/status de este módulo.",
+      "expect": [
+        "Hallazgo: cadena === || === vs includes (07)",
+        "Corrección [OrderStatus.Pending, OrderStatus.Cancelled].includes(status)",
+        "Carga 07",
+        "Sin editar código"
+      ],
+      "forbid": [
+        "Aprobar status === OrderStatus.Pending || status === OrderStatus.Cancelled",
+        "KEEP un === único como el mismo hallazgo"
+      ]
+    },
+    {
+      "id": "audit-whenloaded-callback",
+      "prompt": "Audita ClientResource: 'client' => $this->whenLoaded('client', fn() => new ClientResource($this->client)). Alcance: este Resource.",
+      "expect": [
+        "Hallazgo: whenLoaded con callback innecesario (06)",
+        "Corrección new ClientResource($this->whenLoaded('client'))",
+        "Carga 06",
+        "Sin editar código"
+      ],
+      "forbid": [
+        "Aprobar fn() => new ClientResource($this->client)"
+      ]
+    },
+    {
+      "id": "audit-vue-local-area-fn",
+      "prompt": "Audita AccountPage.ts (Vue). Junto a DateHelper hay una función local startedStamp que parte el ISO y arma '15 ene. · 14:30'. Alcance: esta página.",
+      "expect": [
+        "Hallazgo: función local que duplica el área de DateHelper (23)",
+        "Corrección: llamar o extender DateHelper; quitar startedStamp",
+        "Carga 23 y el núcleo (01); 25 no apaga el helper",
+        "Sin editar código"
+      ],
+      "forbid": [
+        "Aprobar startedStamp porque el repo es Vue",
+        "Crear formatMoney o una función suelta como patrón del área"
+      ]
+    },
+    {
+      "id": "audit-vue-template-no-style-skill",
+      "prompt": "Formatea el <template> y el <style> de este archivo .vue con el estilo Gian.",
+      "expect": [
+        "No hay skill de estilo Gian para el template ni el style",
+        "El composable .ts, o el <script setup lang=\"ts\"> inline, sí carga gian-ts-style",
+        "Sin editar el template"
+      ],
+      "forbid": [
+        "Aplicar reglas de TSX/JSX al template"
+      ]
+    },
+    {
+      "id": "audit-request-sometimes-nested",
+      "prompt": "Audita este UpdateInvoiceRequest: items.*.qty tiene sometimes y required_with:items.*.price.",
+      "expect": [
+        "Hallazgo Alta",
+        "sometimes en una key anidada con required_with",
+        "Sin editar código"
+      ]
+    },
+    {
+      "id": "audit-request-store-without-required",
+      "prompt": "Audita StoreInvoiceRequest. number es obligatorio en el producto, pero sus reglas son string y max:255, sin required.",
+      "expect": [
+        "Hallazgo Alta",
+        "campo obligatorio sin required en el Store",
+        "Sin editar código"
+      ]
+    }
+  ]
+}

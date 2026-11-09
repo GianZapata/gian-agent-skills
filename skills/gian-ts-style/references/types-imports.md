@@ -2,23 +2,44 @@
 
 ## Type-only import (HARD)
 
-`type-only-import`. Si el specifier existe solo en type position:
+`type-only-import`. Todos los specifiers de la sentencia se usan solo en posición de tipo → `import type { … }`, también si venían como `{ type A, type B }`.
 
 ```ts
 import type { ChipProps } from '@mui/material/Chip';
+import type { Invoice, InvoiceStatus } from '../interfaces/invoice.interface';
 ```
 
-SAFE FIX de runtime import innecesario → `import type`.
+Mixto (valor + tipo) → una sola sentencia con `type` inline. Sin split en dos sentencias.
 
-Mixed type+value: seguir ESLint `import/order` del repo si existe; si no, `import { Foo, type Bar }` o split. Decorators/metadata runtime oculto → GAP.
+```ts
+import { Chip, type ChipProps } from '@mui/material';
+```
 
-Unused imports: owner ESLint (`unused-imports`). No reimplementar. WRITE no deja unused.
+Re-export de tipos → `export type { … }`.
+
+```ts
+export type { Invoice, InvoiceStatus } from './invoice.interface';
+```
+
+No:
+
+```ts
+import { ChipProps } from '@mui/material/Chip';
+import { type Invoice, type InvoiceStatus } from '../interfaces/invoice.interface';
+import { Chip } from '@mui/material';
+import type { ChipProps } from '@mui/material';
+export { Invoice } from './invoice.interface';
+```
+
+SAFE FIX. Decorators o metadata de runtime (`emitDecoratorMetadata`) → `GAP type-only-import archivo:línea — metadata de runtime`.
+
+Unused imports: owner ESLint (`unused-imports`). No reimplementar. WRITE no deja imports sin uso.
 
 Import **order/groups**: owner ESLint del repo. Esta skill no inventa grupos.
 
-## Interface for own object shapes (PREFERENCE)
+## Interface for own object shapes (HARD)
 
-`interface-object-shape`.
+`interface-object-shape`. `type X = { … }` cuyo lado derecho es un object literal → `interface X { … }`.
 
 ```ts
 interface StatusChipProps {
@@ -27,7 +48,7 @@ interface StatusChipProps {
 }
 ```
 
-No (object shape propio):
+No:
 
 ```ts
 type StatusChipProps = {
@@ -36,16 +57,16 @@ type StatusChipProps = {
 };
 ```
 
-No contradice `gian-how-i-code` `07`:
+Se conserva `type`, no FAIL, cuando el lado derecho es (no contradice `gian-how-i-code` `07`):
 
-- conjuntos cerrados APP_OWNED → enum
-- unions legítimas → `type`
-- derived/library → tipo oficial / `type`
-- mapped/conditional/intersection → `type`
-- `z.infer` → `type`
-- props/object shapes propios → `interface` default
+- union (`|`) o intersection (`&`)
+- mapped o conditional type
+- `z.infer<…>` u otro tipo derivado de librería
+- alias de otro tipo (`type InvoiceId = string`)
 
-AST-SENSITIVE. WRITE emite `interface`. AUDIT FAIL `type` de object shape propio en hunk tocado. No migrar unions ni `z.infer`.
+Conjuntos cerrados APP_OWNED → enum (`gian-how-i-code` `07`).
+
+WRITE emite `interface`. FIX/AUDIT: aplicar en el alcance. Gate: el typecheck del repo (`gian-how-i-code` `17`). Si falla por el cambio (por ejemplo, un index signature implícito que la interface no da), revertir y reportar `GAP interface-object-shape archivo:línea — typecheck falla`.
 
 ## Named interface (HARD)
 

@@ -18,7 +18,7 @@ Backend: al crear, modificar o auditar un caso, recorrer ruta o entrada → auto
 
 Incluir (si existen): `app/`, `apps/*/src`, `components/`, `features/`, `hooks/`, `lib/`, `stores/`, `types/`, `resources/` (Laravel), routers y schemas `*.py` (Python), tests, configs que afecten arquitectura/TS/ESLint/Query/Next/Firebase/validación (`pyproject.toml` incluido).
 
-Excluir por defecto: `node_modules`, `.next`, `dist`, `build`, `coverage`, `.venv`, `__pycache__`, artefactos generados, cachés, vendor. **Toda exclusión extra** → declarar y justificar.
+Excluir siempre: `node_modules`, `.next`, `dist`, `build`, `coverage`, `.venv`, `__pycache__`, artefactos generados, cachés, vendor. **Toda exclusión extra** → declarar y justificar.
 
 Inventario reproducible (`git ls-files` o equivalente). Registrar:
 
@@ -34,11 +34,13 @@ Tabla mínima:
 
 Ningún archivo en alcance puede quedar omitido en silencio. Clasificar cada uno: revisado directo | cubierto por búsqueda estructural | textual | símbolos | excluido justificado.
 
-Auxiliar permitido si el inventario es enorme:
+Auxiliar permitido:
 
 ```text
 docs/pattern-audit/YYYY-MM-DD-<alcance>-coverage-ledger.md
 ```
+
+Usarlo o no es decisión explícita del auditor. Se declara en el reporte (§0 de `18`) con el motivo.
 
 El reporte principal sigue siendo el único `docs/pattern-audit/…-auditoria.md` (`18`, `21`). La carpeta se ignora en el `.gitignore` de la raíz git auditada, como dice `18`.
 
@@ -55,7 +57,7 @@ Matriz:
 
 ## 4. Barrido obligatorio (textual + estructural + símbolos)
 
-Combinar `rg`/Grep, **ast-grep** (si hay), **Serena/codegraph** (si hay). Afirmar “usé X” sin filas en el registro de búsquedas **no** cuenta.
+Combinar `rg`/Grep, **ast-grep** y **Serena/codegraph**. Si una herramienta no está disponible, registrarlo en el Apéndice A (fila con la herramienta y «no disponible»). Afirmar “usé X” sin filas en el registro de búsquedas **no** cuenta.
 
 Categorías mínimas a cubrir (contrastar con references vigentes):
 
@@ -72,6 +74,16 @@ Categorías mínimas a cubrir (contrastar con references vigentes):
 | Errores / feedback | `14` |
 | Calidad de diseño | `22` |
 | Stack gaps | `19` |
+| Copy / i18n | `15` |
+| Backend (ruta → autorización → Request → Controller → Action → persistencia y efectos → respuesta) | `05`, `06` |
+| Tablas / filtros | `11` |
+| Estado | `12` |
+| Tests | `17` |
+| Orden del cuerpo de función | `26` |
+| Tenancy (condicional) | `16` |
+| Vue SFC (condicional) | `25` |
+
+Las categorías condicionales se marcan «No aplicable» con evidencia (p. ej. `rg` sin tenancy en manifests y config, ningún `.vue` en el inventario). Ninguna categoría queda sin estado.
 
 ### Patrones orientativos (no son la regla)
 
@@ -86,7 +98,7 @@ La verdad es cada `references/NN`. Ejemplos de búsqueda:
 - Naming: `handle[A-Z]`, files `use-*.ts(x)` / `use_*.ts(x)`, `export function`, `className=\``, `as any`
 - Errores: `console.error`, `toast.`, `error.message`, `FirebaseError` / `CustomError`
 
-Para **cada** mutation hook / form / overlay relevante: tabla de cumplimiento vs regla **vigente** (no inventar la regla aquí).
+Para **cada** mutation hook, form y overlay del inventario, sin excepción: tabla de cumplimiento vs regla **vigente** (no inventar la regla aquí).
 
 ## 5. Revisión por feature
 
@@ -163,6 +175,10 @@ No cerrar como completo hasta:
 - [ ] Todas las features con estado
 - [ ] Mutations / queries-subscriptions / forms / display / overlays cubiertos
 - [ ] Fechas-helpers / naming / enums / errores / design quality cubiertos
+- [ ] Copy / i18n cubiertos
+- [ ] Backend: ruta → … → respuesta cubierto (encabezado de este archivo)
+- [ ] Tablas / estado / tests / orden de función cubiertos
+- [ ] Tenancy y Vue cubiertos o «No aplicable» con evidencia
 - [ ] Variante documentada (matriz)
 - [ ] Categorías sin hallazgos con evidencia
 - [ ] PROP con costos/riesgos reales
@@ -175,10 +191,12 @@ Si un ítem falla → disposición no puede ser `full_repo_audit_complete`.
 
 Una de:
 
-- `full_repo_audit_complete`
-- `full_repo_audit_complete_with_blind_spots`
-- `full_repo_audit_blocked`
-- `audit_incomplete`
+| Disposición | Cuándo |
+|---|---|
+| `full_repo_audit_complete` | Todo el Gate cumplido, sin exclusiones extra |
+| `full_repo_audit_complete_with_blind_spots` | Todo el Gate cumplido salvo exclusiones justificadas, listadas una por una con motivo |
+| `full_repo_audit_blocked` | Falta acceso (archivos, repo, entorno) para cumplir el Gate; se nombra qué falta |
+| `audit_incomplete` | Cualquier otro ítem del Gate sin cumplir |
 
 ```text
 Archivos en alcance:

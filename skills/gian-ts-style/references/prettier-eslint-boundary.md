@@ -35,7 +35,7 @@ Si el repo usa `eslint-plugin-vue` o `@angular-eslint`, no pelear sus reglas ni 
 | Skill rule | ESLint approx | Why not on |
 |---|---|---|
 | `arrow-implicit-return` | `arrow-body-style: as-needed` | Rompe `react-component-explicit-return` |
-| `single-statement-if` | `curly: multi` / `multi-or-nest` | Suele exigir braces en multilínea (regla 5) |
+| `single-statement-if` | `curly: multi-line` | Permite `{}` en una línea y no las quita; también gobierna `for`/`while` |
 | `boolean-prop-shorthand` | `react/jsx-boolean-value: never` | Equivalente futuro opcional |
 | `fragment-shorthand` | `react/jsx-fragments: syntax` | Equivalente futuro opcional |
 | `type-only-import` | `@typescript-eslint/consistent-type-imports` | GAP decorators; no instalar |

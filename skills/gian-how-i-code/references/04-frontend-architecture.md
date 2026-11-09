@@ -26,7 +26,7 @@ Sintaxis TS/TSX: `gian-ts-style` (no decide Tailwind/MUI/`sx`). Mecánica de `cn
 
 En componentes React/MUI:
 
-1. Tailwind es el default para CSS visual:
+1. El CSS visual de esta lista MUST ir en Tailwind. `sx` solo en los casos cerrados del punto 5:
    - layout
    - flex / grid de CSS
    - spacing
@@ -86,7 +86,7 @@ El gate observa si **las clases varían**, no si el componente tiene estado. Si 
 
 Mecánica y anti-patrones de composición: `23`.
 
-4. **`no-local-style-constants` (HARD).** No extraer objetos/functions de styling locales por organización visual.
+4. **`no-local-style-constants` (HARD).** Prohibido guardar styling ordinario en constantes, objetos, funciones, `useMemo` o archivos `*.styles.ts`, en el mismo archivo o en otro. Las clases van inline en el JSX, con el `cn()` del repo cuando varían. Si el bloque se repite, se extrae un componente.
 
 No:
 
@@ -96,9 +96,18 @@ const CONTROL_SX: SxProps<Theme> = { height: 38, minHeight: 38 };
 const toggleButtonSx = (isSelected: boolean): SxProps<Theme> => ({ … });
 
 const getButtonSx = (selected: boolean) => ({ … });
+
+const styles = { card: 'rounded-xl border p-4', title: 'text-lg font-bold' };
+
+const cardSx = useMemo(() => ({ … }), []);
+
+const rowClass = ['flex', 'items-center'].join(' ');
 ```
 
-Si representan styling ordinario, expresarlos con Tailwind y `cn()` en el punto de uso.
+```ts
+// InvoiceCard.styles.ts
+export const invoiceCardClass = 'rounded-xl border border-divider p-4';
+```
 
 Lo mismo con un string de clases. No:
 
@@ -121,21 +130,22 @@ Sí:
 >
 ```
 
-Si el mismo bloque se repite, se extrae un componente (`<SummaryCard prominent>`), no un string. Al tocar un componente que usa la constante, se inlinea en ese componente; el resto del archivo no se migra. Un primitive compartido entre archivos que ya existe en el repo, o un mapa de variantes, se conserva y se compone con `cn()`, nunca con template literal.
+Si el mismo bloque se repite, se extrae un componente (`<SummaryCard prominent>`), no un string ni un objeto. Al tocar un componente que usa la constante, se inlinea en ese componente; el resto del archivo no se migra.
 
-Una constante de styling sólo se justifica si representa una abstracción **semántica reutilizable** y no una agrupación de CSS. Excepciones: mapping de variantes compartido; primitive/shared real; valor dinámico que exige theme; API MUI que sólo expone razonablemente `sx`.
+Excepción cerrada. Se conserva un primitive o un mapa de variantes que ya existe en el repo y que importan otros archivos. Se compone con `cn()`, nunca con template literal. Crear uno nuevo está prohibido.
 
-5. `sx` es escape hatch, no styling default. Sigue siendo válido cuando:
-   - el token del theme no tiene una utility Tailwind equivalente;
-   - el valor es dinámico y depende realmente del theme;
-   - una API MUI requiere razonablemente `sx`;
-   - Tailwind o `slotProps` degradan claridad o correctness.
+5. `sx` es escape hatch. Solo vale en estos casos cerrados:
+   - (a) el token no tiene utility Tailwind ni bridge verificado en la config del repo;
+   - (b) el valor se calcula del theme en runtime;
+   - (c) la prop solo se expone en `sx` según la API documentada del componente.
+
+   Cada `sx` nuevo o tocado cita en el cierre cuál caso aplica. Sin caso, va en Tailwind.
 
 ### Gate de resolución de tokens visuales
 
 Cuando un estilo necesita un color/token, resolver en este orden:
 
-1. **Utility Tailwind verificada.** Si la configuración real del repo expone una utility respaldada por el MUI theme o por su bridge, preferir `className` / `cn()`.
+1. **Utility Tailwind verificada.** Si la configuración real del repo expone una utility respaldada por el MUI theme o por su bridge, MUST usar `className` / `cn()`.
 
    Infraestructura válida del repo:
 
@@ -160,15 +170,23 @@ Cuando un estilo necesita un color/token, resolver en este orden:
 
 2. **`slotProps.className` cuando aplica a un slot interno.** Usarlo solo si la API pública del componente documenta y expone ese slot. Esto no significa que `slotProps` preceda a `sx` para cualquier propiedad; el paso solo aplica cuando el objetivo es estilizar ese slot.
 
-3. **`sx={(theme) => …}`.** Conservarlo cuando no existe una equivalencia limpia y demostrable o cuando la API MUI lo requiere.
+3. **`sx={(theme) => …}`.** Solo en los casos (a)–(c) del punto 5.
 
-Tailwind-first no convierte automáticamente cada `theme.palette` a utilities. Primero verificar la configuración real del repo. No inventar utilities, colores arbitrarios (`bg-[#…]`, `text-[#…]`, `border-[#…]`), aliases aproximados ni editar theme/Tailwind CSS silenciosamente.
+Tailwind-first no convierte automáticamente cada `theme.palette` a utilities. Primero verificar la configuración real del repo. Prohibido inventar utilities, colores arbitrarios (`bg-[#…]`, `text-[#…]`, `border-[#…]`), aliases aproximados o editar theme/Tailwind CSS en silencio.
+
+También prohibido:
+
+- `style={{…}}` para styling estático;
+- hex o rgb literales en `sx` o `className` (`color: '#fff'`, `bg-[rgb(…)]`);
+- `styled()`, `css` de emotion o CSS modules nuevos.
+
+El color sale del theme o del bridge.
 
 ### Theme dentro de styling
 
 Si el theme sólo se necesita para `sx`, NO crear `const theme = useTheme()`.
 
-Preferir:
+MUST:
 
 ```tsx
 sx={(theme) => ({
@@ -201,7 +219,7 @@ slotProps={{
 }}
 ```
 
-Selectores `'& .Mui…'` son fallback, no default. No inventar nombres de slot: usar solo los que documenta **ese** componente.
+Selectores `'& .Mui…'` solo si el componente no documenta un slot para ese elemento. No inventar nombres de slot: usar solo los que documenta **ese** componente.
 
 ### Grid MUI
 
@@ -209,7 +227,14 @@ Selectores `'& .Mui…'` son fallback, no default. No inventar nombres de slot: 
 
 ## Skeleton de carga
 
-Si la espera ocupa el lugar de una tarjeta, lista, ficha o gráfica, el placeholder es un skeleton con el alto de lo que va a llegar. No un párrafo visible.
+Toda superficie que espera datos MUST mostrar un skeleton con el alto de lo que va a llegar: tabla, lista, tarjeta, ficha, drawer de detalle, form de edición y gráfica.
+
+Prohibido:
+
+- spinner solo (`CircularProgress`, `LinearProgress` centrado) en lugar del skeleton;
+- cualquier texto de carga, en cualquier idioma: «Cargando…», "Loading…", `t('common:loading')`.
+
+Mecanismo:
 
 - La pantalla ya está en Tailwind: bloques `animate-pulse`.
 - La superficie ya es MUI (tabla, diálogo): `Skeleton` de MUI.
@@ -220,7 +245,7 @@ No se agrega una librería. El texto de error y el vacío no se sustituyen.
 
 - Container / presentational en forms
 - Diálogos como componentes aparte
-- Shared solo para transversal real (`shared/helpers`, `shared/utils`)
+- A `shared/` (`shared/helpers`, `shared/utils`) va solo lo que usa más de una feature. Lo de una sola feature queda en la feature
 - No meter dialogs compartidos solo dentro de `Form/**` si la tabla también los usa
 
 ## Naming
@@ -228,7 +253,7 @@ No se agrega una librería. El texto de error y el vacío no se sustituyen.
 **Núcleo.** No depende del framework.
 
 - Componentes PascalCase
-- Callbacks `on*` / verbos; **prohibido `handle*`**
+- Callbacks `on*` / verbos. **`handle*` prohibido** en callbacks y handlers de UI (`handleClick`, `handleChange`, `handleSave`). La API de una librería es `LIBRARY_OWNED` y se conserva: `handle()` de Action, Job, Listener o Command, y `handleSubmit` de RHF
 - Archivos `use*` y composables (**HARD**): archivo, directorio 1:1, export `use*` e import specifier en camelCase. `use-`/`use_` + segmentos → `use` + PascalCase (`use-dashboard` → `useDashboard`). Nunca kebab/snake. Implementar: rename en alcance (archivo/dir + imports); no barrer el repo. Auditar: Hallazgo. **No** aplica a barrels del molde (`<entity>.queries.ts`, `<entity>.mutations.ts`) ni a `.interface` / `.schema` / `.service` / `.helper` / `.util`.
 
 ## Orden dentro del composable, hook o componente (HARD)
@@ -256,21 +281,32 @@ Los casos dentro de cada slot (dependencias, estado, queries, derivadas, handler
 ```tsx
 export const InboxPage: FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation(['inbox']);
 
   const [search, setSearch] = useState('');
 
   const inbox = useInboxQuery({ search });
 
   const rows = inbox.data?.data ?? [];
+  const title = rows[0]?.title ?? t('inbox:title');
 
   const openRow = (id: string) => {
     navigate(`/inbox/${id}`);
   };
 
   useEffect(() => {
-    document.title = rows[0]?.title ?? 'Bandeja';
-  }, [rows]);
+    document.title = title;
+  }, [title]);
 
-  return <List rows={rows} onOpen={openRow} />;
+  return (
+    <List
+      rows={rows}
+      search={search}
+      onSearchChange={setSearch}
+      onOpen={openRow}
+    />
+  );
 };
 ```
+
+El efecto depende de `title`, un string estable. No depende de `rows`: `?? []` crea un array nuevo en cada render.

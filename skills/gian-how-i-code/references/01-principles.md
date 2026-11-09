@@ -4,15 +4,15 @@ Cargar cuando: arranque, conflicto de reglas, modo Consultar sobre “por qué�
 
 ## Reglas de oro
 
-1. **El molde canónico** define la estructura objetivo para features frontend, backend, contratos, formularios, consultas y mutaciones. Usar features CRUD maduras del propio repo como ejemplos de referencia.
+1. **El molde canónico** define la estructura objetivo para features frontend, backend, contratos, formularios, consultas y mutaciones. Las features de referencia del repo se clasifican primero (`02` Checklist Fase 0, paso 6). Una feature Legacy no sirve de molde.
 2. **Una fuente tipada de verdad** para estados/tipos cerrados (TS string enum `APP_OWNED`; PHP backed Enum o constantes en State Machine string-based — ver `07`). Ownership antes de declarar el contrato.
 3. **Negocio en el contrato de lectura** (Laravel: Resource/Action), no recalcular flags en el cliente. El cliente refleja el contrato; no lo adivina.
 4. **Display:** metadata exhaustiva de un enum `APP_OWNED` en el entity helper (`static readonly Record`, `08`). Display ad-hoc de un componente: cadena de `if` inline. En React, `useMemo` según `23` A–E (no ceremonial; multi-rama C sí).
 5. **Diálogo dueño** de mutación + invalidate; padre solo trigger + entidad + onClose. En React el montaje es `{isOpen && user && (`; en otro stack, el overlay equivalente. La propiedad no cambia.
-6. **YAGNI + migración oportunista**: al tocar, alinear; no refactor masivo no pedido. No escribir un capítulo de stack (Angular, Node, Python, …) sin un repo real.
+6. **YAGNI + migración oportunista**: al tocar, alinear la unidad de la tabla «Unidad que se alinea al tocar». Fuera de esa unidad no se migra; no refactor masivo no pedido. No escribir un capítulo de stack (Angular, Node, Python, …) sin un repo real.
 7. **Evaluación de mejoras de stack** antes de instalar; mala práctica ≠ “instala una lib”.
 8. **Fechas, helpers y estilo** (`23`/`04`): dayjs vía el módulo del repo; utils chicos / helpers clase de área; alias claros, no opacos. En el adaptador React: `cn()` para clases que varían, Tailwind-first, sin `*_SX` locales, memo A–E. Sintaxis TS/TSX → `gian-ts-style`.
-9. **Formato PHP** no vive aquí: cargar `gian-php-style`. **Formato TS/TSX** no vive aquí: cargar `gian-ts-style` (WRITE/FIX corrigen el hunk; AUDIT no edita).
+9. **Formato PHP** no vive aquí: cargar `gian-php-style`. **Formato TS/TSX** no vive aquí: cargar `gian-ts-style` (WRITE/FIX corrigen la unidad de «Unidad que se alinea al tocar»; AUDIT no edita).
 10. **Ruta ≠ body.** IDs de URL no se mezclan con el DTO. Firmas y `TVariables` en `13`; schema en `10`.
 11. **El lenguaje no apaga el estándar.** Núcleo y adaptador, abajo. Una API de React que el stack no tiene no es permiso para saltarse la responsabilidad.
 12. **El entorno no es un modo de producto.** `npm run dev`, el test runner y las variables de entorno ejecutan la lógica oficial. No condicionar copy, chips ni validaciones al runtime. Al tocarlo, borrarlo (`08`/`15`/`17`).
@@ -57,12 +57,25 @@ El snake_case de Python es `LIBRARY_OWNED`, igual que el kebab de Angular. El do
 
 Solo filas. No escribir un capítulo de Node, Python o Angular sin un repo real (`#6`).
 
+## Unidad que se alinea al tocar
+
+Una sola tabla para todas las references y para `gian-ts-style` / `gian-php-style`. Ninguna reference achica esta unidad.
+
+| Qué se tocó | Unidad que sale conforme |
+|-------------|--------------------------|
+| Una línea añadida o cambiada dentro de una función, método, componente, hook o composable | Esa función, método, componente, hook o composable completo: núcleo, estilo TS/PHP y orden (`26`) |
+| Cualquier línea del archivo | Los imports del archivo, según `gian-ts-style` / `gian-php-style`. `26` no reordena imports |
+| Un campo de formulario (reglas de `10`) | Ese campo: tipo, schema, control, mensaje y ayuda. El campo hermano con el mismo problema va como PROP |
+| El resto del archivo | No se migra. Una divergencia observada fuera de la unidad se reporta como hallazgo o PROP, sin editar |
+
+"Tocar" nunca es solo la línea editada.
+
 ## Qué es obligatorio vs default vs variante
 
 | Nivel | Significado |
 |-------|------------|
 | Regla | Incumplir = hallazgo Alto/Medio |
-| Default | Preferir salvo evidencia de variante reconocida (`20`) |
+| Default | MUST. Solo lo reemplaza una variante listada en `20` con evidencia en el repo. Incumplirlo sin variante = hallazgo Medio |
 | Variante | Documentada en `20` (p. ej. Zustand para drawers) |
 | Excepción | Legacy / OpenAPI generado / texto libre |
 

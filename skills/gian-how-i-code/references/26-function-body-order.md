@@ -6,13 +6,15 @@ La línea en blanco entre pasos es formato: `gian-php-style` o `gian-ts-style`.
 
 ## Alcance
 
-Entra la función que el edit toca: método PHP público o privado, componente, hook, composable, o función plana de un módulo `.ts`. Se mueven bloques de primer nivel.
+Entra la función completa que contiene la línea añadida o cambiada: método PHP público o privado, componente, hook, composable, o función plana de un módulo `.ts`. Se mueven bloques de primer nivel.
 
 El otro método o el otro componente del archivo queda como está. Imports, la interface de props y el orden de los miembros de la clase quedan fuera. Un closure, el callback de `map` / `filter` / `array_map`, y un arrow de una expresión son el algoritmo de esa línea: su cuerpo no se reordena.
 
 El self-check de `gian-ts-style` revisa esta misma unidad.
 
-Si mover un bloque cambiaría el comportamiento, no se mueve y queda GAP. Cubre un efecto cuyo lugar importa, un lock, una transacción que no se puede partir, un temporal dead zone y las rules of hooks. No se mete un guard dentro de un efecto para forzar el orden.
+Si mover un bloque cambiaría el comportamiento, no se mueve y queda GAP. La lista es cerrada: un efecto cuyo lugar importa, un lock, una transacción que no se puede partir, un temporal dead zone y las rules of hooks. No se mete un guard dentro de un efecto para forzar el orden.
+
+Todo GAP de orden se lista en el cierre: `GAP orden archivo:línea — <motivo de la lista>`. Las funciones reordenadas también se listan en el cierre (`21`).
 
 ## PHP y función plana
 
@@ -21,7 +23,7 @@ El mismo orden por rol vale para un método PHP y para una función plana `.ts` 
 1. Normalizar la entrada: trim, cast, default. Las de una línea del mismo paso van juntas.
 2. Guards: `return` / `throw` tempranos, y `continue` dentro de un bucle. El orden es invalidez, ausencia, conflicto, precondición. El camino feliz queda al nivel del método.
 3. Cargar. Las lecturas que no se necesitan entre sí no tienen orden forzado. Cada lectura es su propio grupo visual (`read-group` en `gian-php-style` / `gian-ts-style`). La que usa el resultado de la anterior va debajo. Una query no sube por encima del id que usa.
-4. Decidir: `match`, `if` / `else` que elige un valor. Un anidado profundo se queda, o se extrae a un método privado. No se reordenan sus ramas.
+4. Decidir: `match`, `if` / `else` que elige un valor. No se reordenan sus ramas. Extraer un anidado profundo a un método privado no es parte de este contrato: no FAIL.
 5. Derivar: mapas, reducciones y transforms de lo cargado.
 6. Efecto: writes, eventos, jobs. Un write no queda arriba del guard que lo habría saltado.
 7. `return` del camino feliz.
@@ -62,7 +64,7 @@ public function handle(int $id): Invoice {
 Los slots son los de `04`. Aquí solo el orden dentro de cada uno.
 
 - Dependencias que no leen estado local: router y route, luego stores, luego clientes.
-- Estado: primero ids y lo que sale de la ruta, luego el input del usuario, luego el chrome (`open`, tab). Un par `search` / `setSearch` es una declaración. El orden en que el resto del cuerpo los lee gana al alfabético.
+- Estado: primero ids y lo que sale de la ruta, luego el input del usuario, luego el chrome (`isOpen`, tab). Un par `search` / `setSearch` es una declaración. El orden en que el resto del cuerpo los lee gana al alfabético.
 - Hooks que leen ese estado: queries que el render necesita, luego mutations, luego el resto. Cada query es su grupo (`read-group` en `gian-ts-style`). El que consume a otro va debajo. Ninguno debajo de un `return` ni de un efecto.
 - Derivadas: cada `const` debajo de lo que lee. Las baratas (`?? []`, un boolean) siguen juntas y en una línea. Un `useMemo` de varias ramas (`23`, caso C) es un solo bloque.
 - Funciones: helpers que los handlers llaman, luego handlers en el orden en que el JSX los lee. El handler que solo usa un efecto queda inmediatamente arriba de ese efecto, en el slot de funciones. Extraer un handler ceremonial, o envolver una referencia directa, lo decide `gian-ts-style`.
@@ -73,12 +75,13 @@ Los slots son los de `04`. Aquí solo el orden dentro de cada uno.
 export const InvoicePage: FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation(['invoices']);
 
-  const [note, setNote] = useState('');
+  const [search, setSearch] = useState('');
 
   const invoice = useInvoiceQuery(id);
 
-  const pay = usePayInvoiceMutation();
+  const pay = usePayInvoice(id);
 
   const rows = invoice.data?.lines ?? [];
 
@@ -86,20 +89,30 @@ export const InvoicePage: FC = () => {
     navigate(`/invoices/${id}/lines/${lineId}`);
   };
 
-  const onPay = () => {
-    pay.mutate({ id, note });
+  const onPay = (data: PayInvoiceDto) => {
+    pay.mutate(data);
   };
 
   useEffect(() => {
-    document.title = invoice.data?.number ?? 'Factura';
-  }, [invoice.data?.number]);
+    document.title = invoice.data?.number ?? t('invoices:title');
+  }, [invoice.data?.number, t]);
 
   if (invoice.isLoading) return <Skeleton />;
   if (invoice.isError) return <ErrorState />;
 
-  return <InvoiceView rows={rows} onOpen={openLine} onPay={onPay} />;
+  return (
+    <InvoiceView
+      rows={rows}
+      search={search}
+      onSearchChange={setSearch}
+      onOpen={openLine}
+      onPay={onPay}
+    />
+  );
 };
 ```
+
+`usePayInvoice(id)` recibe el id de ruta y `mutate(data)` el DTO (`PayInvoiceDto` = `z.infer` del schema). Prohibido el híbrido `mutate({ id, note })` (`13` §4).
 
 ## Fuera de este contrato
 
@@ -107,4 +120,4 @@ Orden de imports, de miembros de clase, de hijos JSX y de clases de Tailwind. Ta
 
 ## Aplicar
 
-WRITE reordena la función tocada cuando el movimiento conserva el comportamiento. AUDIT marca FAIL solo si el bloque está en un rol o slot equivocado y moverlo no cambia comportamiento: un `useEffect` arriba de un `useState`, un write arriba de un guard que no lo lee, un `return` en medio de los hooks. El límite dudoso queda GAP.
+WRITE reordena la función completa que contiene la línea cambiada cuando el movimiento conserva el comportamiento. AUDIT marca FAIL solo si el bloque está en un rol o slot equivocado y moverlo no cambia comportamiento: un `useEffect` arriba de un `useState`, un write arriba de un guard que no lo lee, un `return` en medio de los hooks. Si el bloque cae en un caso de la lista cerrada de Alcance, es GAP y se lista en el cierre con `archivo:línea` y motivo.

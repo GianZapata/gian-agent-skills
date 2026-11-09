@@ -4,11 +4,11 @@ Cargar cuando: el repo tiene un patrón distinto del default y hay que decidir s
 
 ## Clasificación
 
-Solo se sigue una variante de la lista de este archivo. Documentarla en el reporte y extenderla en Implementar.
+El default del estándar es obligatorio. Solo lo reemplaza una variante de la lista de este archivo, con evidencia en el repo (`archivo:línea`). Incumplir el default sin variante es hallazgo Medio. La variante se documenta en el reporte y se extiende en Implementar.
 
 Un patrón dominante que no está en la lista no es variante. Hay dos casos, y no se mezclan:
 
-- **Adaptador.** Otra tecnología para la misma capacidad: Firestore en lugar de HTTP, realtime, o el cliente de datos del stack. Se documenta y se cumple la responsabilidad con el equivalente (`01`, `24` §3). No es legacy y no se migra a la librería React.
+- **Adaptador.** Otra tecnología para la misma capacidad: Firestore en lugar de HTTP, realtime, o el cliente de datos del stack. Es adaptador solo si cambia la tecnología y hay evidencia de que la responsabilidad equivalente se cumple (fila de la matriz `24` §3 con `archivo:línea`). Sin esa evidencia, es legacy. Con evidencia, se documenta, se cumple la responsabilidad con el equivalente (`01`) y no se migra a la librería React.
 - **Legacy.** Un patrón que rompe una regla de núcleo: `defineComponent` + `return`, funciones sueltas de área, mapas de metadata en paralelo, un `interface *Input` junto al schema. El código nuevo sigue el estándar. El viejo es hallazgo (`02`: legacy para migración). No se convierte en la regla.
 
 ## Variante reconocida — store de UI + fetchers por scope
@@ -36,10 +36,10 @@ No es una variante que reemplace el estándar. Es el delta de vista (`25`). Dete
 
 El núcleo no se sustituye: naming (`04`), helpers de área (`23`), enums (`07`), contratos, errores y display.
 
-## Otras variantes / opcionales
+## Variantes condicionales: obligatorias cuando el repo las tiene
 
-- **App profile / feature flags por marca o producto:** si el repo ya tiene config de perfil (features on/off, rutas bloqueadas), **respetarla** al implementar o auditar; no exigir profile en todo proyecto.
-- **Realtime (Echo / Reverb / Pusher):** opcional. Detectar en Fase 0; si hay env/keys de realtime sin cliente, o necesidad de WS sin stack → PROP (`19`), no instalar por defecto.
+- **App profile / feature flags por marca o producto:** si el repo ya tiene config de perfil (features on/off, rutas bloqueadas), **respetarla** al implementar o auditar. No exigir profile en un proyecto que no lo tiene.
+- **Realtime (Echo / Reverb / Pusher):** detectar en Fase 0. Si el repo lo tiene, se sigue. Si hay env/keys de realtime sin cliente, o necesidad de WS sin stack → PROP (`19`). No instalar sin OK.
 - **MRT localization:** solo si el repo usa Material React Table (`11`).
 
 ## Regla

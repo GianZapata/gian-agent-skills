@@ -19,18 +19,21 @@ type PaginationResponse<T> = { data: T[]; meta?: unknown; links?: unknown };
 type MutationResponse<T> = { message: string; data: T };
 ```
 
-Adaptar a convención del proyecto; ser consistente (unwrap vs envelope).
+Shape (unwrap vs envelope): MUST usar el de las features de referencia (`02` paso 5). Si discrepan entre sí, es hallazgo y se sigue el de `assets/`.
 
-| Endpoint | Backend | Response típica |
+Las respuestas de la tabla MUST cumplirse.
+
+| Endpoint | Backend | Response |
 |----------|---------|-----------------|
 | GET collection | Query + Resource collection | PaginationResponse si pagina |
 | GET show | Query detail + Resource | ReadResponse |
 | POST | StoreRequest + Action + Resource | MutationResponse 201 |
 | PUT/PATCH | UpdateRequest + Action + Resource | MutationResponse 200 |
-| DELETE | DeleteAction | Según política proyecto (204 / message / id) |
+| DELETE | DeleteAction | El mismo shape que los DELETE existentes del repo. Sin DELETE previo: no FAIL; el cierre declara el shape elegido |
 
 ## QueryBuilder
 
+- Todo GET (collection y show) MUST pasar por una Query (`05`)
 - `AllowedInclude` / `AllowedFilter` / `AllowedSort` explícitos
 - Params FE = allowlists reales
 - Counts: `withCount` forzado si filtra/ordena; include count si solo display opcional
@@ -38,10 +41,11 @@ Adaptar a convención del proyecto; ser consistente (unwrap vs envelope).
 ## Resources
 
 - `whenLoaded()` → campo opcional/nullable en TS
-- Relación → Resource (HARD): pasar `whenLoaded` al constructor (Laravel omite si es `MissingValue`). Colección: `::collection($this->whenLoaded('rels'))`.
+- Relación → Resource (HARD): siempre `new X($this->whenLoaded('x'))` (Laravel omite si es `MissingValue`). Colección: `X::collection($this->whenLoaded('xs'))`. `X::make(...)` es equivalente a `new X(...)`.
+- Prohibido construir un Resource desde la relación con `relationLoaded`, `when` o closures.
 - No inventar datos ni fallbacks mentirosos (`code ?? \`X-${id}\``)
 - No exponer `pivot` crudo; aplanar campos documentados
-- Clasificar relaciones: public_api / internal / sensitive
+- Clasificar relaciones: `public_api` / `internal` / `sensitive`. `internal` y `sensitive` MUST NOT serializarse en Resources públicos. `sensitive` solo se serializa detrás de una Policy
 
 ```php
 'city' => new CityResource($this->whenLoaded('city')),
@@ -55,9 +59,11 @@ No:
     'client',
     fn() => new ClientResource($this->client)
 ),
+'client' => $this->relationLoaded('client') ? new ClientResource($this->client) : null,
+'client' => $this->when($this->relationLoaded('client'), fn() => new ClientResource($this->client)),
 ```
 
-KEEP el callback si hay lógica extra (recurso distinto, default, map). KEEP `whenLoaded()` sin Resource (escalar).
+KEEP `whenLoaded()` sin Resource: un escalar o un map que no construye Resource (`$this->whenLoaded('client', fn() => $this->client->name)`).
 
 AUDIT: FAIL. WRITE/FIX: SAFE en el Resource tocado; no barrer el repo.
 
@@ -71,8 +77,10 @@ AUDIT: FAIL. WRITE/FIX: SAFE en el Resource tocado; no barrer el repo.
 
 ## Params de lectura
 
+Un solo nombre de tipo: `<Entity>ListParams`, recibido como `params` (`13`).
+
 ```ts
-export interface EntityParams {
+export interface EntityListParams {
   include?: Array<'…'>;
   filter?: { … };
   sort?: Array<'…'>;

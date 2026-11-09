@@ -8,16 +8,16 @@ Antes de crear un `type`, union, enum o mapping para un conjunto de valores, ide
 
 | Gate | Criterio | Representación |
 |---|---|---|
-| `APP_OWNED` | Conjunto cerrado, nombrado y controlado por la app (dominio persistido **o** UI/feature con identidad clara) | **string enum** por default |
+| `APP_OWNED` | Conjunto cerrado, nombrado y controlado por la app (dominio persistido **o** UI/feature con identidad clara) | MUST **string enum** |
 | `LIBRARY_OWNED` | El concepto ya lo define MUI, TanStack, RHF, Zod u otra dep, y la semántica es la misma | Tipo oficial / derivado (`ComponentProps['prop']`). Sin union, enum ni alias shadow |
-| `EXTERNAL_GENERATED` | OpenAPI, schemas generados, APIs externas, legacy no normalizado | Respetar el contrato; normalizar en la frontera si aplica. No imponer enum por estética |
+| `EXTERNAL_GENERATED` | OpenAPI, schemas generados, APIs externas, legacy no normalizado | Respetar el contrato. Si el valor alimenta UI o lógica de la app como conjunto cerrado, MUST normalizarse a un enum `APP_OWNED` en el service (frontera). No imponer enum por estética |
 | `UNION LEGÍTIMA` | Discriminated unions con shapes distintas; unions estructurales; el literal es narrowing estructural, no un catálogo nominal | Conservar esa representación |
 
 Criterio:
 
 ```text
 ¿Es un conjunto cerrado propio y nombrado?
-→ enum por default
+→ MUST string enum
 
 ¿Ya pertenece a una librería?
 → tipo oficial de la librería
@@ -65,11 +65,13 @@ export enum DialogKind {
 useState<DialogKind | null>(null);
 ```
 
+`DialogKind` es solo un ejemplo de enum con ausencia. No es un patrón de apertura. Varios diálogos en un padre llevan un boolean `isOpen<X>` cada uno (`09`).
+
 ## LIBRARY_OWNED
 
 Si solo alimenta una prop de librería, **no recrear el contrato**.
 
-Preferir (adaptador React/MUI; en otro stack, el tipo que exporta su librería):
+MUST usar el tipo oficial (adaptador React/MUI; en otro stack, el tipo que exporta su librería). Prohibido union, enum o alias propio:
 
 ```ts
 ChipProps['color']
@@ -89,7 +91,7 @@ type StatusTone = 'success' | 'warning' | 'error' | 'info' | 'neutral';
 
 si únicamente termina en `<Chip color={…}>`.
 
-Un wrapper puede existir si agrega semántica real (p. ej. `StatusChip` = pill de estado vs Chip de filtro). Reutiliza el contrato base:
+Un wrapper solo se permite si fija un estilo de identidad o agrega comportamiento (p. ej. `StatusChip` = pill de estado vs Chip de filtro). Sus props reutilizan el tipo base, sin unions propias:
 
 ```ts
 interface StatusChipProps {
@@ -118,7 +120,7 @@ Mappings UI/comportamiento con una propiedad pública `static readonly Record<En
 
 ## Membresía (HARD) — TS, PHP y Python
 
-Si el **mismo** identificador se compara con **2 o más** miembros de un conjunto cerrado (`APP_OWNED`: status, type, mode, similares; constantes de SM), unidos por `||` (`===`) o `&&` (`!==`): membresía, no cadena.
+Si el **mismo** identificador se compara con **2 o más** miembros de un conjunto cerrado (`APP_OWNED`: status, type, mode, similares; constantes de SM): membresía, no cadena. Aplica a toda disyunción o conjunción sobre ese identificador: `||`, `&&`, `or`, `and`, con `===`, `!==`, `==` o `!=`, negada o no (`!(a === X || a === Y)`). `in_array` sin `true` también es hallazgo.
 
 TS:
 
@@ -162,11 +164,12 @@ AUDIT: FAIL. WRITE/FIX: SAFE en el hunk tocado; no barrer el repo.
 Metadata derivada de un enum propio → **una** fuente en `<entity>.helper.ts` (`08`). No `*-display.config.ts`. No duplicar el Record inline en cada tabla.
 
 ```ts
+import type { ChipProps } from '@mui/material';
 import i18n from '@/lib/i18n';
 
 interface StatusMeta {
   label: string;
-  tone: ChipTone;
+  color: NonNullable<ChipProps['color']>;
 }
 
 export class OrderHelper {
@@ -175,16 +178,16 @@ export class OrderHelper {
       get label() {
         return i18n.t('orders:status.pending');
       },
-      tone: 'warning',
+      color: 'warning',
     },
     // … todos los miembros
   };
 }
 ```
 
-`ChipTone` es el tipo `LIBRARY_OWNED` del chip del stack (§LIBRARY_OWNED), no una union propia. Adaptador React/MUI: el campo es `color: NonNullable<ChipProps['color']>`, para esparcir el meta en `<Chip>`.
+El campo `color` usa el tipo `LIBRARY_OWNED` del chip del stack (§LIBRARY_OWNED), no una union propia. Adaptador React/MUI: `color: NonNullable<ChipProps['color']>`, para esparcir el meta en `<Chip>`. Prohibido un campo `tone` o un alias `ChipTone`.
 
-La propiedad es pública por default: no usar `private`/`protected` ni envolverla en un método. `Record<OrderStatus, StatusMeta>` hace que agregar un miembro al enum rompa el chequeo hasta completar la metadata. Unir en este mapa todos los campos relacionados (label, tone, icon, etc.).
+La propiedad MUST ser `public static readonly`: prohibido `private`/`protected` y envolverla en un método. `Record<OrderStatus, StatusMeta>` hace que agregar un miembro al enum rompa el chequeo hasta completar la metadata. Unir en este mapa todos los campos relacionados (label, color, icon).
 
 El getter de cada `label` ejecuta `i18n.t()` al leer y evita congelar el locale al inicializar la clase (`15`). No inyectar `TFunction`, no usar `labelKey` diferido y no asignar `label: i18n.t(...)` directamente durante la inicialización.
 
@@ -210,7 +213,7 @@ El resolver canónico para ausencia legítima vive en el mismo helper:
 
 ```ts
 private static readonly unknownMeta: StatusMeta = {
-  tone: 'default',
+  color: 'default',
   get label() {
     return i18n.t('common:unknown');
   },
@@ -220,9 +223,7 @@ private static getMeta<T extends PropertyKey>(
   meta: Record<T, StatusMeta>,
   value: T | null | undefined
 ): StatusMeta {
-  if (value == null) {
-    return this.unknownMeta;
-  }
+  if (value == null) return this.unknownMeta;
 
   return meta[value];
 }
@@ -232,7 +233,7 @@ static getStatusMeta(status: OrderStatus | null | undefined): StatusMeta {
 }
 ```
 
-`getXMeta()` es la API preferida en componentes que reciben valores opcionales. Para `EXTERNAL_GENERATED` o legacy no normalizado, validar/normalizar primero o definir el resolver explícito de esa frontera; no debilitar el Record canónico.
+Si el valor puede ser `null`/`undefined`, el consumidor MUST llamar a `getXMeta()`. El acceso directo al Record solo vale con enum garantizado o al iterar. Para `EXTERNAL_GENERATED` o legacy no normalizado, MUST normalizarse a enum en el service antes de llegar al helper; no debilitar el Record canónico.
 
 Prohibido: métodos que reconstruyen el `Record`; `Record<string, …>` cuando las keys son un enum/conjunto cerrado conocido; índices abiertos; `string` o casts para ampliar/ocultar el contrato; `?? unknownMeta` en cada consumidor; traducciones congeladas al inicializar la clase; partir metadata fuertemente relacionada en `STATUS_COLOR` + `STATUS_LABEL` / `humanStatusesKeys` + `statusChipColors` + `statusIcons` paralelos.
 
@@ -254,9 +255,9 @@ Igual para colors/variants de Button, Chip, Alert, y props equivalentes.
 
 ## Valores cerrados en PHP
 
-### Default — backed Enum
+### Regla — backed Enum
 
-Usar backed Enum cuando:
+Todo conjunto cerrado PHP fuera de una State Machine string-based MUST ser backed Enum. Prohibida una clase con constantes (`05`). La lista describe usos típicos, no condiciones:
 
 - el valor se castea desde Eloquent;
 - se usa en varias capas fuera de una State Machine string-based;
@@ -279,7 +280,7 @@ Con `asantibanez/laravel-eloquent-state-machines` (API de strings: `transitions(
 - declarar estados como `public const` UPPER_SNAKE en la SM;
 - usar constantes en transitions, defaultState, hooks, validators, factories, Actions y tests;
 - exponer `values()` para `Rule::in` / enumeración;
-- **no** crear un backed Enum paralelo con los mismos valores salvo necesidad concreta, testeada y documentada;
+- prohibido crear un backed Enum paralelo con los mismos valores, salvo §Excepción — backed Enum paralelo;
 - no repetir strings literales fuera de la SM.
 
 ```php
@@ -311,16 +312,22 @@ final class OrderStatusStateMachine extends StateMachine
 
 ### Regla de no duplicación
 
-No mantener a la vez: constantes SM + backed Enum + strings literales para los **mismos** estados, salvo integración explícita.
+Prohibido mantener a la vez constantes SM + backed Enum + strings literales para los **mismos** estados, salvo §Excepción — backed Enum paralelo.
 
-## Excepciones (no forzar enum/const)
+### Excepción — backed Enum paralelo
+
+Único texto de esta excepción (`05` lo cita). Un backed Enum paralelo a las constantes de la SM solo se permite cuando una integración exige un backed Enum. Lleva un test que cubre esa integración y un comentario en el Enum que la nombra. Sin los tres, es hallazgo Medio.
+
+## Excepciones
+
+Lista cerrada. Estos casos no llevan enum ni const:
 
 - Texto libre, IDs dinámicos, keys i18n abiertas
 - `EXTERNAL_GENERATED` / legacy no normalizado
 - `UNION LEGÍTIMA` (discriminated / estructural)
 - Tipos generados desde OpenAPI/schema
 
-`as const` + tipo derivado: solo interop JS o valor no compartido entre capas. **No es el default** TS para conjuntos `APP_OWNED`. En arrays runtime `LIBRARY_OWNED`, `satisfies` el tipo de la lib (no `as const` como fuente de un tipo propio).
+`as const` + tipo derivado: solo para interop con JS sin tipos. Prohibido para conjuntos `APP_OWNED`: un modo de UI de un solo componente sigue siendo enum. En arrays runtime `LIBRARY_OWNED`, `satisfies` el tipo de la lib (no `as const` como fuente de un tipo propio).
 
 ## Checklist al declarar (HARD)
 
@@ -366,21 +373,24 @@ Lo verifica `gian-ts-style` `assets/self-check.mjs`: `enum-ownership`, `library-
 
 ## Hallazgos típicos
 
-| Observado | Tipo |
-|-----------|------|
-| `type Status = 'a' \| 'b'` `APP_OWNED` | Mejora / Mala práctica |
-| Shadow `StatusTone` (union propia) alimentando `Chip.color` | Mejora / Mala práctica |
-| `enum StatusTone` sustituyendo el shadow | Mala práctica (el shadow debe desaparecer) |
+Una sola escala: Alto / Medio / Bajo. Lo marcado como prohibido o HARD en este archivo es como mínimo Medio.
+
+| Observado | Severidad |
+|-----------|-----------|
+| `type Status = 'a' \| 'b'` `APP_OWNED` | Medio |
+| Shadow `StatusTone` (union propia) alimentando `Chip.color` | Medio |
+| `enum StatusTone` sustituyendo el shadow (el shadow debe desaparecer) | Medio |
 | `Record<string, …>` con keys de enum conocido | Medio |
 | Método que reconstruye el `Record` / propiedad no `static readonly` | Medio |
 | `label: i18n.t(...)` inicializado una vez (locale congelado) | Medio |
 | Lookup normal con `?.` / `??` para enum cerrado | Medio |
-| `STATUS_COLOR` + `STATUS_LABEL` / `labelKey` paralelos | Mejora |
+| `STATUS_COLOR` + `STATUS_LABEL` / `labelKey` paralelos | Medio |
 | `*.display.config.ts` o `getXConfig(t: TFunction)` | Medio |
-| Array MUI sin `satisfies` el tipo de la lib | Baja / Mejora |
+| Array MUI sin `satisfies` el tipo de la lib | Bajo |
 | `status: string` abierto para SM | Alto |
-| Enum PHP + constantes SM duplicadas | Mala práctica |
+| Enum PHP + constantes SM duplicadas, fuera de §Excepción | Medio |
 | Mapping incompleto sin Record | Medio |
 | Strings literales fuera de la SM | Medio |
 | `status === A \|\| status === B` (conjunto cerrado, 2+) | Medio |
-| Discriminated union convertida a enum | Mala práctica (sobre-aplicación) |
+| `as const` + tipo derivado para un conjunto `APP_OWNED` | Medio |
+| Discriminated union convertida a enum (sobre-aplicación) | Medio |

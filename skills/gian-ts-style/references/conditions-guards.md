@@ -2,9 +2,14 @@
 
 ## Single-statement-if (HARD)
 
-`single-statement-if`. Si un `if` **standalone** (sin `else` / `else if` en esa statement) contiene **exactamente una** statement aprobada: omitir `{}`.
+`single-statement-if`. Un `if` **standalone** (sin `else` / `else if` en esa statement) con **exactamente una** statement aprobada:
 
-Aprobadas: `return`; `throw`; call; assignment; `continue`; `break`.
+- el `if` completo cabe en una línea física tras Prettier → sin `{}`;
+- el `if` ocupa varias líneas → con `{}`.
+
+Aprobadas, lista cerrada: `return`; `throw`; call; `await` call; optional call (`a?.b()`); assignment; `++` / `--`; `continue`; `break`.
+
+Conservan `{}`: `yield`, declaraciones (`const` / `let`) y cualquier statement fuera de la lista.
 
 ```ts
 if (!entity) return null;
@@ -15,7 +20,11 @@ if (!id) throw new Error('Entity id is required');
 
 if (enabled) refresh();
 
+if (shouldSync) await sync();
+
 if (user) name = user.name;
+
+if (isValid) attempts++;
 ```
 
 No:
@@ -35,54 +44,84 @@ if (!user) {
 }
 ```
 
-WRITE/FIX: SAFE FIX si standalone + una aprobada + sin `if` anidado en el cuerpo.
+### Multilínea → llaves
 
-### Lines ≠ statements
-
-`single-statement-multiline` es **cláusula** de esta regla, no otro ID. Wrapping de Prettier no convierte una statement en varias.
+Si la statement no cabe en la línea del `if`, lleva llaves. Vale igual que en `gian-php-style`.
 
 ```tsx
-if (!entity) return (
-  <EmptyState
-    title="Sin entidad"
-    description="Selecciona una entidad"
-  />
-);
+if (!contract) return null;
 
-if (!entity) throw new DomainError(
-  'Entity is required before continuing',
-  context,
-);
+if (!contract) {
+  return (
+    <EmptyState
+      title={t('contracts:empty.title')}
+      description={t('contracts:empty.description')}
+    />
+  );
+}
+
+if (!entity) {
+  throw new DomainError(
+    'Entity is required before continuing',
+    context,
+  );
+}
 ```
 
-AST-SENSITIVE: aplicar si sigue siendo una statement. No añadir braces porque el wrap ocupa varias líneas.
+No:
+
+```tsx
+if (!contract) return (
+  <EmptyState title={t('contracts:empty.title')} />
+);
+
+if (!entity)
+  throw new DomainError('Entity is required before continuing', context);
+```
+
+`for` / `for…of` / `while` no siguen esta regla. Prettier y el repo deciden sus llaves.
+
+WRITE/FIX: SAFE FIX en las dos direcciones (quitar `{}` de una línea, añadir `{}` a multilínea) si el `if` es standalone y el cuerpo no contiene otro `if`. AUDIT: FAIL en las dos direcciones.
 
 ### Dangling-else / association (NEVER AUTOFIX)
 
 1. El `if` tiene `else` o `else if` → no usar el SAFE FIX de standalone (ver `compact-if-else`).
 2. El cuerpo contiene otro `if` → no quitar braces.
 3. Un `else` hermano se asocia a este `if` vía braces → no quitar braces.
-4. Si el árbol de control diferiría → skip FIX; GAP.
 
-## Compact if/else (PREFERENCE)
+Estos tres casos se reportan `GAP single-statement-if archivo:línea — <caso>`.
 
-`compact-if-else`. Una statement aprobada por branch, **ningún** branch contiene `if`, no `else if`, no comments entre `if`/`else`:
+## Compact if/else (HARD)
+
+`compact-if-else`. Aplicar cuando se cumplen todos:
+
+- dos ramas: `if` y `else`, sin `else if`;
+- cada rama tiene una statement aprobada que cabe en una línea;
+- ninguna rama contiene `if`;
+- sin comentarios entre `if` y `else`.
 
 ```ts
 if (enabled) start();
 else stop();
 ```
 
-AST-SENSITIVE. AUDIT FAIL solo caso plano demostrable. FIX NEVER si nesting / else-if / 3+ branches / JSX association dudosa.
+No:
 
-```text
-GAP — no corregido automáticamente:
-posible cambio de asociación/semántica
+```ts
+if (enabled) {
+  start();
+} else {
+  stop();
+}
 ```
 
-## Guard clauses (PREFERENCE)
+Si una rama no cumple, la regla no aplica: llaves en las dos ramas (`} else {`). No es FAIL.
 
-`guard-clause-over-nesting`. WRITE en código nuevo:
+WRITE/FIX/AUDIT: aplicar con los criterios de arriba. Un `if` anidado con `else` es GAP (`principles.md` § NEVER AUTOFIX).
+
+## Guard clauses (HARD)
+
+`guard-clause-over-nesting`. Un `if` sin `else` cuyo único contenido es otro `if` sin `else`, y que es la última statement de la función → guard clauses.
 
 ```ts
 if (!user) return;
@@ -101,4 +140,11 @@ if (user) {
 }
 ```
 
-FIX NEVER AUTOFIX si: `else` en cualquier nivel; bindings del bloque externo usados después; side effects en la condición invertida; loops; JSX tree; mutations de estado. AUDIT no FAIL legado ambiguo.
+WRITE: aplicar siempre. FIX y AUDIT: aplicar en el alcance, salvo esta lista cerrada, que se reporta `GAP guard-clause-over-nesting archivo:línea — <caso>`:
+
+- `else` en cualquier nivel;
+- bindings del bloque externo usados después;
+- side effects en la condición que se invierte;
+- el `if` está dentro de un loop;
+- el `if` decide un árbol JSX;
+- mutations de estado (`setX`, `ref.value =`) dentro del bloque.

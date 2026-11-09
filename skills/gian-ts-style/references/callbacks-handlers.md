@@ -4,7 +4,7 @@ Solo React (JSX). En Vue, Angular y Node no aplica.
 
 ## Direct reference (HARD)
 
-`direct-handler-reference`. Si la función ya tiene la firma correcta:
+`direct-handler-reference`. Wrapper que solo llama a una función → referencia directa.
 
 ```tsx
 <Button onClick={onClose} />
@@ -16,23 +16,29 @@ No:
 <Button onClick={() => onClose()} />
 ```
 
-SAFE FIX cuando: cero argumentos extra; no se ignora el evento a propósito; no hay bind parcial.
+SAFE FIX cuando la función declara 0 parámetros, o parámetros idénticos a los que pasa la prop. Si la función acepta un parámetro opcional que el evento llenaría (`onClose(reason?)`), se conserva el wrapper. Bind parcial (`() => onSelect(user.id)`) → `inline-argument-handler`.
 
-## Inline argument handler (PREFERENCE)
+## Inline argument handler (HARD)
 
-`inline-argument-handler`. Si necesita argumentos:
+`inline-argument-handler`. Un handler con argumentos que se usa una sola vez en JSX va inline:
 
 ```tsx
 <Button onClick={() => selectUser(user.id)} />
 ```
 
-No extraer automáticamente `const selectCurrentUser = () => selectUser(user.id)` solo para pasarla al JSX.
+No:
 
-WRITE: inline. AUDIT no FAIL extracción existente si el nombre aporta. NEVER AUTOFIX extracción ni inline-ización de named handlers reutilizados.
+```tsx
+const selectCurrentUser = () => selectUser(user.id);
 
-## No ceremonial extraction (PREFERENCE)
+<Button onClick={selectCurrentUser} />
+```
 
-`no-ceremonial-handler-extraction`. Multi-statement local y claro → inline:
+WRITE: inline. FIX/AUDIT en el alcance: `const x = () => f(a)` con un único uso, y ese uso es JSX → inline.
+
+## No ceremonial extraction (HARD)
+
+`no-ceremonial-handler-extraction`. Un handler que se usa una sola vez en JSX va inline, aunque tenga varias statements:
 
 ```tsx
 onClick={() => {
@@ -41,6 +47,9 @@ onClick={() => {
 }}
 ```
 
-Extraer solo si: reuso; nombre semántico valioso; cuerpo complejo; testing/API; legibilidad claramente mejor.
+Se extrae a `const` solo si cumple uno de estos criterios, lista cerrada:
 
-WRITE no inventa `const onCancel` ceremoniales. AUDIT no FAIL handlers nombrados existentes.
+- se usa en 2 o más sitios;
+- se pasa a algo que no es JSX (array de deps, `export`, un test).
+
+WRITE no crea `const onCancel` fuera de esa lista. FIX/AUDIT en el alcance: un handler nombrado que no cumple la lista → inline.

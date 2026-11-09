@@ -19,28 +19,34 @@ Una puerta de esta skill gana a la skill de proceso que nombra, aunque esa skill
 
 ## Activación
 
-Cargar cuando la tarea sea de desarrollo dentro del scope de `gian-how-i-code` (PHP, Laravel, React, Vue, Angular, Node, TypeScript, Python, features, refactors, migraciones, auditorías, contratos API, forms, queries/mutations, tablas, dialogs/drawers, arquitectura) o haya duda sobre qué proceso seguir.
+Cargar cuando la tarea sea de desarrollo dentro del scope de `gian-how-i-code` (PHP, Laravel, React, Vue, Angular, Node, TypeScript, Python, features, refactors, migraciones, auditorías, contratos API, forms, queries/mutations, tablas, dialogs/drawers, arquitectura, copy de UI, locales, mensajes de API, estilos —Tailwind, `sx`, CSS— y tests) o haya duda sobre qué proceso seguir.
 
 La policy entera aplica en cualquier stack. Un capítulo de stack (`25` en Vue, y los que existan después) solo agrega el delta. No copiar reglas de SFC ni de núcleo aquí.
 
-Si la tarea crea, edita, audita o corrige PHP: cargar también `gian-php-style` (formato visual; no duplicar esas reglas aquí). WRITE del hunk. **No correr Pint.** Laravel Boost `pint/core` queda anulado. Los planes no dicen “Pint al final”.
+Si la tarea crea, edita, audita o corrige PHP: cargar también `gian-php-style` (formato visual; no duplicar esas reglas aquí). WRITE sobre la unidad de `gian-how-i-code` `01` §Unidad que se alinea al tocar, y su self-check. **No correr Pint.** Laravel Boost `pint/core` queda anulado. Los planes no dicen “Pint al final”.
 
-Si la tarea crea o modifica `.ts`/`.tsx`, el hermano `.ts` de un componente Vue o un `<script setup lang="ts">` inline (incl. una feature normal, no solo “format this TS”): **HARD** cargar `gian-ts-style` y aplicarla en WRITE sobre código nuevo y el **hunk/función tocada** (SAFE FIX de inconsistencias de ese alcance). No migrar el archivo/repo. Si una corrección puede cambiar semántica: no aplicar; registrar GAP. AUDIT no edita. No duplicar esas reglas aquí. `<template>` y `<style>` de un `.vue` y el `.html` de Angular no tienen skill de estilo Gian: se sigue el lint del repo.
+Si la tarea crea o modifica `.ts`/`.tsx`, el hermano `.ts` de un componente Vue o un `<script setup lang="ts">` inline (incl. una feature normal, no solo “format this TS”): **HARD** cargar `gian-ts-style` y aplicarla en WRITE sobre código nuevo y la unidad de `gian-how-i-code` `01` §Unidad que se alinea al tocar: la función, componente o hook completo que contiene una línea cambiada, más los imports. No migrar el resto del archivo ni el repo. Si una corrección está en la lista cerrada de `gian-ts-style` `principles.md` § NEVER AUTOFIX: no aplicar; registrar el GAP en el cierre con `archivo:línea`. AUDIT no edita. No duplicar esas reglas aquí. `<template>` y `<style>` de un `.vue` y el `.html` de Angular no tienen skill de estilo Gian: se sigue el lint del repo.
 
 Python: no hay skill de estilo Gian. Se sigue el Ruff o Black del repo. No se porta formato de PHP ni de TS.
 
-No cargar para: preguntas generales, Git, Docker/infra pura, textos, debugging ajeno al scope.
+No cargar para: preguntas generales, Git, Docker/infra pura, redacción ajena al producto (emails, documentos personales), debugging ajeno al scope. El copy de UI, los locales y los mensajes de API están en scope (`gian-how-i-code` `15`).
 
 ## Clasificación de tarea
 
 | Tipo | Señales | Cadena |
 |---|---|---|
-| Feature grande / cambio de comportamiento | "diseña", "nuevo sistema", "nuevo flujo", requisitos ambiguos, alternativas materiales | policy → brainstorming → (grill solo si decisiones materiales abiertas) → writing-plans → Build |
-| Feature clara multi-step | requisitos definidos, múltiples archivos, plan útil | policy → (brainstorming mínimo solo si aporta) → writing-plans → Build |
-| Decisión arquitectónica | "decide entre X/Y", tradeoff material, impacto duradero | brainstorming → UN grill (grill-me por defecto; grill-with-docs solo si la decisión amerita ADR) → plan si aplica |
-| Bug | fallo, test rojo, 500, error reproducible | policy → systematic-debugging → fix + test |
-| Trivial | typo, rename, validación pequeña, cambio mecánico localizado | policy → implementación directa → validación |
-| Fuera de scope | Git, infra pura, textos, preguntas generales | nada (ni policy) |
+| Feature grande / cambio de comportamiento | "diseña", "nuevo sistema", "nuevo flujo", requisitos ambiguos, alternativas materiales | policy → brainstorming → (grill solo con una decisión material abierta) → writing-plans → Build |
+| Feature clara multi-step | requisitos definidos, múltiples archivos | policy → (brainstorming solo con una decisión material abierta) → writing-plans → Build |
+| Decisión arquitectónica | "decide entre X/Y", tradeoff material, impacto duradero | brainstorming → UN grill (`grill-me`; `grill-with-docs` solo si la decisión deja un ADR) → writing-plans si el usuario pide implementar la decisión en este hilo |
+| Bug | fallo, test rojo, 500, error reproducible | policy → systematic-debugging → fix + test → cierre |
+| Trivial | typo, rename, cambio mecánico localizado que no altera contrato, validación, copy visible, permisos ni datos persistidos | policy → implementación directa → validación → cierre |
+| Fuera de scope | Git, infra pura, redacción ajena al producto, preguntas generales | nada (ni policy) |
+
+Un cambio de validación, copy visible, permisos o datos persistidos nunca es Trivial: es como mínimo Feature clara (o Bug si corrige un fallo reproducible).
+
+Decisión material: cambia el contrato, el modelo de datos, las dependencias o la UX de un flujo.
+
+La primera respuesta declara el tipo y la cadena. Ejemplo: `Clasificación: Bug → policy → systematic-debugging → fix + test → cierre`.
 
 ## Bypass (anti-sobreingeniería)
 
@@ -62,19 +68,29 @@ No cargar para: preguntas generales, Git, Docker/infra pura, textos, debugging a
 
 ## Plan (agente plan)
 
-clasificar → cargar policy si desarrollo → brainstorming si aplica → grill si decisiones materiales → writing-plans si multi-step → entregar plan + estado de aprobación. Read-only siempre. Si el plan incluye snippets PHP: siguen `gian-php-style` (no PHPDoc; un parámetro en una línea). Si incluye snippets TS/TSX: siguen `gian-ts-style`. No duplicar esas specs aquí. **No incluir Pint como paso final** (Boost `pint/core` queda anulado).
+clasificar → cargar policy si desarrollo → brainstorming y grill según la cadena de la tabla → writing-plans en Feature grande y Feature clara multi-step → entregar plan + estado de aprobación. Read-only siempre. Si el plan incluye snippets PHP: siguen `gian-php-style` (no PHPDoc; un parámetro en una línea). Si incluye snippets TS/TSX: siguen `gian-ts-style`. No duplicar esas specs aquí. **No incluir Pint como paso final** (Boost `pint/core` queda anulado).
 
 Si se parte de una referencia o un plan, el plan lista *Sin datos todavía* y *Texto de la referencia que no se publica*. La UI no lleva ese texto: nombre de la referencia, fase, Mock o muestra, dueño o fecha de entrega. Sección sin datos: constante + `TODO(datos)`, sin preguntar ni bloquear. Fuera de alcance: no se monta (`gian-how-i-code` `15`).
 
 ## Build (agente build)
 
-consumir plan aprobado (o alcance aprobado) → cargar policy → Fase 0 + references según routing (lazy) → si toca PHP, WRITE `gian-php-style` en el hunk (**no Pint**) → si toca `.ts`/`.tsx` o un `<script setup lang="ts">`, WRITE `gian-ts-style` en el hunk (HARD; no format-only) → ejecutar por tareas/lotes con todowrite → validaciones reales del repo → revisión independiente según riesgo → cierre con evidencia. Sin plan, o tarea trivial/bug → routing proporcional de esta skill.
+consumir plan aprobado (o alcance aprobado) → cargar policy → Fase 0 + references según la matriz de routing → si toca PHP, WRITE `gian-php-style` en la unidad de `gian-how-i-code` `01` (**no Pint**) → si toca `.ts`/`.tsx` o un `<script setup lang="ts">`, WRITE `gian-ts-style` en esa unidad (HARD; no format-only) → ejecutar por tareas/lotes con todowrite → self-check de estilo → validaciones reales del repo → revisión → cierre (sección Cierre).
+
+Revisión: autorrevisión del diff contra cada reference cargada, siempre. Además, revisión independiente si el cambio toca contrato API, auth, dinero, migraciones o más de 5 archivos.
+
+Sin plan, bug o trivial: solo se omiten brainstorming, grill y writing-plans (y systematic-debugging en trivial). Nunca se omiten: Fase 0, references de la matriz de routing, WRITE de estilo con su self-check, reorden (`26`), validación, revisión y cierre.
 
 Si se partió de una referencia o un plan: antes de cerrar, `rg` de rótulos y `rg "TODO\(datos\)"` sobre los archivos tocados. El cierre lleva *Sin datos todavía* con `archivo:línea` y *Texto de la referencia que no publiqué* (`gian-how-i-code` `15`, `21`).
 
 Si el edit entra en el cuerpo de un componente, hook o composable, reordenar esa función antes de cerrar el cambio. Los slots están en `04`. Los casos dentro de cada slot están en `26`. Efectos al final, antes del return. No el otro componente del archivo.
 
 Si el edit entra en un método PHP, reordenar ese método según `26` antes de cerrar el cambio. No el otro método del archivo.
+
+## Cierre (obligatorio)
+
+Toda implementación cierra con el formato de `gian-how-i-code` `21` §Implementar, también un bug o un cambio trivial. Sin ese cierre la tarea no está terminada.
+
+Incluye siempre la línea del self-check de cada lenguaje tocado, según § Self-check de estilo, o la lista de GAP con `archivo:línea`.
 
 ## Self-check de estilo (obligatorio)
 
@@ -84,7 +100,7 @@ PHP todavía no tiene script: el cierre dice `Self-check PHP: manual` y lista la
 
 ## Precedencia y fallback
 
-Este router DELEGA: no reescribe contenido de las process skills ni de la policy. Si una process skill no está disponible o falla, degradar al siguiente nivel (sin writing-plans → lotes con todowrite; sin brainstorming → preguntas directas al usuario). Si `gian-how-i-code` no está disponible, continuar el proceso y señalarlo en el cierre.
+Este router DELEGA: no reescribe contenido de las process skills ni de la policy. Si una process skill no está disponible o falla, degradar al siguiente nivel (sin writing-plans → lotes con todowrite; sin brainstorming → preguntas directas al usuario). Si `gian-how-i-code` no está disponible, no se edita código: avisar al usuario y esperar instrucción. Solo se permite trabajo read-only.
 
 ## Caveman
 
@@ -109,7 +125,7 @@ Si el turno crea o edita `gian-development-workflow`, `gian-how-i-code`, `gian-p
 
 Si la tarea propone, crea, modifica o revisa UI visible, antes de la primera decisión visual abre `references/visual-quality.md`. Plan, análisis y review incluidos. No abrir en tareas sin interfaz.
 
-La principal es preferencia de superficie. Un apoyo no trae otra dirección y no se cargan dos apoyos en la misma delegación. Las preferencias de `gian-how-i-code` no congelan un defecto visual dentro del alcance. Contratos, stack y función siguen en esa skill.
+La principal fija la dirección de la superficie. Un apoyo no trae otra dirección y no se cargan dos apoyos en la misma delegación. Ante un defecto visual dentro del alcance solo ceden los tokens de look (color, tipografía, densidad, radios, sombras). Las reglas HARD de `gian-how-i-code` `04`, `09`, `15` y `23` nunca ceden. Contratos, stack y función siguen en esa skill.
 
 ## References
 

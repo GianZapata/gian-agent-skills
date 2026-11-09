@@ -5,7 +5,7 @@ Cargar cuando: Implementar FE, crear util/helper, fechas en frontend, multipart/
 ## Alcance
 
 - **Núcleo:** renombres explícitos, dayjs, utils vs helpers, `FormDataHelper` y la sección de duplicación. Un área es `export class XxxHelper`. Una función suelta de área (fecha, número, etiqueta, dinero) es hallazgo.
-- **Adaptador React:** memoización A–E y `cn()` / `className`. En Vue, los mismos casos A–E deciden `computed` (`25`). Sin `cn()`, las clases condicionales no se resuelven inventando la utilidad: se componen en el mecanismo del stack, sin concatenar nombres Tailwind dinámicos.
+- **Adaptador React:** memoización A–E y `cn()` / `className`. En Vue, los mismos casos A–E deciden `computed` (`25`). Sin `cn()`, las clases condicionales no se resuelven inventando la utilidad: se componen en el mecanismo del stack. Vue: `:class` con array u objeto (`:class="['base', { 'font-semibold': isActive }]"`, `25`). Angular: `[class.x]` o `[ngClass]`. Prohibido interpolar o concatenar clases en todos los stacks, y prohibido construir nombres Tailwind dinámicos.
 
 **Formato visual TS/TSX** (arrows, braces, JSX, imports type, comments): skill `gian-ts-style`. Esta reference no duplica esas reglas. **Autoridad de styling** (Tailwind vs `sx` vs theme): `04`. Forma de `export const` utils: la style skill; **cuándo** crear util vs helper: aquí.
 
@@ -19,7 +19,7 @@ No usar `useMemo`, `useCallback` o `memo` por costumbre de performance.
 | B. 2 ramas con una condición de 1 o 2 partes | ternario, o `&&` boolean-safe en JSX (`gian-ts-style`) |
 | C. valor derivado con 3+ ramas, o ternario cuya condición junta 3+ partes con `&&` / `||` | `useMemo` + `if` + early return, obligatorio en componente y hook (Vue: `computed`) — claridad, **no** claim de performance (`derived-multi-branch`) |
 | D. JSX multi-rama en render | `if` / early return en el componente (`08`); no `useMemo` |
-| E. performance / identidad referencial | frontera ya memoizada (p. ej. `columns` MRT, `11`) o evidencia real |
+| E. performance / identidad referencial | `useMemo` / `useCallback` / `memo` solo con una de estas evidencias, citada en el cierre: el valor es prop de un componente memoizado (p. ej. `columns` MRT, `11`); el valor es dependencia de un efecto o de una query key; hay una medición del profiler citada. Sin evidencia, es caso A |
 
 ```ts
 // A — no
@@ -62,7 +62,7 @@ Lo verifica `gian-ts-style` `assets/self-check.mjs` (`derived-multi-branch`, `no
 |---|---|
 | Completamente estáticas | `className` directo; no `cn()` ceremonial |
 | Condicionales, compuestas o variables por estado/props runtime | `cn()` |
-| Ternario entre variables o constantes de clase | `cn(base, cond && extra)` inline |
+| Ternario entre strings de clase | `cn(base, cond && extra)` inline |
 | Estado resuelto solo por props MUI y `className` idéntico | `className` estático permitido |
 
 Selected:
@@ -121,13 +121,21 @@ const cardClass = 'rounded-xl border border-divider bg-white p-4';
 
 Un string de clases tampoco: va inline. Si el bloque se repite, componente (`04`).
 
-Preferir Tailwind + `cn()` directamente en JSX cuando el gate de `04` lo permita.
+Tailwind + `cn()` inline en el JSX es obligatorio (MUST) cuando el gate de `04` lo permite.
 
-Excepciones (igual que `04`): mapping semántico reutilizable de variantes; primitive/shared real; valor dinámico que requiere `theme`; API MUI que sólo expone razonablemente `sx`.
+Excepciones cerradas (las de `04` puntos 4 y 5). El cierre cita cuál aplica:
 
-## Renombres explícitos (default)
+1. mapping de variantes que ya existe y se usa en 2+ archivos;
+2. primitive que ya existe en `shared/`;
+3. valor que depende del `theme` en runtime;
+4. prop que la API documentada del componente solo acepta en `sx`;
+5. token sin utility Tailwind ni bridge verificado (`04` 5a).
 
-Alias claros frente a nombres opacos (`d`, `o`, `x`). Geometría de destructuring: `gian-ts-style` (`query-data-alias`, `direct-property-access`). MRT `Cell: ({ row: { original } })` se queda en `11`.
+Crear un mapping o un primitive nuevo para styling ordinario está prohibido (`04`).
+
+## Renombres explícitos (HARD)
+
+Prohibidos los alias opacos (`d`, `o`, `x`). Usar alias con nombre de dominio. Geometría de destructuring: `gian-ts-style` (`query-data-alias`, `direct-property-access`). MRT `Cell: ({ row: { original } })` se queda en `11`.
 
 ```ts
 const { data: entities } = useEntitiesQuery(…);
@@ -138,7 +146,8 @@ const { data: entities } = useEntitiesQuery(…);
 - Stack FE canónico incluye **dayjs** en todos los proyectos.
 - No usar `new Date` / Date nativo para parseo, formato o aritmética de negocio en FE.
 - Si el repo tiene un **módulo configurado** (`lib/dayjs`, plugins utc/timezone/locale, etc.): importar **desde ese módulo**, no `import dayjs from 'dayjs'` crudo.
-- Preferir `DateHelper` (u helper de área) que envuelva ese dayjs; o `dayjs(value).format(…)` puntual vía el mismo módulo.
+- Si existe `DateHelper` (u helper de área de fechas), usarlo es obligatorio. Si al helper le falta el método, agregarlo al helper; no llamar `dayjs(value).format(…)` suelto en el consumidor.
+- Sin `DateHelper` en el repo: `dayjs(value).format(…)` vía el módulo configurado.
 
 Plugins típicos del módulo (orientativos): `utc`, `timezone`, `customParseFormat`, `isSameOrAfter` / `isSameOrBefore`, `relativeTime`, locale del producto (p. ej. `es-mx`).
 
@@ -214,7 +223,7 @@ Si ya existe un helper/util de área (`DateHelper`, `NumberHelper`, util compart
 | Reimplementa capacidad de `*Helper`/util **compartido** (p. ej. `formatOrderDate` ≈ `DateHelper.format`) | Media | Llamar o extender el helper; eliminar la función local |
 | Util local mínimo casi idéntico **solo** dentro del mismo feature, sin shared | Baja | Consolidar en el helper/util de la feature o shared si ya aplica |
 | Labels/colores de UI duplicados entre componentes | — | **Permitido** (`08`); no es este hallazgo |
-| Una sola coincidencia accidental trivial **sin** abstracción previa | — | No forzar extracción (`22`); omitir o Baja |
+| Una sola coincidencia accidental trivial **sin** abstracción previa | Baja | Registrar como Baja. No extraer (`22`) |
 
 Tooling: Serena/codegraph para localizar `DateHelper` / `NumberHelper`; ast-grep para `dayjs($X).format` u wrappers `format*Date` locales.
 
@@ -234,13 +243,13 @@ Tooling: Serena/codegraph para localizar `DateHelper` / `NumberHelper`; ast-grep
 | String de clases local (`const cardClass = '…'`) en vez de inline + `cn()` | Media |
 | Template literal que compone una constante de clases | Media |
 | `sx` usado para layout/spacing/sizing ordinario pudiendo usar Tailwind | Media |
-| `useTheme()` solo para alimentar `sx` (preferir `sx={theme => …}`) | Media |
+| `useTheme()` solo para alimentar `sx` (usar `sx={theme => …}`) | Media |
 | Clase estática sin `cn()` | — permitido |
 | UI construye `FormData` / formatea fechas para el payload | Media |
 | Multipart a mano en el service pese a existir `FormDataHelper` | Media |
 | Falta `FormDataHelper` y la feature **necesita** multipart | Media (crear shared; no PROP de lib) |
 | Util que debería ser helper de área (o al revés) | Baja |
 | Duplicación mínima solo dentro del mismo feature | Baja |
-| Nombre opaco en alias frecuente | Baja |
+| Alias opaco (`d`, `o`, `x`) | Baja en auditoría; en Implementar se corrige en la función tocada |
 
 Arrows, `{ return }`, braces de `if`, JSX props: **no** esta tabla — `gian-ts-style`.

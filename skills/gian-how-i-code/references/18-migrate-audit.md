@@ -16,9 +16,14 @@ Reglas de molde: leer la **versión instalada** de la skill y sus references —
 ### Scope de una auditoría focalizada
 
 - **FAIL:** la regla aplicable está incumplida y su corrección pertenece al alcance solicitado.
-- **GAP:** la regla pertenece al alcance, pero no puede resolverse de forma segura con la evidencia actual (por ejemplo, equivalencia palette↔utility no demostrable, slot público incierto o token requerido sin bridge).
+- **GAP:** la regla pertenece al alcance y la corrección cae en uno de estos tres casos, y solo en ellos:
+  1. equivalencia no demostrable (p. ej. palette↔utility);
+  2. API o slot pública incierta;
+  3. token requerido sin bridge.
+
+  Cada GAP indica el caso, la evidencia que falta y qué la resolvería. Cualquier otra regla incumplida dentro del alcance es FAIL.
 - **Fuera de alcance:** problema real de otra categoría que la auditoría actual no pretende resolver. En una auditoría de styling, query-key-factory, AbortSignal, CustomTable/MRT o arquitectura del store no son GAP de styling.
-- Registrar “Fuera de alcance” solo cuando sea útil; no convertirlo automáticamente en PROP salvo que el usuario haya pedido una auditoría más amplia ni inflar el reporte con deuda lateral no solicitada.
+- Registrar siempre lo “Fuera de alcance” observado, una línea por caso con `archivo:línea`. No convertirlo en PROP salvo que el usuario haya pedido una auditoría más amplia. No desarrollarlo más allá de esa línea.
 
 ## Salida (un solo archivo)
 
@@ -31,7 +36,7 @@ La ruta es relativa a la raíz git del repo auditado, no a un repo padre. Ejempl
 - **Un único** `.md` de auditoría. No carpetas multi-archivo por feature.
 - Si ya existe el archivo del mismo alcance/día, **actualizarlo**; no un segundo reporte paralelo.
 - Numeración `H-` / `PROP-` **global**.
-- Solo en **repo completo**: auxiliar opcional `docs/pattern-audit/YYYY-MM-DD-<alcance>-coverage-ledger.md` si el inventario de archivos es inmanejable (`24`).
+- Solo en **repo completo**: auxiliar `docs/pattern-audit/YYYY-MM-DD-<alcance>-coverage-ledger.md` (`24`). Usarlo o no es decisión explícita del auditor; se declara en §0 Contexto con el motivo.
 - Al escribir, si el `.gitignore` de esa raíz no ignora `docs/pattern-audit/`, se agrega esa línea. Si no hay `.gitignore`, se crea con esa sola línea. Si la entrada ya está, no se duplica. No se ignora `docs/` entero.
 
 Idioma: **español**.
@@ -57,12 +62,14 @@ Cada conclusión es una de cuatro. Buscar una mejora justificada es obligatorio 
 - Versión de gian-how-i-code cargada
 - Alcance: feature | repositorio completo
 - References usadas
+- Herramientas usadas y no disponibles (ast-grep, Serena, codegraph)
+- Coverage-ledger: sí | no, con motivo (solo repo completo)
 
 ## 1. Resumen ejecutivo
 (Prohibido “altamente alineado” en full-repo sin gate `24`)
 
 ## 2. Hallazgos de molde
-### Por módulo/feature (si el alcance es amplio)
+### Por módulo/feature (cuando la auditoría cubre dos o más features)
 ### H-001 — …
 ## 3. Propuestas (PROP-NNN)
 ## 4. Lotes sugeridos
@@ -83,7 +90,9 @@ Cada conclusión es una de cuatro. Buscar una mejora justificada es obligatorio 
 
 ### Hallazgo H-NNN (mínimo)
 
-Feature: Severidad, Evidencia, Regla, Problema, Corrección, Estado.
+Feature: Severidad, Evidencia (`archivo:línea`), Regla (`references/NN §sección`), Problema, Corrección, Estado.
+
+Cada H cita `references/NN §sección`. Un H sin regla citada no cuenta. Toda categoría revisada sin hallazgos lleva el bloque «Sin hallazgos» de `24` §6.
 
 Repo completo: plantilla enriquecida en `24` (categoría, alcance aislado/repetido/sistemático, impacto, archivos estimados, …).
 
@@ -97,7 +106,7 @@ Contrato `19`. Costos/riesgos reales — no “ninguno”; no “garantiza CI”
 |-------|----------|
 | Alta | N+1, status update a mano, contrato inventado, diálogo rompe datos, falta dayjs / `new Date` sistemático de negocio, falta ErrorMapper/apiFetcher cuando el molde lo exige, chip/banner/copy "Test mode" o validación ramificada por el runtime (`08`), rótulo de referencia, fase o muestra publicado en UI ("Mock", "Próxima fase", "oficial") (`15`), efecto duplicado, dato incoherente o contrato roto por una clase fuera de lugar (`05`), `sometimes` en una key anidada con `required_with` (acepta ítems incompletos), campo obligatorio sin `required` en el Store |
 | Media | Display helper (labels/colores), `*Helper` cajón multi-dominio, función local que duplica `DateHelper`/`NumberHelper`/util compartido, keys sueltas, props aplanadas, typed strings vs enum `APP_OWNED`, shadow type `LIBRARY_OWNED`, `useMemo` ceremonial (`23` A; no C/E), constantes `*_SX` / `get*Sx` locales, `sx` de layout/spacing/sizing ordinario, concat/template de `className` condicional, `useTheme()` ceremonial (solo para `sx`), mutation con `onSuccess`/`onError` fijos en el hook, `interface XxxInput` duplicando Zod, `TVariables` híbrido ruta+body, payload anónimo `{ body: string }`, `new FormData()` en dialog/form, IDs de ruta dentro del schema Zod, query sin `*QueryProps`, dayjs crudo pese a módulo configurado, QueryClient por feature, archivo hook kebab/snake `use-*` sistemático (`04`), cadena `=== \|\| ===` de conjunto cerrado sistemático (`07`), loop que inyecta presencia en reglas compartidas, regla redefinida en el Update, trait para el Store/Update de una entidad, `unique` solo en uno de los dos requests |
-| Baja | Naming `handle*`, `open` vs `isOpen`, `entity=`/`data=` vs prop por tipo (`09`), `=== \|\| ===` vs includes/`in_array` aislado (`07`), callback `whenLoaded` innecesario (`06`), archivo hook `use-*`/`use_*` aislado (`04`), copy Title Case, nit de carpeta, mutation sin interface `UseMutationOptions`, mutation sin los 3 genéricos explícitos si el resto (interface + DTO) está bien |
+| Baja | Naming `handle*`, `open` vs `isOpen` (Baja solo en auditoría; en Implementar es HARD y se corrige en el componente tocado, `09`), `entity=`/`data=` vs prop por tipo (`09`), `=== \|\| ===` vs includes/`in_array` aislado (`07`), callback `whenLoaded` innecesario (`06`), archivo hook `use-*`/`use_*` aislado (`04`), copy Title Case, nit de carpeta, mutation sin interface `UseMutationOptions`, mutation sin los 3 genéricos explícitos si el resto (interface + DTO) está bien |
 
 La gravedad depende del impacto, la frecuencia y el riesgo sustentados por evidencia. No hace falta un incidente ya ocurrido para sostener un riesgo. No bajar todo a Baja.
 
@@ -106,7 +115,7 @@ Estar en `Support`, o agrupar variables en una clase, es desviación de convenci
 ## Auditar (sin editar)
 
 - No modificar código ni manifests
-- Evidencia por archivo/línea (preferir ast-grep / símbolos cuando estén disponibles — ver `02` / `24`)
+- Evidencia por `archivo:línea`. Si ast-grep, Serena o codegraph están disponibles, usarlos y registrar cada consulta en el registro de búsquedas. Si no están disponibles, anotarlo en §0 (`02`, `24`)
 - Separar Hallazgos vs Propuestas en el **mismo** archivo
 - Contrastar inventario FE de `02`
 - Si alcance = repo completo → cumplir Gate `24` antes de disposición `complete`

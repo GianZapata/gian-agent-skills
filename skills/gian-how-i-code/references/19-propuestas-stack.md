@@ -12,7 +12,10 @@ Cargar cuando: gap, complejidad, dependencia potencial, mejora no molde-estricto
 - una mejora de configuración, linting, tipado o arquitectura;
 - una oportunidad para simplificar o hacer más segura una implementación.
 
-No es obligatorio producir una propuesta en cada tarea. Si el stack actual ya resuelve adecuadamente el problema, registrar `No requiere cambio` o no crear una PROP.
+No es obligatorio producir una PROP en cada tarea. El cierre de Implementar y el reporte de Auditar incluyen siempre una de estas dos salidas:
+
+- `Mejoras de stack: ninguna (<motivo>)`
+- la lista de PROP.
 
 Una ayuda de captura (`10`) que falta se propone nombrando solo la capacidad que ella necesita: utilidad local, catálogo, endpoint o debounce. No se piden los cuatro si basta uno. No se instala sin OK.
 
@@ -48,14 +51,14 @@ Una ayuda de captura (`10`) que falta se propone nombrando solo la capacidad que
 
 1. Verificar manifests y abstracciones **antes** de proponer.  
 2. No versiones de memoria.  
-3. Mala práctica corregible con stack existente ≠ propuesta de install (preferir Hallazgo H-).  
-4. Preferir el stack canónico de este estándar cuando cubra el caso.  
+3. Una mala práctica corregible con el stack existente es Hallazgo H-, nunca PROP de instalación.  
+4. Usar el stack canónico de este estándar cuando cubra el caso, salvo variante documentada en `20`.  
 5. **Nunca instalar sin OK.**  
 6. Auditoría no toca manifests.  
 7. El comando de instalación se muestra como propuesta; no se ejecuta hasta aprobación.
 8. **Costos y riesgos reales** — prohibido “Costos y riesgos: Ninguno”. Incluir migración, API change, fragmentación de caché, esfuerzo de adopción, etc.
 9. **No afirmar que algo “garantiza CI”** salvo evidencia: plugin/reglas en ESLint, script de lint, y job de CI que lo ejecute. Si falta alguno, decirlo.
-10. Migrar query keys / invalidaciones: evaluar riesgo de cambiar identidades de caché y plan incremental.
+10. Migrar query keys / invalidaciones: la PROP incluye el riesgo de cambiar identidades de caché y un plan incremental.
 
 ## Dependencias FE canónicas esperadas
 
@@ -73,9 +76,11 @@ El adaptador React de abajo es el esperado **cuando el repo es React**. En Vue, 
 | `QueryClient` central | Defaults compartidos (`13`). Solo si el server state es React Query |
 | Realtime (Echo/Reverb) | **Solo si** el producto lo necesita — no stack mínimo |
 
-- dayjs ausente en un cliente TS → PROP **Librería faltante** (Alta) + hallazgo `new Date` si aplica.
-- dayjs presente, imports crudos / sin módulo → PROP **Abstracción interna** o Hallazgo.
-- React Query sin store de keys / invalidaciones con arrays sueltos → subutilización o abstracción interna.
+- dayjs ausente en un cliente TS → PROP **Librería faltante** (Alta). Si el código usa `new Date` para negocio, además Hallazgo (`23`).
+- dayjs presente, módulo configurado e imports crudos → Hallazgo Media (`23`).
+- dayjs presente, sin módulo y con `extend`/locale repetidos por archivo → PROP **Abstracción interna** (`23`).
+- query-key-factory instalado, keys o invalidaciones con arrays sueltos → Hallazgo Media (subutilización, `18`).
+- React Query sin query-key-factory → Hallazgo Media (keys sueltas) + PROP **Librería faltante** (`13` §2).
 - axios ad-hoc / sin ErrorMapper → Hallazgo + PROP de abstracción.
 - Repo Vue/Angular sin React Query, RHF o MUI → no PROP. Cumplir la responsabilidad con el equivalente del stack.
 ## Contrato PROP-NNN
@@ -110,7 +115,7 @@ El adaptador React de abajo es el esperado **cuando el repo es React**. En Vue, 
 - Falta TanStack Query y hay fetch en `useEffect`.
 - Query-key-factory instalado pero keys manuales + invalidate con arrays sueltos → **subutilizada**.
 - Catálogos sin `staleTime` y refetch agresivo → tipado/config, no lib nueva.
-- Wizard de 8 pasos sin máquina de estados y el dominio es SM → evaluar lib o patrón interno.
+- Wizard de 8 pasos sin máquina de estados y el dominio es SM → PROP con la comparación del paso 5 del Gate (lib vs patrón interno).
 - Campo de moneda, decimal por locale, fecha con rangos o zona, u hora con intervalos: no escribir la máscara, el parser ni el picker. Usar el componente o wrapper del repo. Si no existe, PROP de una librería del framework de ese repo (`10`). No instalar sin OK. Mientras tanto, el campo queda con el tipo y la validación de `10`.
 
 ## Ejemplos de cuándo no proponer
@@ -122,17 +127,17 @@ El adaptador React de abajo es el esperado **cuando el repo es React**. En Vue, 
 - Proponer dayjs, Zod u otra lib JS en un backend Python.
 - Una máscara, un parser o un picker escritos a mano para moneda, decimal por locale, fecha u hora. Ahí la propuesta es el componente del repo o una librería del framework (`10`), no el parser propio.
 
-## Preferencias canónicas (sin pin de versión)
+## Stack canónico (obligatorio salvo variante documentada en `20`; sin pin de versión)
 
-| Caso | Preferir |
+| Caso | Stack |
 |------|----------|
 | Server state (React) | TanStack Query |
-| Query key factory | `@lukemorales/query-key-factory` si ya es el patrón; si no, evaluar |
+| Query key factory | `@lukemorales/query-key-factory` + `mergeQueryKeys` (`13` §2). Si el repo no lo tiene: PROP Librería faltante. Keys sueltas no |
 | Lint Query | `@tanstack/eslint-plugin-query` con evidencia, solo si hay React Query |
 | Forms (React) | RHF + Zod. En otro stack, el form del stack. Un schema nombrado es la fuente del DTO; Zod es ese schema en TypeScript |
 | Query HTTP Laravel | Spatie QueryBuilder |
 | SM | paquete de state machines ya en repo o el canónico del estándar |
 | UI (React) | MUI + Tailwind |
-| Tenancy multi-DB | stancl/tenancy si el producto lo requiere |
+| Tenancy multi-DB | stancl/tenancy cuando el repo tiene tenancy o el usuario la pide (`16`) |
 
 Si el repo ya eligió otra lib equivalente → variante, no reinstall.

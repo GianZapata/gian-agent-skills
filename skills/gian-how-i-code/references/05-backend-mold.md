@@ -16,7 +16,7 @@ Orden del cuerpo del método tocado: `26`. Si el edit entra en el método, se re
 ```text
 Route → FormRequest → Controller (delgado) → Action → Resource
 Job o comando → Action
-Lectura compleja → Query (Spatie QueryBuilder) → Resource
+Lectura (todo GET, collection y show) → Query (Spatie QueryBuilder) → Resource
 ```
 
 Laravel valida el FormRequest antes de invocar el método del controller.
@@ -25,7 +25,7 @@ Laravel valida el FormRequest antes de invocar el método del controller.
 |---|---|
 | FormRequest | Entrada HTTP: requerido, formato, tipo, límite. Puede adelantar un rechazo |
 | Controller | Datos y contexto, llama a la Action, arma la respuesta. No decide el negocio |
-| Action | Condiciones del caso, escrituras, transacción si hace falta, errores conocidos. Sigue siendo válida si la llaman un Job u otra Action, sin ese Request |
+| Action | Condiciones del caso, escrituras, la transacción que delimita qué se confirma junto (§Transacción y error), errores conocidos. Sigue siendo válida si la llaman un Job u otra Action, sin ese Request |
 | Resource | Serializa. No carga relaciones ni dispara queries |
 | Policy | Permiso. Si no hay HTTP, se reutiliza con el actor explícito |
 | Modelo | Invariante cohesiva de esa entidad |
@@ -37,8 +37,14 @@ Al crear, modificar o auditar un caso, se recorre el flujo aunque la Action teng
 
 Buscar una mejora justificada es obligatorio aunque el caso cumpla. No hay cupo mínimo. No se agrega transacción, `catch`, clase, validación ni idempotencia por rutina. Tener `transaction()` y `CustomException` no demuestra que el flujo sea correcto.
 
+El cierre MUST incluir el bloque **Revisión del caso**:
+
+- entradas recorridas (HTTP, Job, comando, otra Action);
+- protección ya presente en cada capa;
+- mejora aplicada o propuesta, o "ninguna" con el motivo en una línea.
+
 - Actions: mutaciones, transacciones, dominio
-- Queries: includes, filters, sorts, counts
+- Queries: includes, filters, sorts, counts. Todo GET (collection y show) MUST pasar por una Query (`06`)
 - Resources: serializan; **no** cargan relaciones ni disparan queries; `whenLoaded` al ctor del Resource (`06`)
 - Lista: `Resource::collection` o el `ResourceCollection` de la feature si la lista necesita envoltura propia. No una clase aparte para el arreglo.
 - Services Laravel: solo integraciones externas
@@ -64,7 +70,7 @@ No se crea una clase solo para agrupar variables. Una clase que ya existe y solo
 
 ### Forma a copiar
 
-- Action: clase `final`, método `handle`, sin constructor si el método no usa una dependencia inyectada.
+- Action: clase `final`, método `handle`. Sin dependencia inyectada: sin constructor. Con dependencia inyectada: constructor con promotion `private readonly` (formato: `gian-php-style`).
 - Query: el cálculo que solo usa esa query es un método privado de la query.
 - Valor reutilizado: helper estático en `Helpers`.
 - Adaptador: la clase que la integración exige o consume, al lado de esa integración. No en `Support`.
@@ -86,11 +92,11 @@ La idempotencia no es un `catch` ni un default de cada `create`. Cuando el efect
 
 Saldo, stock, cupo o disponibilidad se protegen junto con la escritura: índice único, operación atómica o bloqueo. Una comprobación previa, aunque sea de backend, puede quedar vieja. La comprobación previa orienta al sistema. No se publica como "Disponible". Guardar resuelve la colisión.
 
-Los efectos de afuera no los deshace la base. Por flujo se evalúa cuándo correrlos, qué pasa si se repiten, y cómo recuperarse si la base ya confirmó y después fallan: reintento, estado pendiente o compensación. `afterCommit()` espera la transacción exterior. La idempotencia evita repetir el efecto. No se exigen los dos mecanismos iguales en cada integración.
+Los efectos de afuera no los deshace la base. Por cada efecto externo creado o tocado, el cierre MUST declarar: cuándo corre (`afterCommit` o inline), qué pasa si se repite, y cómo se recupera si la base ya confirmó y después falla: reintento, estado pendiente o compensación. `afterCommit()` espera la transacción exterior. La idempotencia evita repetir el efecto. No se exigen los dos mecanismos iguales en cada integración.
 
 ## Query table aliases
 
-Cuando Query Builder, `DB::table`, `from`/`join` o SQL crudo **necesita** alias de tabla:
+Toda query con join o subquery MUST usar alias, en Query Builder, `DB::table`, `from`/`join` o SQL crudo:
 
 - Nivel 0 (query raíz): `t1`, `t2`, `t3`, … en orden de aparición (`from` = `t1`, primer join = `t2`).
 - Subquery: un `s` por nivel de anidamiento, luego `t` + índice **en ese nivel** (el índice reinicia por subquery).
@@ -118,11 +124,16 @@ DB::table('users as u')
     ->join('orders as o', 'o.user_id', '=', 'u.id');
 ```
 
-No forzar alias en un from de una sola tabla sin join/self-join: `DB::table('users')`.
+Solo un `from` de una tabla sin join ni self-join va sin alias: `DB::table('users')`. Un join sin alias (`users.id = orders.user_id`) es hallazgo.
 
 No aplica a relaciones Eloquent (`$user->orders()`), nombres de tabla reales ni columnas. Formato visual PHP: `gian-php-style`.
 
-GAP: alias en `with()` / eager load — no FAIL. Lateral joins / CTEs si el nivel no es un subquery claro — GAP.
+GAP (no FAIL), lista cerrada:
+
+- alias en `with()` / eager load;
+- lateral joins y CTEs cuyo nivel no es un subquery claro.
+
+Se reportan como `GAP` con `archivo:línea` y el alias propuesto. No se reescriben.
 
 ## Resources y verdad derivada
 
@@ -138,7 +149,7 @@ GAP: alias en `with()` / eager load — no FAIL. Lateral joins / CTEs si el nive
 - `bootHasStateMachines()` en `boot()` para jobs async
 - Estados como `public const` UPPER_SNAKE en la SM + `values()` (fuente única; ver `07`)
 - Nuevo estado = SM (const + transitions) + DB enum/constraint + factories + labels UI (TS string enum)
-- No backed Enum PHP paralelo para los mismos estados salvo necesidad demostrada
+- Prohibido un backed Enum PHP paralelo para los mismos estados, salvo la excepción única de `07` §Excepción — backed Enum paralelo
 - Membresía 2+ estados: `in_array(..., true)` / `.includes()` — ver `07`
 
 ## Form Requests
@@ -218,18 +229,18 @@ Si el mismo bloque (dirección, contacto, periodo) se valida en requests de enti
 Cuando se cree o modifique validación de datos introducidos por un usuario:
 
 1. MUST revisar las reglas **y** los mensajes visibles asociados.
-2. En Laravel, revisar explícitamente `rules()`, `messages()`, y `attributes()` **cuando sea útil** (ver abajo).
+2. En Laravel, revisar explícitamente `rules()`, `messages()` y `attributes()` (criterio abajo).
 3. Agregar mensajes específicos para cualquier regla cuyo default exponga implementación, nombres internos, sea ambiguo o no explique qué debe corregir el usuario.
 4. Agregar, modificar o eliminar una regla MUST disparar la revisión de su mensaje resultante.
 5. **No** considerar un FormRequest terminado solamente porque `rules()` está implementado.
 
-`attributes()` es **condicional**. Revisarlo y usarlo cuando el nombre interno pudiera llegar al usuario vía `:attribute`, o cuando haga falta copy humano. Un Request con mensajes específicos ya human-facing puede ser válido **sin** `attributes()`. No exigir el método por existencia estructural.
+`attributes()` MUST existir si algún mensaje resultante interpola `:attribute` con un nombre que no es copy de dominio (columna, clave interna). Si todos los mensajes resultantes ya son human-facing, el Request es válido **sin** `attributes()`. No se exige el método por existencia estructural.
 
 ### Human-facing language
 
-Los mensajes visibles MUST usar lenguaje del dominio. SHOULD orientar sobre qué ingresar, seleccionar o corregir.
+Los mensajes visibles MUST usar lenguaje del dominio. MUST decir qué ingresar, seleccionar o corregir, como en los ejemplos GOOD.
 
-MUST NOT exponer innecesariamente: `boolean`, `regex`, `enum`, `UUID`, tipos internos, nombres de columnas, clases, excepciones, reglas internas de validación.
+MUST NOT exponer: `boolean`, `regex`, `enum`, `UUID`, tipos internos, nombres de columnas, clases, excepciones, reglas internas de validación.
 
 MAY usar términos técnicos cuando formen parte real de la audiencia o dominio (`URL`, `PDF`, `CSV`, `API key`).
 
@@ -275,11 +286,17 @@ is_active.boolean       -> covered
 
 ### Backend → frontend
 
-Si hay UI que consume esa validación: MUST comprobar el camino real del 422; MUST asignar errores por campo a los inputs cuando esa sea la arquitectura del repo; MUST preferir el mensaje human-facing del backend (no sustituirlo por un genérico). Definir buenos mensajes en BE y no mostrarlos en FE **no** cuenta como integración completa. No introducir arquitectura nueva de errores si el proyecto ya tiene patrón — ver `10`/`14`.
+Si hay UI que consume esa validación:
+
+- MUST comprobar el camino real del 422.
+- MUST mostrar el 422 por campo en los inputs. Si el repo ya tiene patrón, se usa ese. Si no tiene mecanismo, usar `setError` (o el equivalente del stack) en el form tocado y reportarlo.
+- MUST mostrar el mensaje del backend tal cual. Prohibido sustituirlo por un genérico.
+
+Definir buenos mensajes en BE y no mostrarlos en FE **no** cuenta como integración completa. Ver `10`/`14`.
 
 ### Completion gate
 
-Una tarea que modifica formularios o validación user-facing no puede declararse completa hasta revisar, según aplique:
+Una tarea que modifica formularios o validación user-facing no puede declararse completa hasta marcar cada casilla con ✔ o `n/a: <motivo concreto>`. Si hay FormRequest, `rules`, `messages` y `backend 422 contract` nunca son n/a.
 
 ```text
 [ ] rules
@@ -297,11 +314,12 @@ Una tarea que modifica formularios o validación user-facing no puede declararse
 - [ ] Request + Action + Resource / Query
 - [ ] Lugar decidido antes de crear el archivo. `Support` no es el molde. No se creó una clase solo para agrupar variables
 - [ ] Includes/filters/sorts explícitos
-- [ ] Tipos cerrados: backed Enum **o** constantes SM (no ambos para lo mismo)
+- [ ] Tipos cerrados: backed Enum **o** constantes SM (no ambos para lo mismo, salvo `07` §Excepción — backed Enum paralelo)
 - [ ] SM con const + transitions + defaultState + bootHasStateMachines
 - [ ] Tests focalizados si cambia comportamiento
-- [ ] Joins/SQL: alias `t1`/`t2`; subquery `st1`/`sst1` (no `users u`)
+- [ ] Toda query con join o subquery: alias `t1`/`t2`; subquery `st1`/`sst1` (no `users u`)
 - [ ] User-facing validation (`05`): no done solo con `rules()`; completion gate si toca FormRequest/form
 - [ ] Store/Update de la misma entidad: base `<Entity>Request` + `presence()`; sin loop de presencia ni reglas redefinidas
+- [ ] Cierre con **Revisión del caso** y la declaración de cada efecto externo tocado
 
 Ver `assets/backend/`.

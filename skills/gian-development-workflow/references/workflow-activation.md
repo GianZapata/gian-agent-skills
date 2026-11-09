@@ -20,6 +20,8 @@ Antes del primer edit, abrir y leer estos archivos. Recordar la skill no cuenta.
 
 Esas references se aplican. Saltarse una regla porque el cambio parece pequeño, porque el repo ya diverge, o porque la skill ya se usó en otro turno, no está permitido.
 
+El cierre lista las references leídas y las reglas aplicadas (`gian-how-i-code` `21`).
+
 La matriz decide qué references aplican. No se leen todas en cada turno. No se copia el molde en este bloque.
 
 Fuera de scope (git, Docker/infra pura, preguntas generales): no se carga.

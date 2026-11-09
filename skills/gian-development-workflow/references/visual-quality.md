@@ -12,8 +12,8 @@ El contenido es independiente de la herramienta. Rutas, comandos y límites de c
 2. Contratos ejecutables, stack existente y función. `gian-how-i-code` manda ahí: DTO, 422, enums, copy de dominio, props del overlay, dueño de la mutación, no instalar ni migrar. El arreglo visual se escribe con el mecanismo que el repo ya tiene.
 3. Accesibilidad de lo tocado: contraste, teclado, foco, nombre accesible.
 4. Estas obligaciones.
-5. La skill principal de la superficie, como preferencia. Un apoyo no puede traer otra dirección visual.
-6. Preferencias de look, incluidas las de `gian-how-i-code` y las de la skill principal. No impiden corregir, dentro del alcance, espacio, densidad, jerarquía, scroll, alineación o un defecto repetido por consistencia.
+5. La skill principal de la superficie. Cede ante los niveles 1–4. Un apoyo no puede traer otra dirección visual.
+6. Tokens de look: color, tipografía, densidad, radios y sombras, vengan del producto o de la skill principal. No impiden corregir, dentro del alcance, espacio, densidad, jerarquía, scroll, alineación o un defecto repetido por consistencia. Las reglas HARD de `gian-how-i-code` (`04`, `09`, `15`, `23`) no son look: están en el nivel 2 y nunca ceden.
 
 Formato PHP/TS no es acabado de interfaz. `22-design-quality.md` no es calidad visual.
 
@@ -29,11 +29,13 @@ Antes de escribir, nombrar audiencia, tarea, frecuencia, contenido y qué puede 
 
 En un rediseño de página entera, plantear dos o tres composiciones que difieran en distribución, jerarquía o tipo. Elegir una y justificarla en pocas líneas. No crear tres archivos ni tres imágenes, y no pedir otra aprobación. Un ajuste menor no exige ese paso.
 
+Ajuste menor: un cambio dentro de un componente que no mueve secciones, no cambia la jerarquía y no cambia el layout. Todo lo demás no es ajuste menor.
+
 La principal sigue siendo una. Impeccable acompaña. Leer `new-work.md`. Usar `concept-seed` solo en el alcance que esa referencia marca: `surface` para una página abierta dentro de un mundo ya establecido, `direction` para crear o reemplazar el mundo visual. No sustituirlo ni saltarlo en ese alcance. No correrlo en un ajuste menor, una extensión local o un pedido ya precisado. Si el launcher no puede correr sin descargar, vale el fallback de la sección Impeccable. Una dirección fijada en este hilo gana al roll.
 
-`critique` diagnostica y no aplica solo. `layout` corrige la composición elegida si hace falta. Nombrar un comando no cuenta como ejecutarlo ni como aplicar sus hallazgos.
+`critique` diagnostica y no aplica solo. `layout` corrige la composición elegida cuando `critique` o la verificación encuentran un defecto de composición. Nombrar un comando no cuenta como ejecutarlo ni como aplicar sus hallazgos.
 
-Después de implementar, abrir la UI real del proyecto. Revisar composición, jerarquía, controles editables frente a deshabilitados, acciones alcanzables y adaptación a sus viewports, incluida la página, el formulario, lo expandido y el diálogo. Si un criterio falla, corregirlo antes de cerrar. Si no se puede renderizar, decir exactamente qué no se vio. No declarar la dirección aprobada porque el archivo exista. Guardar el acuerdo solo si este hilo lo aprueba.
+Después de implementar, abrir la UI real del proyecto. Revisar composición, jerarquía, controles editables frente a deshabilitados, acciones alcanzables y adaptación a los viewports (obligación 9), incluida la página, el formulario, lo expandido y el diálogo. Si un criterio falla, corregirlo antes de cerrar. Declarar que no se pudo renderizar solo después de intentar abrir la UI con el navegador disponible; entonces decir exactamente qué no se vio. No declarar la dirección aprobada porque el archivo exista. Guardar el acuerdo solo si este hilo lo aprueba.
 
 ## Superficie
 
@@ -75,16 +77,16 @@ No descartar la principal ni `impeccable` para preferir contexto de código. Una
 
 ## Obligaciones
 
-Proporcionales al cambio.
+Aplican siempre, incluidas 2, 6, 8, 9, 10 y 11. Solo 1, 3 y 5 se pueden omitir, y solo en un ajuste menor (sección Rediseño autorizado); el cierre declara cuáles se omitieron.
 
 1. Audiencia, tarea, contenido, frecuencia y restricciones antes del layout. Preguntar solo si no están y la decisión es material.
 2. Inspeccionar UI, tokens y componentes. En un refinamiento, conservar la identidad y corregir el defecto.
 3. Justificar distribución, densidad y jerarquía.
 4. Alineación, tamaños, espaciado, contraste, tipo, acciones, estados, contenido largo e información incompleta. El espacio responde al contenido y al viewport.
-5. Página, diálogo, drawer o expansión según la tarea. Tamaño, scroll, cierre, foco y navegación.
+5. Cada contenedor que el cambio toca o abre (página, diálogo, drawer, expansión): tamaño, scroll, cierre, foco y navegación.
 6. Carga, vacío, error, selección, hover, focus, disabled, teclado.
 7. Sin plantillas repetidas, tarjetas de adorno, duplicación, jerarquía ausente ni decoración sin función.
 8. Contratos, stack y dependencias siguen vigentes.
-9. Revisar lo renderizado con las herramientas disponibles. Capturas de los viewports del producto. Tests en verde no alcanzan.
-10. Si no se vio, decir exactamente qué falta. No afirmar acabado solo con código.
+9. Abrir la UI con el navegador disponible y revisar lo renderizado en cada contenedor que el cambio toca o abre. Capturas en los breakpoints que declara el repo; si no declara, 375, 768 y 1440. Tests en verde no alcanzan.
+10. Si no se vio después de intentarlo (9), decir exactamente qué falta y por qué. No afirmar acabado solo con código.
 11. La referencia (HTML, captura, Figma, plan) aporta composición, tokens y datos de ejemplo. Su título, sus notas de fase, muestra, Mock o entrega no son copy. Sección sin datos: constante + `TODO(datos)` en código, sin rótulo. Fuera de alcance: no se monta. Detectarlo, implementarlo igual y avisar en el plan y en el cierre (*Sin datos todavía*, *Texto de la referencia que no publiqué*). Ver `gian-how-i-code` `15`.

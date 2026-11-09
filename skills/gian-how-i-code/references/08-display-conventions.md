@@ -22,15 +22,18 @@ Nested ternary: `gian-ts-style` (`no-nested-ternary`). Valor multi-rama **ad-hoc
 El `<entity>.helper.ts` **es** el hogar del `Record`. Exponer un solo mapa público `static readonly` (color / icon / label juntos), construido una vez. Cada `label` usa un getter que llama `i18n.t()` al leer; no método que reconstruya el mapa ni traducción evaluada durante la inicialización de la clase.
 
 ```ts
+import type { ChipProps } from '@mui/material';
 import i18n from '@/lib/i18n';
 
+interface WarehouseTypeMeta {
+  label: string;
+  color: NonNullable<ChipProps['color']>;
+}
+
 export class WarehouseHelper {
-  static readonly typeMeta: Record<
-    WarehouseType,
-    { tone: ChipTone; label: string }
-  > = {
+  static readonly typeMeta: Record<WarehouseType, WarehouseTypeMeta> = {
     [WarehouseType.Main]: {
-      tone: 'primary',
+      color: 'primary',
       get label() {
         return i18n.t('warehouses:type.main');
       },
@@ -39,9 +42,9 @@ export class WarehouseHelper {
 }
 ```
 
-`ChipTone` es el tipo `LIBRARY_OWNED` del chip del stack, no una union propia (`07`). Adaptador React/MUI: el campo es `color: NonNullable<ChipProps['color']>` (o el `ChipColor` del theme), para el spread en `<Chip>`.
+El campo `color` usa el tipo `LIBRARY_OWNED` del chip del stack, no una union propia (`07`). Adaptador React/MUI: `color: NonNullable<ChipProps['color']>`, para el spread en `<Chip>`. Prohibido un campo `tone` o un alias `ChipTone`.
 
-Consumo preferido en componentes: `WarehouseHelper.getTypeMeta(type)`; en React/MUI, `<Chip {...WarehouseHelper.getTypeMeta(type)} />`. El acceso directo `WarehouseHelper.typeMeta[type]` queda para un enum garantizado o para iterar el catálogo. El resolver acepta solo `WarehouseType | null | undefined`, devuelve `unknownMeta` únicamente para ausencia legítima y no usa `string`, casts ni fallback por consumidor. Valores externos y legacy se validan o normalizan en la frontera.
+Si el valor puede ser `null`/`undefined`, el componente MUST llamar a `WarehouseHelper.getTypeMeta(type)`; en React/MUI, `<Chip {...WarehouseHelper.getTypeMeta(type)} />`. El acceso directo `WarehouseHelper.typeMeta[type]` queda para un enum garantizado o para iterar el catálogo. El resolver acepta solo `WarehouseType | null | undefined`, devuelve `unknownMeta` únicamente para ausencia legítima y no usa `string`, casts ni fallback por consumidor. Valores externos y legacy MUST normalizarse a enum en el service, antes del helper (`07`).
 
 ## Display ad-hoc — inline (HARD)
 
@@ -58,14 +61,15 @@ Se acepta duplicar if-chains **ad-hoc** entre componentes. No extraer eso a help
 - `*.display.config.ts` / `*-display.ts` / `FooDisplayHelper` / clase *solo* de UI
 - Método `typeMeta()` que crea un nuevo `Record` por llamada; `getTypeMeta()` sí es canónico cuando resuelve `null | undefined` mediante el mapa estático
 - `label: i18n.t('…')` evaluado al inicializar la clase; debe ser getter
-- Lookup normal `Helper.typeMeta?.[type]` o `Helper.typeMeta[type] ?? fallback` para enum cerrado; usar `getTypeMeta(type)` cuando el valor sea opcional
+- Lookup normal `Helper.typeMeta?.[type]` o `Helper.typeMeta[type] ?? fallback` para enum cerrado; con valor opcional, MUST `getTypeMeta(type)`
 - Resolver que acepta `string`, usa casts o devuelve `unknownMeta` ante una key desconocida para ocultar drift del contrato
 - Inyectar `t: TFunction` (`getXConfig(t)`, `createXSchema(t)`, `formatX(display, t)`)
 - `labelKey` + `t(config.labelKey)` en render; `humanStatusesKeys` + `statusChipColors` + `statusIcons` en paralelo (`07`)
 - `Helper.getPrimaryLabel` / `ColorHelper.statusColor` como helper de display suelto
 - Ternario anidado (>1 nivel) — forma: `gian-ts-style`
-- Title Case forzado; siglas internas del dominio en copy visible, salvo que el usuario final las conozca y formen parte del lenguaje oficial del producto
-- Chip, banner, badge o texto de entorno: "Test mode", "Testing mode", "Modo prueba", "Dev mode", "Sandbox", "Demo", inferidos de `npm run dev`, `NODE_ENV`, `import.meta.env`, `APP_ENV` o `APP_DEBUG`
+- Title Case forzado
+- Siglas internas del dominio en copy visible. Una sigla solo se publica si ya aparece en copy de producto existente o en el pedido del usuario. Si no, se escribe el término completo
+- Chip, banner, badge o texto de entorno, en inglés o en español: "Test mode", "Testing mode", "Modo prueba", "Dev mode", "Sandbox", "Demo", "Staging", "Preview", "Beta", "QA", "Debug", "Local", y cualquier rótulo que nombre el entorno de ejecución, inferidos de `npm run dev`, `NODE_ENV`, `import.meta.env`, `APP_ENV` o `APP_DEBUG`
 - Enum o meta creado solo para pintar ese entorno
 - Chip, badge o leyenda que viene de la referencia o del plan: "Mock", "Muestra", "Datos de ejemplo", "Oficial", "Próxima fase", "Próximamente" (`15`). Tampoco un enum o meta creado solo para pintarlo
 

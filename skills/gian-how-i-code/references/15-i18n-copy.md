@@ -18,6 +18,8 @@ Nunca inyectar el traductor
 No envolver schemas como createXSchema(t)
 ```
 
+Repo sin i18n: seguir su patrón de strings. Prohibido inventar un sistema de i18n en el mismo cambio. Registrar `GAP sin i18n` en el cierre.
+
 Adaptador React (i18next):
 
 - JSON **flat** dot-notation
@@ -29,7 +31,7 @@ Cualquier stack:
 - Helper / schema: `i18n.t('ns:key')` importado del módulo configurado (`@/lib/i18n` o el path del repo)
 - Metadata de enum en helper: propiedad pública `static readonly Record<Enum, Meta>` con getter `label` que ejecuta `i18n.t()` en cada lectura (`08`)
 - Si existe `getXMeta(Enum | null | undefined)`, `unknownMeta.label` también usa getter para no congelar el locale; el resolver privado solo trata `null`/`undefined` como ausencia
-- Paridad es + en
+- Paridad en todos los locales del repo: en el mismo cambio, cada locale tiene las mismas claves en los namespaces tocados. Se verifica y se reporta en el cierre (ver Validación)
 - Prohibido `as any` / `as string` en i18n
 - Prohibido `getXConfig(t: TFunction)` y `labelKey` + `t(key)` en render — `08`
 - Prohibido `label: i18n.t('…')` dentro de la inicialización estática: congela la traducción al cargar el módulo y no reacciona a un cambio de locale
@@ -55,9 +57,9 @@ Si quien lee no entiende la frase, o la frase le pide algo que no puede hacer, n
 
 No se inventa la causa ni la recuperación. No se asume que el servidor está apagado, que los datos quedaron guardados, ni cuándo vuelve. “Más tarde” vale para un fallo temporal del servicio, no para cualquier error. Un dato inválido dice qué corregir. Una sesión vencida puede pedir iniciar sesión.
 
-Si la pantalla ya tiene forma (tarjeta, lista, ficha, gráfica), la espera es un skeleton de esa forma, no un párrafo «Cargando…». El error y el vacío siguen en palabras. El nombre para el lector de pantalla, si hace falta, va en `sr-only`. El mecanismo (Tailwind o MUI) lo decide `04`.
+Si la pantalla ya tiene forma (tarjeta, lista, ficha, gráfica), la espera es un skeleton de esa forma, no un párrafo «Cargando…». El error y el vacío siguen en palabras. Todo skeleton que reemplaza contenido lleva `aria-busy` en el contenedor y una etiqueta `sr-only` con la tarea. El mecanismo (Tailwind o MUI) lo decide `04`.
 
-Que el sistema compruebe, calcule o limite no se publica por eso. Prohibido anunciar el éxito o el estado normal: "Disponible", "Encontrado", "Solo presentación", "Guardar no convierte", y cualquier frase que explique qué no hace Guardar. Si hace falta señalar, es un icono (`10`). El icono no es obligatorio. El título de una sección no repite la etiqueta de su único campo. Al tocarlo, se quita ese adorno y no se sustituye por otro texto.
+Que el sistema compruebe, calcule o limite no se publica por eso. Prohibido anunciar el éxito o el estado normal: "Disponible", "Encontrado", "Solo presentación", "Guardar no convierte", y cualquier frase que explique qué no hace Guardar. El icono de estado va solo en un campo con comprobación asíncrona del valor completo (unicidad o existencia contra el backend); en cualquier otro campo no va (`10`, `14`). El título de una sección no repite la etiqueta de su único campo. Al tocarlo, se quita ese adorno y no se sustituye por otro texto.
 
 Un término del dominio de quien lee se conserva: `API key`, `PDF`, `URL`. “Revisa que la API esté en marcha” no: esa persona no opera el servidor. El verbo de la pantalla se conserva si es el de la operación. No se cambia “verificar” por “cargar” sin mirar qué hacía la pantalla.
 
@@ -78,8 +80,9 @@ Al detectar copy visible que habla al operador, contiene instrucciones que la au
 Si el usuario pide explícitamente solo analizar, o no modificar archivos, se entrega la propuesta y no se edita.
 
 - Sin siglas internas en visible
-- Tono natural; mayúscula natural
-- Título ↔ botón consistentes
+- Tono natural
+- Sentence case. Prohibido Title Case en títulos, botones y toasts (`08`)
+- Título ↔ botón consistentes: el botón primario usa el verbo de la operación del título
 - Toast: qué pasó y a dónde. «A dónde» es la pantalla o la tarea, no un valor fijo de prueba
 - Key puede ser técnica; value humano
 - `data-testid` en inglés técnico OK
@@ -146,9 +149,16 @@ rg -n -i "mock|muestra|ejemplo|demo|oficial|pr[oó]xima fase|pr[oó]ximamente|fa
 rg -n "TODO\(datos\)" <archivos tocados>
 ```
 
-Cada coincidencia visible se corrige, o se conserva si es término del dominio de quien lee. Un rótulo que ya estaba en un archivo tocado se quita y se lista.
+Cada coincidencia visible se corrige, o se conserva si es término del dominio de quien lee. Cada coincidencia conservada se lista en el cierre con `archivo:línea` y el motivo. Un rótulo que ya estaba en un archivo tocado se quita y se lista.
 
-4. Avisar. El plan lleva las dos listas, con lo que se hará. El cierre lleva el mismo bloque con `archivo:línea` sacado del `rg` (`21`). Si no hubo casos, no se agrega el bloque.
+4. Avisar. El plan lleva las dos listas, con lo que se hará. El cierre lleva el mismo bloque con `archivo:línea` sacado del `rg` (`21`). Si se partió de una referencia o un plan, el bloque va siempre. Sin casos, cada lista dice «ninguno» y cita el `rg` corrido:
+
+```text
+Sin datos todavía: ninguno (rg -n "TODO\(datos\)" <archivos tocados> → sin resultados)
+Texto de la referencia que no publiqué: ninguno (rg de andamiaje → sin resultados)
+```
+
+Con casos:
 
 ```text
 Sin datos todavía
@@ -162,6 +172,8 @@ Texto de la referencia que no publiqué
 
 Mensajes de validación user-facing (FormRequest `messages`/`attributes`, 422 por campo): autoridad `05`/`10`/`14`. Esta reference no define esa regla.
 
-## Validación sugerida
+## Validación (obligatoria al tocar locales)
 
-Si el repo lo documenta: lint con `defaultLocale` es y en.
+- Comparar las claves de todos los locales del repo en cada namespace tocado.
+- Correr el lint i18n del repo si existe (p. ej. con `defaultLocale`).
+- Reportar en el cierre cada comando y su resultado.

@@ -5,7 +5,7 @@ Cargar cuando: crear/limpiar feature FE.
 ## Alcance
 
 - **Núcleo:** carpetas y sufijos, las capas interface / schema / service / helper y el checklist núcleo. Vale en cualquier stack. Vue remite a `25`.
-- **Adaptador React:** RHF, `UseQueryOptions`, `UseMutationOptions`, query keys y el montaje `{isOpen && user && (`. En otro stack, el equivalente (`01`).
+- **Adaptador React:** RHF, `UseQueryOptions`, `UseMutationOptions`, query keys y el montaje `{isOpenEdit && user && (` (`09`). En otro stack, el equivalente (`01`).
 
 ## Estructura canónica
 
@@ -26,15 +26,15 @@ Vue: `composables/` reemplaza `hooks/`. SFC, `Props` / `Emits` y lo que no se co
 
 Ver `23-ts-style-helpers` para estilo TS, dayjs, `cn()`, y cuándo utils vs helpers.
 
-Query keys (adaptador React): store central del proyecto (p. ej. `lib/query-keys.ts`), no `*.keys.ts` sueltos por feature salvo variante documentada.
+Query keys (adaptador React): store central del proyecto (p. ej. `lib/query-keys.ts`). Prohibidos `*.keys.ts` sueltos por feature, salvo la variante híbrida de `13` §2 o una variante listada en `20`.
 
 ## Capas
 
 | Pieza | Rol |
 |-------|-----|
-| interface | Resource JSON de respuesta (+ params de listado si aplica) |
+| interface | Resource JSON de respuesta, más `<Entity>ListParams` si la feature tiene listado (`13`) |
 | schema | Input/Output mutación (Form Request / body HTTP), nombrado; en TS es Zod y el tipo sale de `z.infer` — no `interface Input` paralela; IDs de ruta fuera (`13`) |
-| service | Extiende SharedService (default); static + ErrorMapper |
+| service | MUST extender `SharedService` si existe en el repo; static + ErrorMapper. Sin `SharedService`: hallazgo y PROP (`19`). La única excepción es la variante de `20` (clase static + fetcher por scope) |
 | queries (adaptador React) | `*QueryProps` = `Omit<UseQueryOptions…, 'queryKey' \| 'queryFn'>` |
 | mutations (adaptador React) | `Use*MutationOptions` extends `UseMutationOptions<…>`; hook solo `mutationFn` + `...options`; ruta ≠ body (`13`) |
 | FormContainer | Datos (queries) |
@@ -44,25 +44,32 @@ Query keys (adaptador React): store central del proyecto (p. ej. `lib/query-keys
 
 ## Checklist implementar feature FE
 
+El checklist no agota las Hard Rules de SKILL.md. Todas aplican.
+
 ### Núcleo (cualquier stack)
 
 - [ ] Carpetas y sufijos correctos; archivos `useThing.ts`, o `composables/` en Vue (`04`, `25`)
 - [ ] Service + mapper de errores en mutaciones (`14`)
 - [ ] DTO desde un schema nombrado, sin interface Input paralela; ruta ≠ body (`13`)
 - [ ] 422 user-facing: errores por campo con el mensaje del backend (`05`/`10`/`14`); no genérico
-- [ ] Overlay dueño de su mutación; props `isOpen` + el tipo (no `open`/`entity`/`data`) (`09`)
-- [ ] Display en el helper de la entidad (`08`): propiedad pública `static readonly Record<Enum, Meta>`; getters de label con `i18n.t()`; `getXMeta(Enum | null | undefined)` preferido cuando el consumidor recibe ausencia; acceso directo solo para enum garantizado/iteración; sin `string`, casts ni fallbacks silenciosos; if-chain ad-hoc con `t()`; sin `*.display.config.ts` ni `TFunction` inyectado
+- [ ] Overlay dueño de su mutación; props `isOpen` + entidad con el nombre del tipo en camelCase + `onClose`; prohibidos los nombres de la lista de `09`
+- [ ] Display en el helper de la entidad (`08`): propiedad pública `static readonly Record<Enum, Meta>`; getters de label con `i18n.t()`; si el valor puede ser `null`/`undefined`, el consumidor MUST llamar a `getXMeta(Enum | null | undefined)`; acceso directo solo para enum garantizado/iteración; sin `string`, casts ni fallbacks silenciosos; if-chain ad-hoc con `t()`; sin `*.display.config.ts` ni `TFunction` inyectado
 - [ ] La UI no arma FormData; multipart vía `FormDataHelper` en el service (`23`)
-- [ ] Enums de dominio alineados al backend (`07`); i18n es+en (`15`)
+- [ ] Enums de dominio alineados al backend (`07`); i18n con paridad en todos los locales que tenga el repo (`15`)
 - [ ] Estilo TS / dayjs / utils|helpers (`23`)
 - [ ] Sin `any` en contratos
+- [ ] Orden del cuerpo de cada componente, hook o función tocada (`26`)
+- [ ] Sin `handle*` en callbacks y handlers de UI (`04`)
+- [ ] Clases inline con el `cn()` del repo; sin constantes, objetos ni archivos de styling (`04` `no-local-style-constants`)
+- [ ] Skeleton en toda superficie que espera datos; sin spinner solo ni texto de carga (`04`)
+- [ ] Sin copy de entorno ni texto de andamiaje de la referencia (`08`, `15`)
 
 ### Adaptador React
 
 - [ ] Form RHF + Zod (`z.infer` como DTO)
 - [ ] Queries `*QueryProps` + mutations `Use*MutationOptions` con solo `mutationFn` + options (`13`)
 - [ ] `useMutation<TData, CustomError, TVariables>`; TVariables DTO o envelope `*Variables` (`13` §4)
-- [ ] Montaje `{isOpen && user && (`; el caller pasa onSuccess/onError (`09`)
+- [ ] Montaje `{isOpenEdit && user && (` (creación: `{isOpenCreate && (`); el caller pasa onSuccess/onError (`09`)
 - [ ] Query keys vía store central (`13`); invalidar:
       - listas: `queries.entities.list._def`
       - detalle: `queries.entities.detail(id).queryKey`
