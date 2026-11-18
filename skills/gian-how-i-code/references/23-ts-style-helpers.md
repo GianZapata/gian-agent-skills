@@ -223,7 +223,7 @@ Si ya existe un helper/util de área (`DateHelper`, `NumberHelper`, util compart
 | Reimplementa capacidad de `*Helper`/util **compartido** (p. ej. `formatOrderDate` ≈ `DateHelper.format`) | Media | Llamar o extender el helper; eliminar la función local |
 | Util local mínimo casi idéntico **solo** dentro del mismo feature, sin shared | Baja | Consolidar en el helper/util de la feature o shared si ya aplica |
 | Labels/colores de UI duplicados entre componentes | — | **Permitido** (`08`); no es este hallazgo |
-| Una sola coincidencia accidental trivial **sin** abstracción previa | Baja | Registrar como Baja. No extraer (`22`) |
+| Una sola coincidencia accidental trivial **sin** abstracción previa | Baja | Baja; se reporta con propuesta genérica (`22`) |
 
 Tooling: Serena/codegraph para localizar `DateHelper` / `NumberHelper`; ast-grep para `dayjs($X).format` u wrappers `format*Date` locales.
 

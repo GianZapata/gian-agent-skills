@@ -21,6 +21,8 @@ Lectura (todo GET, collection y show) → Query (Spatie QueryBuilder) → Resour
 
 Laravel valida el FormRequest antes de invocar el método del controller.
 
+Qué capa no puede saltarse a la de abajo (el Controller no consulta ni calcula, la Action no lee `request()`): `22` §Dirección de dependencias.
+
 | Capa | Garantiza |
 |---|---|
 | FormRequest | Entrada HTTP: requerido, formato, tipo, límite. Puede adelantar un rechazo |

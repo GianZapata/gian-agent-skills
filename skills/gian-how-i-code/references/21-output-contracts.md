@@ -7,7 +7,7 @@ Cargar cuando: cerrar un modo; formato de reportes.
 Cierre obligatorio de toda implementación, también en bug y trivial. Sin este cierre la tarea no está terminada. Cada punto va siempre; si no hubo casos, el punto dice «ninguno».
 
 1. **Archivos**: creados y modificados.
-2. **References leídas**: cada `NN` de esta skill y cada skill de estilo cargada (`gian-ts-style`, `gian-php-style`), más `visual-quality.md` si hubo UI.
+2. **References leídas**: cada `NN` de esta skill, siempre con `22`, y cada skill de estilo cargada (`gian-ts-style`, `gian-php-style`), más `visual-quality.md` si hubo UI.
 3. **Reglas aplicadas**: por reference, las reglas aplicadas en la unidad de `01` §Unidad que se alinea al tocar. Cada GAP con `archivo:línea` y su caso.
 4. **Self-check de estilo**: por cada lenguaje tocado. TS: la salida de `node <ruta de gian-ts-style>/assets/self-check.mjs`, con su última línea tal cual (`Self-check TS: 0 pendientes` o GAP). PHP: `Self-check PHP: manual` y las reglas de gian-php-style revisadas en el método tocado (igual que gian-development-workflow §Self-check).
 5. **Validación**: cada comando corrido con su resultado. Solo valen dos motivos para no correr uno: «el repo no tiene el comando» o «falla por causa ajena al cambio», con la salida citada. Falta de tiempo no es motivo.
@@ -18,12 +18,13 @@ Cierre obligatorio de toda implementación, también en bug y trivial. Sin este 
 10. **Campos de formulario** (`10`): por cada campo creado o editado, la ayuda evaluada, aplicada / propuesta / descartada, y el motivo en una línea.
 11. **Formularios o validación user-facing**: el completion gate de `05` marcado punto por punto (`rules` / `messages` / copy / cobertura semántica / `attributes()` cuando un mensaje interpola `:attribute` con un nombre de columna o clave interna / 422 BE / consumo FE).
 12. **Verificación visual**: con UI, los viewports capturados y cada contenedor visto (`visual-quality.md`), y lo que no se vio, nombrado. Sin UI: «sin UI».
+13. **Diseño** (`22`): por cada archivo tocado, «Corregido» (los Altos de lo escrito o tocado) y «Pendiente (fuera de lo tocado)», agrupados por severidad, cada uno con `archivo:línea` y su propuesta. Sin hallazgos, «ninguno» por archivo.
 
 Formato breve de ejemplo:
 
 ```text
 Archivos: features/invoices/components/InvoiceDrawer.tsx, app/Actions/PayInvoice.php
-References: 01, 03, 04, 09, 13, 26; gian-ts-style; gian-php-style; visual-quality.md
+References: 01, 03, 04, 09, 13, 22, 26; gian-ts-style; gian-php-style; visual-quality.md
 Reglas: 09 isOpen + entidad tipada (InvoiceDrawer.tsx:12); 13 ruta ≠ body (usePayInvoice.ts:8)
 GAP: ninguno
 Self-check TS: 0 pendientes
@@ -36,6 +37,7 @@ Copy: "Pago registrado correctamente!" → "Pago registrado" (es.json:41)
 Campos: note — ayuda evaluada: contador de caracteres; descartada: el campo no tiene límite
 Gate 05: rules ✔ messages ✔ attributes ✔ 422 ✔ consumo FE ✔
 Visual: 375/768/1440, drawer abierto y cerrado; sin pendientes
+Diseño: PayInvoice.php — Corregido: Alta, la Action leía request()->user(); ahora recibe el actor (PayInvoice.php:14). InvoiceDrawer.tsx — Pendiente: Media, el mismo cálculo de total en :31 y :58 (extraer helper local)
 ```
 
 ## Auditar — feature / módulo

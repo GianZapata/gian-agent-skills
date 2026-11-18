@@ -1,8 +1,42 @@
 # 22 — Calidad de diseño (Clean Code / SOLID operacional)
 
-Cargar cuando: auditoría de calidad, refactor de límites, traits, abstracciones, Actions hinchadas.
+Cargar cuando: toda implementación (cada archivo tocado), auditoría de calidad, refactor de límites, traits, abstracciones, Actions hinchadas.
 
 No es permiso para sobrearquitectar. Hacer el cambio más pequeño que mejore cohesión y claridad.
+
+## Revisión en Implementar
+
+En toda implementación se lee cada archivo tocado completo y se revisa contra esta reference.
+
+- Un hallazgo dentro de lo escrito o tocado se corrige en el mismo cambio si es Alto. Media y Baja salen como pendiente con su propuesta.
+- Un hallazgo fuera de las líneas tocadas no se edita. Sale con `archivo:línea` y su propuesta.
+- No se abren archivos vecinos para buscar más. La revisión es del archivo tocado.
+- Cada hallazgo lleva su severidad de las tablas de abajo. El resultado va en el cierre (`21` §Implementar, punto 13).
+
+## Duplicación dentro del archivo
+
+Dos apariciones ya son hallazgo.
+
+- El mismo cálculo, validación o transformación, aunque cambien los nombres de las variables: Media. Propuesta: método privado, constante o helper local.
+- Dos bloques de la misma forma (un guard repetido, dos `useState` iguales, dos handlers con el mismo cuerpo): Baja. Propuesta genérica.
+- Las líneas triviales no cuentan.
+
+Dentro de lo escrito o tocado, el duplicado se extrae. Fuera de lo tocado se reporta.
+
+## Dirección de dependencias
+
+Cada capa depende de la de abajo. Lo que la salta es hallazgo.
+
+| Observado | Severidad |
+|-----------|-----------|
+| Controller que consulta o calcula | Alta |
+| Action que lee `request()` o `auth()`, o devuelve una respuesta HTTP. Recibe el actor y el DTO | Alta |
+| Resource que dispara queries (`06`) | Alta |
+| Modelo que llama a un servicio externo | Media |
+| Componente que llama a `fetch`, `axios` o al cliente HTTP. Pasa por service y query (`14`) | Media |
+| Helper o util que importa React, router o un store | Media |
+
+El flujo Laravel está en `05` y la estructura de feature en `03` y `04`. Esta reference no los repite.
 
 ## Traits
 
@@ -40,8 +74,8 @@ Si el comportamiento tiene dependencias, configuración, estado propio o side ef
 - Transacciones en la Action dueña del caso de uso. Eventos, jobs, mails, notificaciones y llamadas externas disparados dentro de una transacción van `afterCommit` (`05`).
 - Métodos privados para pasos legibles, no solo para acortar.
 - Value Objects cuando haya invariantes reales.
-- No extraer abstracción por una sola duplicación accidental.
-- Si **ya existe** un `*Helper`/util de área y el código lo reimplementa → hallazgo (reutilizar/extender); distinto de “no extraer por una sola dup accidental” — ver `23`.
+- Una duplicación fuera de lo tocado no se extrae: se reporta con la severidad de «Duplicación dentro del archivo».
+- Si **ya existe** un `*Helper`/util de área y el código lo reimplementa → hallazgo (reutilizar/extender) — ver `23`.
 - Revisar N+1, cohesión, acoplamiento y side effects ocultos. El resultado de N+1 y de side effects ocultos se registra en el cierre o en el reporte.
 
 ## Hallazgos típicos
@@ -54,3 +88,7 @@ Si el comportamiento tiene dependencias, configuración, estado propio o side ef
 | Interface inútil de una sola implementación estable | Baja (sobreingeniería) |
 | N+1 en listado | Alta |
 | Reimplementar capacidad de `*Helper`/util ya existente | Media (`23`) |
+| Mismo cálculo, validación o transformación dos veces en un archivo | Media |
+| Dos bloques de la misma forma en un archivo | Baja |
+| Controller que consulta o calcula; Action que lee `request()` / `auth()` | Alta |
+| Componente que llama al cliente HTTP; helper que importa React o un store | Media |

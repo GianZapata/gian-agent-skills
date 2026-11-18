@@ -243,6 +243,8 @@ No se agrega una librería. El texto de error y el vacío no se sustituyen.
 
 ## Organización
 
+Qué capa no puede saltarse a la de abajo (un componente no llama al cliente HTTP, un helper no importa React): `22` §Dirección de dependencias.
+
 - Container / presentational en forms
 - Diálogos como componentes aparte
 - A `shared/` (`shared/helpers`, `shared/utils`) va solo lo que usa más de una feature. Lo de una sola feature queda en la feature

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.35 — 2026-11-18
+
+- Revisión de diseño en Implementar (`22`, `21`, `SKILL.md`): se lee cada archivo tocado completo. Un Alto en lo escrito o tocado se corrige antes de cerrar; lo de fuera se reporta con propuesta. Dos apariciones del mismo bloque son hallazgo (Media si es lógica o regla, Baja si es forma). Nueva sección de dirección de dependencias (Controller, Action, Resource, modelo; componente, helper). El cierre gana el punto 13, Diseño, y `22` entra siempre en References.
+- `22` ya no dice «no extraer por una sola duplicación accidental», y `23` registra esa coincidencia como Baja con propuesta.
+- `how-i-code` carga por sí misma `gian-php-style` y `gian-ts-style` cuando el cambio escribe PHP o TS. Antes lo hacía el bootstrap del harness.
+
 ## 1.4.34 — 2026-11-09
 
 - `05` §Historial de estados: API real de `asantibanez/laravel-eloquent-state-machines` verificada contra el README (`was`, `timesWas`, `whenWas`, `snapshotWhen`, `snapshotsWhen`, `history()` + scopes, `getCustomProperty`, `responsible`, `whereHas{Field}` + scopes, `changedAttributes*`). Prohibido inventar métodos, consultar `state_histories` a mano o pasar strings literales en lugar de constantes de la SM. `postponeTransitionTo` / `hasPendingTransitions` quedan fuera del historial. Checklist BE y routing en `SKILL.md`.

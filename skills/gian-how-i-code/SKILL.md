@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.4.34"
+  version: "1.4.35"
 ---
 
 # gian-how-i-code
@@ -22,6 +22,8 @@ No usar como única skill para: explicación genérica de React/Vue/Angular/Lara
 - Idioma de hallazgos, propuestas y reportes: **español**.
 - Alcance al tocar código: la unidad de `01` §Unidad que se alinea al tocar. La función, método, componente o hook completo que contiene una línea añadida o cambiada, más los imports del archivo; en reglas de `10`, el campo. El resto del archivo no se migra.
 - Cierre de Implementar: MUST seguir `21` §Implementar. Sin ese cierre la tarea no está terminada.
+- Revisión de diseño (`22`): en toda implementación se lee cada archivo tocado completo. Un Alto en lo escrito o tocado se corrige antes de cerrar. Lo que está fuera de la unidad tocada no se edita: se reporta con propuesta. Dos apariciones del mismo bloque ya son hallazgo (Media si es lógica o regla, Baja si es forma). No se abren archivos vecinos para buscar más.
+- Estilo del lenguaje: si el cambio escribe PHP, MUST leer `gian-php-style`; si escribe `.ts`/`.tsx` o `<script setup lang="ts">`, MUST leer `gian-ts-style`. Se aplican en el hunk y el cierre los nombra (`21` punto 2). No depende del bootstrap del harness.
 - No leer todas las `references/`; la matriz de routing decide cuáles se leen. Las que marca se leen y se aplican.
 - No migrar el repo entero en silencio; solo alcance aprobado.
 - No instalar deps ni tocar lockfiles/manifests sin OK explícito.
@@ -109,7 +111,7 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 
 ### Por modo
 
-**Implementar:** aplicar molde en alcance nuevo; reportar bloqueos; checklist `03`/`05`/`17`; aplicar `19` cuando Fase 0 marque una capacidad como ausente o subutilizada, o cuando el código tocado reimplemente lo que cubre una dependencia instalada; cierre de `21`.  
+**Implementar:** aplicar molde en alcance nuevo; reportar bloqueos; checklist `03`/`05`/`17`; aplicar `19` cuando Fase 0 marque una capacidad como ausente o subutilizada, o cuando el código tocado reimplemente lo que cubre una dependencia instalada; cargar el estilo del lenguaje (`gian-php-style`, `gian-ts-style`); revisión `22` de cada archivo tocado; cierre de `21`.  
 **Auditar (feature):** escanear vs molde; un solo `docs/pattern-audit/YYYY-MM-DD-<alcance>-auditoria.md` en la raíz git del repo auditado (ES); Hallazgos / Propuestas. Si el `.gitignore` de esa raíz no ignora `docs/pattern-audit/`, se agrega esa línea.  
 **Auditar (repositorio completo):** `18` + **`24`** (inventario, barridos, gate, disposición); mismo path de reporte; ledger auxiliar opcional (su ausencia no es FAIL; no reemplaza el reporte ni el gate); sin “alineado” sin gate.  
 **Auditar + aplicar:** igual + checklist/registro **en el mismo archivo**; solo ítems aprobados; sin installs no aprobados.  
@@ -157,6 +159,7 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 | Auditar repositorio completo | `18-migrate-audit`, `24-full-repo-audit`, `21-output-contracts`, `02`, `19` |
 | Gap u mejora de stack | `19-propuestas-stack` |
 | Repo con patrón dominante distinto del molde | `20-variants` |
+| Implementar (cualquier archivo tocado) | `22-design-quality`, `21-output-contracts` |
 | Calidad de diseño / traits / límites / refactor cohesión | `22-design-quality` |
 | Trait (archivo) | `05-backend-mold`, `22-design-quality` |
 
