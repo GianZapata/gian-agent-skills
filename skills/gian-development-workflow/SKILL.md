@@ -131,9 +131,10 @@ Si el turno crea o edita `gian-development-workflow`, `gian-how-i-code`, `gian-p
 
 1. El texto publicado está en el clone cuyo `origin` es `github.com/GianZapata/gian-agent-skills`, bajo `skills/<name>/`. Editar ese clone, no solo la copia instalada.
 2. La copia instalada y el clone quedan con el mismo wording. Sin paths de máquina, ni nombres de org, cliente o producto. El slug del repo de estas skills es la excepción.
-3. No commitear `evals/`.
-4. Commit y push en el mismo turno, sin preguntar. Para estos cuatro skills, esta orden gana a “solo commitea si te lo piden”.
-5. No incluir secretos ni archivos ajenos al cambio. No saltarse hooks.
+3. Si el cambio toca una regla, desde la raíz del clone: `python3 tools/run-evals.py --skill <name>`. El runner llama a `claude -p` dos veces por caso (respuesta en plan mode, luego un juez) y escribe `evals-results/`. Exit 1 significa que un caso falló o que la llamada no terminó: no se publica ese cambio como si los evals hubieran pasado. Un cambio que no toca reglas no corre el corpus.
+4. No commitear `evals/` ni `evals-results/`.
+5. Commit y push en el mismo turno, sin preguntar. Para estos cuatro skills, esta orden gana a “solo commitea si te lo piden”.
+6. No incluir secretos ni archivos ajenos al cambio. No saltarse hooks.
 
 ## Workspace
 
