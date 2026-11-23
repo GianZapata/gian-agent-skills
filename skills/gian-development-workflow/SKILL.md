@@ -121,6 +121,10 @@ Si el turno crea o edita `gian-development-workflow`, `gian-how-i-code`, `gian-p
 4. Commit y push en el mismo turno, sin preguntar. Para estos cuatro skills, esta orden gana a “solo commitea si te lo piden”.
 5. No incluir secretos ni archivos ajenos al cambio. No saltarse hooks.
 
+## Workspace
+
+La raíz del proyecto es la carpeta workspace, no cada sub-repo. Engram, CodeGraph, `.atl/` y `.vscode/` viven ahí. Antes del primer edit de desarrollo, si a la raíz le falta `.engram/`, `.codegraph/` o `.atl/skill-registry.md` y el host no tiene hook que lo prepare, abre `references/workspace-bootstrap.md` y corre su script una vez.
+
 ## Calidad visual
 
 Si la tarea propone, crea, modifica o revisa UI visible, antes de la primera decisión visual abre `references/visual-quality.md`. Plan, análisis y review incluidos. No abrir en tareas sin interfaz.
@@ -133,4 +137,6 @@ La principal fija la dirección de la superficie. Un apoyo no trae otra direcci�
 - `references/style-activation.md`
 - `references/visual-quality.md`
 - `references/visual-quality-bootstrap.md`
+- `references/workspace-bootstrap.md`
+- `scripts/workspace-bootstrap.py`, `scripts/workspace-hook.py`
 - Tool choice follows la policy global de herramientas del host. Do not add a second routing skill.
