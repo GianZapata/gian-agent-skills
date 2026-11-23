@@ -73,3 +73,7 @@ Optional (not in overlay): `braces_position` with `same_line` values can align b
 WRITE mode: do not run Pint. Apply Gian Style directly.
 
 AUDIT/FIX: agent-enforced rules still require the agent even when a fixer exists, unless the user runs Pint separately.
+
+## Self-check script
+
+`php <skill>/assets/self-check.php [--all] [files...]` desde la raíz del repo. Solo requiere PHP CLI; no instala nada ni reescribe archivos. Sin argumentos toma `git diff HEAD` y los archivos sin trackear, y amplía cada línea cambiada al método que la contiene. Salida `FAIL path:line rule — mensaje` y última línea `Self-check PHP: N pendientes (M archivos)`. Omite `vendor/` y `.blade.php`.

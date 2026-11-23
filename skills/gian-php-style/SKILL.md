@@ -4,7 +4,7 @@ description: "Mandatory visual PHP/Laravel style. Load whenever creating, editin
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.3.0"
+  version: "1.4.0"
 when-to-use: "Any PHP create/edit/refactor/review/audit/fix; Laravel Boost pint; format PHP; php-style-audit; php-style-fix. Not for CSS, TypeScript, SQL-only, or conversation without PHP."
 ---
 
@@ -94,11 +94,12 @@ PREFERENCE: WRITE las aplica; AUDIT FAIL solo si es objetivamente determinable.
 3. WRITE: PHP HARD/PREFERENCE en código nuevo y hunk tocado; sin comentarios/PHPDoc nuevos; strip PHPDoc y comentarios externos de ese hunk; no tocar envelope Blade.
 4. AUDIT: PHP relevante; alta confianza; agrupar repeticiones; formato `assets/audit-template.md`.
 5. FIX: solo estilo; añadir trailing comma en listas multilínea; strip PHPDoc/comentarios externos del hunk; quitar `{}` de `single-statement-if` solo si el body es una línea y pasa el safety gate; añadir `{}` si el body unbraced es multilínea; listar ítems inseguros omitidos.
-6. No migrar un repo entero salvo audit+fix pedido.
+6. WRITE/FIX: correr `php assets/self-check.php` desde la raíz del repo (sin argumentos revisa los métodos tocados en `git diff HEAD` y los archivos nuevos). Corregir cada FAIL del alcance y repetir hasta `Self-check PHP: 0 pendientes`. AUDIT puede correrlo con `--all` como evidencia.
+7. No migrar un repo entero salvo audit+fix pedido.
 
 ## Output Contract
 
-- WRITE: PHP formateado; sin correr Pint; Blade/HTML intacto.
+- WRITE: PHP formateado; sin correr Pint; Blade/HTML intacto; la última línea de `assets/self-check.php`.
 - AUDIT: lista `[FAIL] path:line` + `Rule:` o `Rules:` + Actual + Expected + Reason; o "no findings". No emitir `single-return` (alias deprecado de `single-statement-if`).
 - FIX: archivos tocados + reglas aplicadas + ítems inseguros omitidos.
 
@@ -107,6 +108,7 @@ PREFERENCE: WRITE las aplica; AUDIT FAIL solo si es objetivamente determinable.
 - `references/principles.md`
 - `references/overrides.md`
 - `references/tooling.md`
+- `assets/self-check.php`
 - `references/conditions.md`
 - `references/delimiters-arrays.md`
 - `references/calls-arguments.md`
