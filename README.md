@@ -50,10 +50,11 @@ List what the repo contains:
 npx --yes skills@latest add GianZapata/gian-agent-skills --list
 ```
 
-Install the four skills (space form of `--skill`; do not use `--skill=name`):
+Install the five skills (space form of `--skill`; do not use `--skill=name`):
 
 ```bash
 npx --yes skills@latest add GianZapata/gian-agent-skills \
+  --skill gian-code-review \
   --skill gian-development-workflow \
   --skill gian-how-i-code \
   --skill gian-php-style \
@@ -64,6 +65,7 @@ Global install:
 
 ```bash
 npx --yes skills@latest add GianZapata/gian-agent-skills \
+  --skill gian-code-review \
   --skill gian-development-workflow \
   --skill gian-how-i-code \
   --skill gian-php-style \

@@ -1,11 +1,12 @@
 # AGENTS.md
 
-This clone is the source of what is published. Installed copies of these four skills must use the **same wording** as `skills/` here.
+This clone is the source of what is published. Installed copies of these five skills must use the **same wording** as `skills/` here.
 
 ## Scope
 
 Publish only:
 
+- `gian-code-review`
 - `gian-development-workflow`
 - `gian-how-i-code`
 - `gian-php-style`
