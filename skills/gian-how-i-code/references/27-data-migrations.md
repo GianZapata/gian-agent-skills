@@ -23,7 +23,7 @@ Cargar cuando: migración nueva o editada, columna, índice, FK, seed de datos, 
 // Mal: NOT NULL sin default en una tabla con datos, FK sin regla, backfill dentro
 $table->string('status');
 $table->foreignId('branch_id');
-DB::table('orders')->update([ 'status' => 'pending' ]);
+DB::table('orders')->update(['status' => 'pending']);
 
 // Bien
 $table->string('status')->default(OrderStatus::Pending->value);

@@ -10,7 +10,7 @@ Cargar cuando: `Log::` o logger, `catch` que traga o re-lanza, integración exte
 
 ## Logging
 
-1. **Mensaje fijo + contexto en array.** `Log::warning('Payment declined', [ 'order_id' => $order->id, 'gateway_code' => $code ])`. Nunca datos interpolados en el mensaje: no se pueden agrupar ni buscar.
+1. **Mensaje fijo + contexto en array.** `Log::warning('Payment declined', ['order_id' => $order->id, 'gateway_code' => $code])`. Nunca datos interpolados en el mensaje: no se pueden agrupar ni buscar.
 2. Contexto común (request ID, tenant, usuario) una vez por request o job con `Context::add()` (Laravel 11+) o `Log::withContext()`. No repetirlo en cada línea.
 3. **Nivel correcto:** `error` = alguien tiene que actuar; `warning` = degradado pero recuperado; `info` = evento de negocio relevante; `debug` = desarrollo. Un error esperado de validación no es `error`.
 4. **Nunca loguear:** contraseñas, tokens, headers `Authorization`, números de tarjeta, documento de identidad completo, payloads completos de request o de un proveedor. Loguear el ID y los campos necesarios.

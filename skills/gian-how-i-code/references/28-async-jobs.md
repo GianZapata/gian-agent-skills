@@ -27,7 +27,7 @@ Cargar cuando: Job nuevo o editado, `dispatch`, listener en cola, notificación 
 // Mal: lógica en el job, dispatch dentro de la transacción, sin reintentos
 public function handle(): void
 {
-    $this->order->update([ 'status' => 'paid' ]);
+    $this->order->update(['status' => 'paid']);
     Mail::to($this->order->user)->send(new Paid($this->order));
 }
 
@@ -36,7 +36,7 @@ public int $tries = 5;
 
 public function backoff(): array
 {
-    return [ 10, 60, 300 ];
+    return [10, 60, 300];
 }
 
 public function handle(MarkOrderPaid $action): void
