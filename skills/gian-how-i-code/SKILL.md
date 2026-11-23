@@ -162,6 +162,9 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 | Implementar (cualquier archivo tocado) | `22-design-quality`, `21-output-contracts` |
 | Calidad de diseño / traits / límites / refactor cohesión | `22-design-quality` |
 | Trait (archivo) | `05-backend-mold`, `22-design-quality` |
+| Migración, índice, query de listado, eager load, export | `27-data-migrations` |
+| Job, listener en cola, comando programado, webhook, integración externa | `28-async-jobs`, `05-backend-mold` |
+| `Log::`, `catch`, acción sensible, cache, throttle o endpoint público | `29-observability` |
 
 ## Output Contract
 
