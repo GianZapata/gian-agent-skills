@@ -11,6 +11,7 @@ Antes de inventar wrappers o proponer installs: **contrastar el repo contra el i
 
 ## Checklist Fase 0
 
+0. Memoria primero: si el hook de sesión no inyectó el índice, `mem_search` del proyecto con `topic_key` `project/conventions` y `project/decisions`. Lo que ya está guardado no se redescubre: solo se verifica lo que falta o pudo cambiar. Las divergencias nuevas se guardan en el cierre.
 1. Raíz monorepo vs app única; apps/packages reales del repositorio.
 2. Leer `AGENTS.md` / `CLAUDE.md` / docs de convenciones si existen. Son contexto. Esta skill manda en toda tarea de desarrollo que el workflow carga (SKILL.md §Autoridad). Sus divergencias son hallazgos.
 3. Detectar el stack real, no asumir React:

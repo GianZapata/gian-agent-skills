@@ -92,6 +92,16 @@ Toda implementación cierra con el formato de `gian-how-i-code` `21` §Implement
 
 Incluye siempre la línea del self-check de cada lenguaje tocado, según § Self-check de estilo, o la lista de GAP con `archivo:línea`.
 
+Si la tarea tomó una decisión de peso o descubrió una convención o divergencia del repo, el cierre la guarda en Engram (§ Memoria).
+
+## Entrega (opcional, solo si el usuario la pide)
+
+Después del cierre. Nada corre sin pedido explícito en este hilo:
+
+- Commit: `work-unit-commits`.
+- Pull request: `gian-code-review` sobre el diff, después `branch-pr`.
+- El reporte diario sigue siendo manual (`gian-daily-work-report`).
+
 ## Self-check de estilo (obligatorio)
 
 Antes del cierre, en toda tarea que crea o edita `.ts` / `.tsx` o un `<script setup lang="ts">`, correr desde la raíz del repo `node <ruta de gian-ts-style>/assets/self-check.mjs`. Sin argumentos revisa las funciones tocadas en `git diff HEAD` y los archivos nuevos. El alcance incluye el cuerpo completo de la función o del miembro de clase tocado; no abre el otro método ni el otro componente. Si hay archivos modificados de otra tarea, el cierre invoca el script con los paths explícitos de esta tarea. Esos argumentos filtran archivos, no hunks: si la suciedad ajena está en el mismo archivo, también entra respecto de HEAD y se declara ese límite. El modo sin argumentos se conserva cuando el diff pertenece a esta tarea. Un FAIL dentro de la unidad seleccionada no se reetiqueta como fuera de alcance. El cierre conserva la salida completa, incluidos los GAP. Cada FAIL se corrige en el alcance y se vuelve a correr hasta `Self-check TS: 0 pendientes`. El cierre pega esa última línea tal cual sale. Si sale `GAP` (exit 2), se reporta así. Nunca se escribe `0 pendientes` sin haber corrido el script.
@@ -101,6 +111,10 @@ PHP todavía no tiene script: el cierre dice `Self-check PHP: manual` y lista la
 ## Precedencia y fallback
 
 Este router DELEGA: no reescribe contenido de las process skills ni de la policy. Si una process skill no está disponible o falla, degradar al siguiente nivel (sin writing-plans → lotes con todowrite; sin brainstorming → preguntas directas al usuario). Si `gian-how-i-code` no está disponible, no se edita código: avisar al usuario y esperar instrucción. Solo se permite trabajo read-only.
+
+## Relación con ODD
+
+Esta skill decide el proceso. ODD (orquestador del host) solo aporta tracking, commits por unidad y review nativa. Mapeo: Bug y Trivial = small (sin feature doc). Feature clara multi-step = small mientras se pueda retomar desde el diff. Feature grande = large (feature doc + espejo en Engram). Si ODD y esta skill chocan en el proceso, gana esta skill. En tracking y review, gana ODD.
 
 ## Caveman
 
@@ -124,6 +138,14 @@ Si el turno crea o edita `gian-development-workflow`, `gian-how-i-code`, `gian-p
 ## Workspace
 
 La raíz del proyecto es la carpeta workspace, no cada sub-repo. Engram, CodeGraph, `.atl/` y `.vscode/` viven ahí. Antes del primer edit de desarrollo, si a la raíz le falta `.engram/`, `.codegraph/` o `.atl/skill-registry.md` y el host no tiene hook que lo prepare, abre `references/workspace-bootstrap.md` y corre su script una vez.
+
+## Memoria
+
+Las convenciones y decisiones del proyecto viven solo en Engram, no en ADRs del repo.
+
+- Guardar: `mem_save` con `topic_key` `project/conventions` (convención o divergencia del repo) o `project/decisions` (decisión de peso y su porqué). El título empieza con `Convention:` o `Decision:`. Se actualiza la observación del mismo tema, no se duplica.
+- Cargar: el hook de sesión inyecta un índice de esos títulos con su ID. Antes de decidir sobre un tema del índice, abrir la observación con `mem_get_observation`. Si el host no tiene hook, la Fase 0 hace ese `mem_search` (`gian-how-i-code` `02`).
+- Inbox: una corrección del usuario que aplica a cualquier repo (no solo a este) se guarda con `topic_key` `gian-skills/inbox` y título `Inbox:`. Nunca se edita una skill por eso. Cuando el usuario diga «revisa el inbox», aplicarlas con `skill-improver`, correr evals y publicar (§ Publicar estas skills).
 
 ## Calidad visual
 

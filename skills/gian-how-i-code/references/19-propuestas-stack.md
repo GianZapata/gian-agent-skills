@@ -59,6 +59,7 @@ Una ayuda de captura (`10`) que falta se propone nombrando solo la capacidad que
 8. **Costos y riesgos reales** — prohibido “Costos y riesgos: Ninguno”. Incluir migración, API change, fragmentación de caché, esfuerzo de adopción, etc.
 9. **No afirmar que algo “garantiza CI”** salvo evidencia: plugin/reglas en ESLint, script de lint, y job de CI que lo ejecute. Si falta alguno, decirlo.
 10. Migrar query keys / invalidaciones: la PROP incluye el riesgo de cambiar identidades de caché y un plan incremental.
+11. **Dependencia nueva = justificarla**: alternativa en el stack actual o nativa, peso, mantenimiento (último release, issues abiertos), licencia y versión verificada con Context7 o el registry. Sin esa justificación no entra.
 
 ## Dependencias FE canónicas esperadas
 
