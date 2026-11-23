@@ -14,6 +14,7 @@ Installed copies and this clone must stay the **same wording**. Do not put host 
 | `gian-how-i-code` | Implementation policy. The core applies to any stack; Laravel, React, and Vue are documented adapters |
 | `gian-php-style` | Visual PHP formatting (not architecture) |
 | `gian-ts-style` | Visual TypeScript / TSX formatting (not architecture) |
+| `gian-code-review` | Read-only review of a diff through parallel lenses; runs alongside RDD |
 
 ## Layout
 
