@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.36 — 2026-11-24
+
+- `15` gana «Vocabulario de arquitectura»: `central`, `tenant`, base de datos, CRUD, módulo y similares no se publican, ni siquiera si vienen del prompt. El término es el que el producto ya usa, sin tabla fija. Incluye BAD/GOOD y un `rg` que solo juzga strings visibles. `21` punto 9 lo cita.
+- `10`: excepción para radio cards en un formulario nuevo con 2 a 4 opciones que traen datos que comparar.
+
 ## 1.4.35 — 2026-11-18
 
 - Revisión de diseño en Implementar (`22`, `21`, `SKILL.md`): se lee cada archivo tocado completo. Un Alto en lo escrito o tocado se corrige antes de cerrar; lo de fuera se reporta con propuesta. Dos apariciones del mismo bloque son hallazgo (Media si es lógica o regla, Baja si es forma). Nueva sección de dirección de dependencias (Controller, Action, Resource, modelo; componente, helper). El cierre gana el punto 13, Diseño, y `22` entra siempre en References.

@@ -98,7 +98,7 @@ La tabla no limita la regla. Si el campo no aparece, se identifica qué represen
 
 - **Se aplica** en el campo tocado lo que no rechaza un valor que hoy pasa: el `type` que le corresponde, `inputmode`, `autocomplete` y normalización sin pérdida. Los ejemplos de la tabla (`trim`, teléfono a dígitos y `+`) no agotan la lista. Minúsculas en todo el email no son ese default. Un monto `type="number"` libre pasa a decimal con 2 decimales, usando el schema de dinero o decimal del repo, sin parseo por float.
 - **Se propone (PROP)** lo que puede rechazar datos ya guardados o cambiar el contrato. Los ejemplos (nombre o apellidos sin dígitos, reescribir un identificador ya guardado, rangos de negocio, un tope nuevo, una longitud máxima nueva) no agotan la lista. No se aplica en silencio.
-- **El control sigue a la elección, no al gusto.** Dos opciones exclusivas son un radio. No se cambian a cards. Muchas opciones usan el autocomplete que el repo ya tiene; si no hay, se propone. No se recorre el formulario cambiando widgets.
+- **El control sigue a la elección, no al gusto.** Dos opciones exclusivas son un radio. No se cambian a cards. Excepción: en un formulario nuevo, de 2 a 4 opciones que traen datos que hay que comparar (precio, límite) pueden ser radio cards. Un widget que ya existe no se convierte. Muchas opciones usan el autocomplete que el repo ya tiene; si no hay, se propone. No se recorre el formulario cambiando widgets.
 - **La misma regla** va en el schema del form y en el borde (FormRequest, body model de Pydantic, schema del handler), con mensaje de dominio y 422 por campo (`05`, `15`).
 - **No se bloquea el pegado ni la escritura.** Si se puede normalizar sin perder el dato, se normaliza.
 
