@@ -5,7 +5,8 @@ Reads every `skills/<skill>/evals/*.json` file with a `cases` list whose items h
 `id`, `prompt` and `expect`. For each case:
 
 1. Answer: `claude -p` in plan mode (no edits), told to load the skill and describe
-   what it would do for the prompt.
+   what it would do for the prompt. With `--answer-model <id>` the answer comes from
+   `cursor-agent -p --mode ask --model <id>` instead (plan mode hides the text in a CreatePlan call); the judge stays `claude -p`.
 2. Judge: a second `claude -p` with a JSON schema grades each `expect` item as
    pass / fail with a short reason.
 
@@ -150,12 +151,24 @@ def judge_results(payload: dict) -> list[dict]:
     return structured["results"]
 
 
+def cursor_answer(prompt: str, args: argparse.Namespace) -> str:
+    command = ["cursor-agent", "-p", "--mode", "ask", "--trust", "--model", args.answer_model, "--output-format", "text", prompt]
+    result = subprocess.run(command, cwd=args.cwd, text=True, capture_output=True, timeout=args.timeout)
+    text = result.stdout.strip()
+
+    if result.returncode != 0 or not text:
+        raise RuntimeError(result.stderr.strip()[:500] or f"cursor-agent exit {result.returncode}, no output")
+
+    return text
+
+
 def run_case(case: dict, args: argparse.Namespace) -> dict:
-    answer = claude(
-        ANSWER_PROMPT.format(skill=case["skill"], prompt=case["prompt"]),
-        args,
-        ["--permission-mode", "plan"],
-    )["result"]
+    answer_prompt = ANSWER_PROMPT.format(skill=case["skill"], prompt=case["prompt"])
+
+    if args.answer_model:
+        answer = cursor_answer(answer_prompt, args)
+    else:
+        answer = claude(answer_prompt, args, ["--permission-mode", "plan"])["result"]
 
     judged = claude(
         JUDGE_PROMPT.format(
@@ -220,6 +233,7 @@ def main() -> int:
     parser.add_argument("--skill", help="only this skill directory name")
     parser.add_argument("--case", help="only this case id")
     parser.add_argument("--model", help="model for both calls (default: claude default)")
+    parser.add_argument("--answer-model", help="answer with this model through `cursor-agent` (judge stays claude)")
     parser.add_argument("--cwd", default=str(ROOT), help="directory the answer runs in (a fixture repo)")
     parser.add_argument("--budget", type=float, default=3.0, help="max USD per claude call")
     parser.add_argument("--timeout", type=int, default=600, help="seconds per claude call")
@@ -259,7 +273,8 @@ def main() -> int:
             outcomes.append({**case, "error": str(error)})
 
     RESULTS.mkdir(exist_ok=True)
-    path = RESULTS / f"{datetime.now():%Y%m%d-%H%M%S}.md"
+    tag = f"-{args.answer_model}" if args.answer_model else ""
+    path = RESULTS / f"{datetime.now():%Y%m%d-%H%M%S}{tag}.md"
     path.write_text(report(outcomes))
 
     failed = [

@@ -15,6 +15,8 @@ Installed copies and this clone must stay the **same wording**. Do not put host 
 | `gian-php-style` | Visual PHP formatting (not architecture) |
 | `gian-ts-style` | Visual TypeScript / TSX formatting (not architecture) |
 | `gian-code-review` | Read-only review of a diff through parallel lenses; runs alongside RDD |
+| `admin-dashboard-architect` | Admin panels, tables, forms and dialogs for a new surface; structure and copy rules elsewhere |
+| `modern-ui-architect` | Minimal modern UI for prototypes and new screens without an existing identity |
 
 ## Layout
 
@@ -50,26 +52,30 @@ List what the repo contains:
 npx --yes skills@latest add GianZapata/gian-agent-skills --list
 ```
 
-Install the five skills (space form of `--skill`; do not use `--skill=name`):
+Install the skills (space form of `--skill`; do not use `--skill=name`):
 
 ```bash
 npx --yes skills@latest add GianZapata/gian-agent-skills \
+  --skill admin-dashboard-architect \
   --skill gian-code-review \
   --skill gian-development-workflow \
   --skill gian-how-i-code \
   --skill gian-php-style \
-  --skill gian-ts-style
+  --skill gian-ts-style \
+  --skill modern-ui-architect
 ```
 
 Global install:
 
 ```bash
 npx --yes skills@latest add GianZapata/gian-agent-skills \
+  --skill admin-dashboard-architect \
   --skill gian-code-review \
   --skill gian-development-workflow \
   --skill gian-how-i-code \
   --skill gian-php-style \
   --skill gian-ts-style \
+  --skill modern-ui-architect \
   -g
 ```
 
@@ -105,6 +111,8 @@ When the edit changes a rule, run this from the clone root before the commit:
 ```bash
 python3 tools/run-evals.py --skill <name>
 ```
+
+To have another model write the answers (for example Grok), add `--answer-model <id>` (ids from `cursor-agent --list-models`). The judge stays `claude -p`; `--model` only changes the Claude calls.
 
 That applies to `skills/<name>/` only. Do not commit `evals/` or `evals-results/`. The same order is in `AGENTS.md`.
 
