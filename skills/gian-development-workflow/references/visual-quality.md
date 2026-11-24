@@ -48,6 +48,8 @@ Una principal. El apoyo no es una segunda dirección.
 | Lectura: docs, guías, artículos, ayuda | ninguna de campaña | Impeccable, modo Read | `frontend-design`, taste, `hallmark` |
 | Experiencia: portfolios, galerías | `frontend-design` | Impeccable, modo Experience | `interface-design` |
 
+`admin-dashboard-architect` (admin) y `modern-ui-architect` (prototipo) son principal solo en una superficie nueva sin mundo visual. Nunca entran como segunda dirección junto a `interface-design`, ni en un refinamiento de un producto con identidad: ahí solo aportan estructura y copy.
+
 `design-taste-frontend` no entra en dashboards, tablas ni wizards. Si el brief es marketing y no compite con la dirección ya elegida, puede apoyar solo esas partes. `ui-ux-pro-max` no se obedece en su "Must Use". `gpt-taste` no entra en producto operativo. Una piel o `hallmark` entra solo si el pedido la nombra y no hay otra dirección ya elegida. `redesign-existing-projects` es principal alternativa de un rediseño autorizado, no un segundo look junto a la principal. `modern-web-guidance` es API web, no dirección visual.
 
 ## Fase
