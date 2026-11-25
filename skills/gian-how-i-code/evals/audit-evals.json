@@ -505,9 +505,12 @@
       "id": "audit-long-boolean-condition",
       "prompt": "Audita: const showClearLogo = !readOnly && (Boolean(logoFile) || removeLogo || (!deferred && Boolean(settings.logo?.url)));",
       "expect": [
-        "Media: booleano de 4 partes sin nombre",
-        "Propone const con nombre por parte (hasPendingLogoChange, hasSavedLogo) y composición",
-        "No propone useMemo"
+        "Media: booleano de 4 partes inline (caso C)",
+        "Propone useMemo<boolean> + if con early return (readOnly → false; logoFile || removeLogo → true; resto)",
+        "Genérico explícito <boolean>"
+      ],
+      "forbid": [
+        "Partir en const con nombre por parte como solución final"
       ]
     },
     {
@@ -526,6 +529,28 @@
         "Alta: default distinto al backend",
         "Cita config/fortezza.php con línea",
         "Alinea al dueño o propone consumirlo de la respuesta (PROP si la API no lo expone)"
+      ]
+    },
+    {
+      "id": "audit-usememo-missing-generic",
+      "prompt": "Audita: const statusLabel = useMemo(() => {\n  if (isLoading) return 'Cargando';\n  if (error) return 'Error';\n  return 'Listo';\n}, [isLoading, error]);",
+      "expect": [
+        "Media: useMemo sin genérico explícito",
+        "Propone useMemo<string>",
+        "Conserva useMemo (caso C, 3 ramas)"
+      ]
+    },
+    {
+      "id": "audit-hint-hardcoded-config",
+      "prompt": "Audita:\nconst logoStatusHint = useMemo(() => {\n  if (logoFile) return 'Se guardará con los datos generales.';\n  if (removeLogo) return 'Se restablecerá al logo predeterminado al guardar.';\n\n  return 'PNG, JPEG o WebP · Máx. 2 MB';\n}, [logoFile, removeLogo]);",
+      "expect": [
+        "Media: copy que escribe a mano formatos y límite",
+        "Interpola desde LOGO_MAX_MB y una etiqueta derivada de LOGO_MIME_TYPES",
+        "Los dos textos puros quedan inline",
+        "useMemo<string>"
+      ],
+      "forbid": [
+        "Mover el copy puro a constants"
       ]
     }
   ]

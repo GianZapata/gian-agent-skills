@@ -17,9 +17,11 @@ No usar `useMemo`, `useCallback` o `memo` por costumbre de performance.
 |---|---|
 | A. expresión derivada sencilla | cálculo directo; no `useMemo` |
 | B. 2 ramas con una condición de 1 o 2 partes | ternario, o `&&` boolean-safe en JSX (`gian-ts-style`) |
-| C. valor derivado con 3+ ramas, o ternario cuya condición junta 3+ partes con `&&` / `||` | `useMemo` + `if` + early return, obligatorio en componente y hook (Vue: `computed`) — claridad, **no** claim de performance (`derived-multi-branch`) |
+| C. valor derivado con 3+ ramas, ternario cuya condición junta 3+ partes con `&&` / `||`, o booleano que junta 3+ partes con `&&` / `||` | `useMemo<T>` + `if` + early return, obligatorio en componente y hook (Vue: `computed`) — claridad, **no** claim de performance (`derived-multi-branch`) |
 | D. JSX multi-rama en render | `if` / early return en el componente (`08`); no `useMemo` |
 | E. performance / identidad referencial | `useMemo` / `useCallback` / `memo` solo con una de estas evidencias, citada en el cierre: el valor es prop de un componente memoizado (p. ej. `columns` MRT, `11`); el valor es dependencia de un efecto o de una query key; hay una medición del profiler citada. Sin evidencia, es caso A |
+
+Todo `useMemo` lleva el genérico explícito: `useMemo<boolean>`, `useMemo<string | null>`, `useMemo<MRT_ColumnDef<Row>[]>`. Es el tipo de retorno declarado: si una rama no devuelve `T` (un `return;` suelto, un `undefined`), TypeScript lo marca. Sin genérico es Media (`usememo-explicit-generic`).
 
 ```ts
 // A — no
@@ -32,7 +34,7 @@ const fullName = useMemo(
 const fullName = `${firstName} ${lastName}`;
 
 // C — sí (claridad; ver gian-ts-style)
-const statusLabel = useMemo(() => {
+const statusLabel = useMemo<string>(() => {
   if (isLoading) return t('…');
   if (hasError) return t('…');
   return t('…');
@@ -43,16 +45,24 @@ No crear helpers de display (`08` es autoridad). En C, `useMemo` es obligatorio 
 
 ```ts
 // C — sí: dos resultados, pero la condición junta 5 partes
-const orderMessage = useMemo(() => {
+const orderMessage = useMemo<string | null>(() => {
   if (fromMessage !== null || toMessage !== null) return null;
   if (localFrom === null || localTo === null) return null;
   if (!localTo.startOf('day').isBefore(localFrom.startOf('day'))) return null;
 
   return DashboardHelper.periodMessages.order;
 }, [fromMessage, toMessage, localFrom, localTo]);
+
+// C — sí: booleano de 4 partes
+const showClearLogo = useMemo<boolean>(() => {
+  if (readOnly) return false;
+  if (logoFile || removeLogo) return true;
+
+  return !deferred && Boolean(settings.logo?.url);
+}, [readOnly, logoFile, removeLogo, deferred, settings.logo?.url]);
 ```
 
-Lo verifica `gian-ts-style` `assets/self-check.mjs` (`derived-multi-branch`, `no-nested-ternary`; `memo-ceremonial` como GAP).
+Lo verifica `gian-ts-style` `assets/self-check.mjs` (`derived-multi-branch`, `no-nested-ternary`, `usememo-explicit-generic`; `memo-ceremonial` como GAP).
 
 ### Lógica en JSX (Auditar + Implementar)
 
@@ -62,8 +72,7 @@ Lo verifica `gian-ts-style` `assets/self-check.mjs` (`derived-multi-branch`, `no
 |---|---|
 | La misma derivación se repite 2+ veces (p. ej. `ready ? Helper.format(x) : '—'` en cuatro KPIs) | Método del helper de la feature (`Helper.metricValue(metric)`). Media |
 | Expresión larga en una prop o en el JSX: template con 2+ llamadas, o ternario + `??` | `const` con nombre antes del `return`, sin `useMemo` (caso A/B) |
-| Un booleano de 3+ partes (`!readOnly && (a || b || (!c && d))`) | Partir en `const` con nombre por parte y componer: `const showClear = !readOnly && (hasPendingChange || hasSavedLogo)`. Sin `useMemo` (A/B). Media |
-| 3+ ramas (el resultado es uno de varios estados), sobre todo si se repite en varios bloques del JSX | `useMemo` + `if` (caso C). El JSX hace `if` / early return o un `switch` sobre el resultado (caso D) |
+| 3+ ramas (el resultado es uno de varios estados), o una condición/booleano que junta 3+ partes con `&&` / `||`, sobre todo si se repite en varios bloques del JSX | `useMemo<T>` + `if` (caso C). El JSX hace `if` / early return o un `switch` sobre el resultado (caso D) |
 
 ```tsx
 // Mal — la condición se repite en dos bloques y junta 4 partes
@@ -71,7 +80,7 @@ Lo verifica `gian-ts-style` `assets/self-check.mjs` (`derived-multi-branch`, `no
 {!(tablePending && !tableRows) && !tableError && (tableRows ?? []).length > 0 ? <Table /> : null}
 
 // Bien — se deriva una vez (C)
-const tableState = useMemo(() => {
+const tableState = useMemo<TableState>(() => {
   if (tablePending && !tableRows) return TableState.Loading;
   if (tableError) return TableState.Error;
   if (!tableRows?.length) return TableState.Empty;
@@ -84,17 +93,6 @@ footnote={row ? `Cobrado ${DashboardHelper.money(row.collected, row.currency)} d
 
 // Bien — const con nombre (A/B) o método del helper si se repite
 const cohortFootnote = CentralDashboardHelper.cohortFootnote(data.cohort);
-```
-
-```tsx
-// Mal — booleano de 4 partes sin nombre
-const showClearLogo =
-  !readOnly && (Boolean(logoFile) || removeLogo || (!deferred && Boolean(settings.logo?.url)));
-
-// Bien — cada parte con nombre
-const hasPendingLogoChange = Boolean(logoFile) || removeLogo;
-const hasSavedLogo = !deferred && Boolean(settings.logo?.url);
-const showClearLogo = !readOnly && (hasPendingLogoChange || hasSavedLogo);
 ```
 
 El estado derivado de UI (`TableState`) es `APP_OWNED` cerrado: string enum (`07`).
@@ -343,6 +341,27 @@ Una constante o un `static readonly` que nadie usa (`rg -w <NOMBRE>` solo encuen
 
 - El copy puro (`'Ej. Torre Santa Catarina'`) se queda inline o en i18n (`15`). No va a `constants`.
 - El copy que **repite** un valor de configuración se interpola desde la constante: `` `Ej. ${DateHelper.DEFAULT_BUSINESS_TIMEZONE}` ``, `` `no puede exceder ${LOGO_MAX_MB} MB` ``. Si se escribe a mano, el texto y la validación terminan diciendo cosas distintas.
+- Se separa el **valor** de la **frase**: el valor configurable (MB, formatos, timezone) va en una constante, la frase lo interpola y el copy puro de las otras ramas se queda inline. Pasar todo el copy a `constants` obliga a saltar de archivo para leer qué ve el usuario; centralizar textos es trabajo de i18n (`15`).
+
+```tsx
+// Mal — el hint repite a mano los formatos y el límite
+const logoStatusHint = useMemo(() => {
+  if (logoFile) return 'Se guardará con los datos generales.';
+  if (removeLogo) return 'Se restablecerá al logo predeterminado al guardar.';
+
+  return 'PNG, JPEG o WebP · Máx. 2 MB';
+}, [logoFile, removeLogo]);
+
+// Bien — valor desde la constante, copy puro inline, genérico explícito
+const logoStatusHint = useMemo<string>(() => {
+  if (logoFile) return 'Se guardará con los datos generales.';
+  if (removeLogo) return 'Se restablecerá al logo predeterminado al guardar.';
+
+  return `${LOGO_FORMATS_LABEL} · Máx. ${LOGO_MAX_MB} MB`;
+}, [logoFile, removeLogo]);
+```
+
+`LOGO_FORMATS_LABEL` se deriva de `LOGO_MIME_TYPES` (§Contraste con el backend, punto 5).
 
 ### Contraste con el backend (HARD, Auditar + Implementar)
 
@@ -480,7 +499,8 @@ const example = DateHelper.formatZoneExample(zone);
 | Regla del backend no reflejada en el front | Media |
 | Derivación repetida 2+ veces en JSX en vez de método del helper | Media |
 | 3+ ramas repetidas en JSX en vez de estado derivado (C) | Media |
-| Booleano de 3+ partes sin `const` con nombre por parte | Media |
+| Booleano de 3+ partes inline en vez de caso C (`useMemo<boolean>` + `if`) | Media |
+| `useMemo` sin genérico explícito (`useMemo<T>`) | Media |
 | Clase estática sin `cn()` | — permitido |
 | UI construye `FormData` / formatea fechas para el payload | Media |
 | Multipart a mano en el service pese a existir `FormDataHelper` | Media |

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.50 — 2026-11-25
+
+- `23` Memoización: el caso C incluye el booleano que junta 3+ partes con `&&` / `||` (`useMemo<boolean>` + `if`, ejemplo `showClearLogo`). Revierte la regla de 1.4.49 «booleano de 3+ partes → `const` con nombre por parte»: fila de §Lógica en JSX, bloque Mal/Bien y severidad.
+- `23`: todo `useMemo` lleva genérico explícito (`useMemo<T>`) para que TypeScript marque la rama que no devuelve `T`; ejemplos C actualizados; severidad Media.
+- `23` §Copy que repite un valor: se separa valor de frase; el valor configurable sale a constante, el copy puro queda inline (ejemplo `logoStatusHint`).
+- `SKILL.md`: líneas Memo y Composición alineadas.
+- Evals: `audit-long-boolean-condition` reescrito; nuevos `audit-usememo-missing-generic`, `audit-hint-hardcoded-config`.
+
 ## 1.4.49 — 2026-11-25
 
 - `23` §Contraste con el backend (HARD, Implementar + Auditar): todo valor de regla del servidor que la UI muestra o valida se corrobora contra FormRequest/config/enum de la API con `archivo:línea` o «sin verificar»; paridad campo a campo, enums exhaustivos, defaults iguales, una sola fuente exportada con comentario de fuente; alinear a una regla que el backend ya aplica no es PROP; filas de severidad Alta/Media.
