@@ -1,6 +1,6 @@
 {
   "skill": "gian-how-i-code",
-  "version": "1.4.52",
+  "version": "1.4.53",
   "cases": [
     {
       "id": "impl-entity-crud",
@@ -965,6 +965,20 @@
       "forbid": [
         "Instalar dependencias",
         "Inventar endpoints"
+      ]
+    },
+    {
+      "id": "impl-fix-finding-expands-self-check",
+      "prompt": "Corrige H-020 de la auditoría: quita el useMemo caso A de RegisterPaymentDialog. Al quitarlo, el self-check de gian-ts-style revisa la función completa y aparecen slot-order, vertical-spacing y un ternario anidado.",
+      "expect": [
+        "No pospone el hallazgo por el alcance del self-check",
+        "Primer commit style(...) que deja la función en 0 pendientes",
+        "Segundo commit refactor(...) que quita el useMemo, citando H-020",
+        "tsc y ESLint en 0 después de cada commit"
+      ],
+      "forbid": [
+        "Dejar H-020 como Pendiente por 'la función sigue en rojo'",
+        "Mezclar el estilo y el refactor en un solo commit"
       ]
     }
   ]

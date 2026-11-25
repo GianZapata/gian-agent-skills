@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.53 — 2026-11-25
+
+- SKILL: corregir hallazgos (HARD). Solo se pospone por decisión de producto o PROP. «No queda en verde», «archivo grande» o «amplía el self-check» no son razones. Si amplía el alcance de `gian-ts-style`, primero va `style(<scope>)` de esa función y luego la corrección. Un commit, un hallazgo.
+- Evals: implementation +1 (`impl-fix-finding-expands-self-check`, 76).
+
 ## 1.4.52 — 2026-11-25
 
 - Nueva `31-form-controls-ux`: matriz dato × número de opciones × contexto (formulario de página, dialog/drawer, barra de filtros, edición inline), ayudas ágiles con su disparador (slug autogenerado con check en vivo contra un endpoint existente, dominio con adornment y preview, dinero/unidades, default visible desde migración → modelo/FormRequest → seeder → supuesto, máscaras, fechas con presets y min/max), aplicar en un formulario nuevo vs PROP en uno existente, componente ausente → `19` sin instalar, severidad de auditoría.

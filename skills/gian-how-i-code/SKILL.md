@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.4.52"
+  version: "1.4.53"
 ---
 
 # gian-how-i-code
@@ -23,6 +23,7 @@ No usar como única skill para: explicación genérica de React/Vue/Angular/Lara
 - Alcance al tocar código: la unidad de `01` §Unidad que se alinea al tocar. La función, método, componente o hook completo que contiene una línea añadida o cambiada, más los imports del archivo; en reglas de `10`, el campo. El resto del archivo no se migra.
 - Cierre de Implementar: MUST seguir `21` §Implementar. Sin ese cierre la tarea no está terminada.
 - Revisión de diseño (`22`): en toda implementación se lee cada archivo tocado completo. Un Alto en lo escrito o tocado se corrige antes de cerrar. Lo que está fuera de la unidad tocada no se edita: se reporta con propuesta. Dos apariciones del mismo bloque ya son hallazgo (Media si es lógica o regla, Baja si es forma). No se abren archivos vecinos para buscar más.
+- Corregir hallazgos de una auditoría (HARD): un Alto/Media se pospone **solo** por decisión de producto o por un PROP que cambia la UX o el contrato. No son razones para posponer: «archivo grande», «el componente no queda en verde», «quitar esto mete la función entera al self-check». Si `tsc`/ESLint pasan, se corrige. Si la corrección amplía el alcance del self-check de `gian-ts-style` (función tocada), primero va un commit `style(<scope>)` que deja esa función en 0 y después el commit de la corrección; nunca se deja el hallazgo abierto por eso. Un commit hace una sola cosa: un refactor de otro hallazgo va en su propio commit con su H-NNN.
 - Estilo del lenguaje: si el cambio escribe PHP, MUST leer `gian-php-style`; si escribe `.ts`/`.tsx` o `<script setup lang="ts">`, MUST leer `gian-ts-style`. Se aplican en el hunk y el cierre los nombra (`21` punto 2). No depende del bootstrap del harness.
 - No leer todas las `references/`; la matriz de routing decide cuáles se leen. Las que marca se leen y se aplican.
 - No migrar el repo entero en silencio; solo alcance aprobado.
