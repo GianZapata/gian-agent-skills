@@ -112,7 +112,7 @@ When the edit changes a rule, run this from the clone root before the commit:
 python3 tools/run-evals.py --skill <name>
 ```
 
-To have another model write the answers (for example Grok), add `--answer-model <id>` (ids from `cursor-agent --list-models`). The judge stays `claude -p`; `--model` only changes the Claude calls.
+To have another model write the answers (for example Grok), add `--answer-model <id>` (ids from `cursor-agent --list-models`). The judge stays `claude -p`; `--model` only changes the Claude calls. `--judge-model <id>` grades through `cursor-agent` too, for when Claude is unavailable.
 
 That applies to `skills/<name>/` only. Do not commit `evals/` or `evals-results/`. The same order is in `AGENTS.md`.
 

@@ -151,8 +151,8 @@ def judge_results(payload: dict) -> list[dict]:
     return structured["results"]
 
 
-def cursor_answer(prompt: str, args: argparse.Namespace) -> str:
-    command = ["cursor-agent", "-p", "--mode", "ask", "--trust", "--model", args.answer_model, "--output-format", "text", prompt]
+def cursor_agent_text(prompt: str, model: str, args: argparse.Namespace) -> str:
+    command = ["cursor-agent", "-p", "--mode", "ask", "--trust", "--model", model, "--output-format", "text", prompt]
     result = subprocess.run(command, cwd=args.cwd, text=True, capture_output=True, timeout=args.timeout)
     text = result.stdout.strip()
 
@@ -160,6 +160,19 @@ def cursor_answer(prompt: str, args: argparse.Namespace) -> str:
         raise RuntimeError(result.stderr.strip()[:500] or f"cursor-agent exit {result.returncode}, no output")
 
     return text
+
+
+def cursor_answer(prompt: str, args: argparse.Namespace) -> str:
+    return cursor_agent_text(prompt, args.answer_model, args)
+
+
+JUDGE_JSON_HINT = """
+
+Reply with only a JSON object: {"results": [{"expect": "<text>", "pass": true, "reason": "<short>"}]}"""
+
+
+def cursor_judge(prompt: str, args: argparse.Namespace) -> dict:
+    return {"result": cursor_agent_text(prompt + JUDGE_JSON_HINT, args.judge_model, args)}
 
 
 def run_case(case: dict, args: argparse.Namespace) -> dict:
@@ -170,15 +183,16 @@ def run_case(case: dict, args: argparse.Namespace) -> dict:
     else:
         answer = claude(answer_prompt, args, ["--permission-mode", "plan"])["result"]
 
-    judged = claude(
-        JUDGE_PROMPT.format(
-            prompt=case["prompt"],
-            expect="\n".join(f"- {item}" for item in case["expect"]),
-            answer=answer,
-        ),
-        args,
-        ["--json-schema", json.dumps(JUDGE_SCHEMA), "--tools", ""],
+    judge_prompt = JUDGE_PROMPT.format(
+        prompt=case["prompt"],
+        expect="\n".join(f"- {item}" for item in case["expect"]),
+        answer=answer,
     )
+
+    if args.judge_model:
+        judged = cursor_judge(judge_prompt, args)
+    else:
+        judged = claude(judge_prompt, args, ["--json-schema", json.dumps(JUDGE_SCHEMA), "--tools", ""])
 
     return {**case, "answer": answer, "results": judge_results(judged)}
 
@@ -234,6 +248,7 @@ def main() -> int:
     parser.add_argument("--case", help="only this case id")
     parser.add_argument("--model", help="model for both calls (default: claude default)")
     parser.add_argument("--answer-model", help="answer with this model through `cursor-agent` (judge stays claude)")
+    parser.add_argument("--judge-model", help="grade with this model through `cursor-agent` instead of claude")
     parser.add_argument("--cwd", default=str(ROOT), help="directory the answer runs in (a fixture repo)")
     parser.add_argument("--budget", type=float, default=3.0, help="max USD per claude call")
     parser.add_argument("--timeout", type=int, default=600, help="seconds per claude call")
@@ -274,6 +289,7 @@ def main() -> int:
 
     RESULTS.mkdir(exist_ok=True)
     tag = f"-{args.answer_model}" if args.answer_model else ""
+    tag += f"-judge-{args.judge_model}" if args.judge_model else ""
     path = RESULTS / f"{datetime.now():%Y%m%d-%H%M%S}{tag}.md"
     path.write_text(report(outcomes))
 

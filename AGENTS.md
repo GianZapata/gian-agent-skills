@@ -42,7 +42,7 @@ Use `--skill <name>` with a space. Do not use `--skill=<name>`. Do not use `--al
 
 When a file under `skills/` changes, commit and push in the same turn. Do not ask. Do not wait for a reminder. For this repository, that order wins over a general “only commit when the user asks” instruction.
 
-When the edit changes a rule, run `python3 tools/run-evals.py --skill <name>` from the clone root first. Exit 1 means a case failed or the model call did not finish. Do not publish that change as if the evals passed. Skip the corpus when the edit does not touch a rule. `--answer-model <id>` makes `cursor-agent` write the answers (judge stays Claude).
+When the edit changes a rule, run `python3 tools/run-evals.py --skill <name>` from the clone root first. Exit 1 means a case failed or the model call did not finish. Do not publish that change as if the evals passed. Skip the corpus when the edit does not touch a rule. `--answer-model <id>` makes `cursor-agent` write the answers (judge stays Claude unless `--judge-model <id>`).
 
 Commit only the skill change and, when it is part of that change, `tools/run-evals.py`. Do not commit `evals/`, `evals-results/`, secrets, or unrelated files. Do not skip hooks.
 
