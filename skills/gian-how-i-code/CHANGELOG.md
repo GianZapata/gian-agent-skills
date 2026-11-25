@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.43 — 2026-11-25
+
+- `07` §Checklist al declarar gana el punto 5: un valor de una entidad de otra feature usa el enum y el meta de la feature dueña (`ContractHelper.statusMeta`) y el payload se tipa con ese enum; prohibido el Record de labels local, `Record<string, string>` o cast; si la API devuelve otro conjunto, se verifica en la API antes de crear un enum propio. Fila de hallazgo en §Hallazgos típicos y línea en la Hard Rule de ownership.
+- Evals `impl-cross-feature-status-meta` y `audit-cross-feature-status-labels`.
+
 ## 1.4.42 — 2026-11-25
 
 - Nueva `30-screen-audit`: auditoría por pantalla en 7 pasos (quién y para qué, cada elemento contra la pregunta, lenguaje, acciones coherentes, densidad y jerarquía, estados, visto en vivo), severidades y formato de hallazgo con «visto en vivo / leído, no visto».

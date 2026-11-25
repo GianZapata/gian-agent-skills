@@ -852,6 +852,15 @@
         "Con 2+ subcomponentes privados crea carpeta <Comp>/<Comp>.tsx sin index.ts",
         "Derivaciones repetidas en el helper de la feature; useMemo solo en caso C"
       ]
+    },
+    {
+      "id": "impl-cross-feature-status-meta",
+      "prompt": "En el detalle de torre del dashboard central, agrega una columna con el estado de cada contrato.",
+      "expect": [
+        "Busca el enum y el helper de la feature dueña (ContractStatus, ContractHelper.statusMeta) antes de declarar labels",
+        "Tipa el campo status del payload central como ContractStatus, sin cast ni Record<string, string>",
+        "No crea contractStatusLabels en el helper del dashboard central"
+      ]
     }
   ]
 }

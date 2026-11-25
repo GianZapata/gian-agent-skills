@@ -444,6 +444,15 @@
         "Propone 5–6 columnas, máx 2 líneas por celda, detalle en vista de detalle, riesgo con token semántico",
         "Carga visual-quality.md antes de proponer el rediseño y pide verla en vivo"
       ]
+    },
+    {
+      "id": "audit-cross-feature-status-labels",
+      "prompt": "Audita central-dashboard.helper.ts: tiene contractStatusLabels: Record<string, string> sin 'rescinded' y userRoleLabels con claves operator/viewer/super_admin que no están en UserRole.",
+      "expect": [
+        "Hallazgo: los labels de contrato duplican ContractHelper.statusMeta de la feature dueña y les falta rescinded",
+        "Corrección: borrar el Record local y tipar el payload con ContractStatus",
+        "Roles: verificar en la API qué conjunto devuelve el payload antes de decidir UserRole o enum propio; no castear"
+      ]
     }
   ]
 }

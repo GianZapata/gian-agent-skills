@@ -337,7 +337,8 @@ Antes de escribir un `type`, una unión, un enum, un `Record` o una constante de
 2. ¿Es un conjunto cerrado propio sin enum? String enum en `enums/` de la feature.
 3. ¿Los valores son de una librería (color, variant, size, severity de MUI)? El tipo del componente que los recibe: `NonNullable<ButtonProps['color']>`, `ChipProps['color']`. Sin unión propia.
 4. ¿Varios datos por miembro del enum (copy, color, icono)? Una sola `static readonly Record<Enum, Meta>` en `<entity>.helper.ts`, con `interface <Concepto>Meta`. Nunca dos Records paralelos por la misma key ni la metadata en el `.tsx`.
-5. ¿Un tipo de objeto inline con 2+ campos (`Record<X, { heading: string; detail: string }>`, `Array<{ top: string }>`)? `interface` con nombre.
+5. ¿El valor es de una entidad que pertenece a otra feature (el estado de un contrato que muestra el dashboard central, el rol de un usuario en una tabla de auditoría)? Se usa el enum y el meta de la feature dueña (`ContractStatus` + `ContractHelper.statusMeta`), y el campo del payload se tipa con ese enum en la interface del consumidor. Prohibido un `contractStatusLabels` / `roleLabels` local, `Record<string, string>` o cast del `string` del payload. Si la API devuelve otro conjunto de valores que el enum dueño, no se adapta en el front a ciegas: se verifica el payload en la API (archivo:línea) y, si de verdad es otro contrato, se crea su propio enum. Buscar antes de escribir: `rg "enum <Entidad>Status|<Entidad>Helper" src/features`.
+6. ¿Un tipo de objeto inline con 2+ campos (`Record<X, { heading: string; detail: string }>`, `Array<{ top: string }>`)? `interface` con nombre.
 
 ```ts
 interface ArrearsBucketMeta {
@@ -381,6 +382,7 @@ Una sola escala: Alto / Medio / Bajo. Lo marcado como prohibido o HARD en este a
 | Shadow `StatusTone` (union propia) alimentando `Chip.color` | Medio |
 | `enum StatusTone` sustituyendo el shadow (el shadow debe desaparecer) | Medio |
 | `Record<string, …>` con keys de enum conocido | Medio |
+| Labels / meta locales de una entidad de otra feature en lugar del meta de la feature dueña (le falta un miembro, como `rescinded`) | Medio (Alto si un miembro se muestra crudo) |
 | Método que reconstruye el `Record` / propiedad no `static readonly` | Medio |
 | `label: i18n.t(...)` inicializado una vez (locale congelado) | Medio |
 | Lookup normal con `?.` / `??` para enum cerrado | Medio |

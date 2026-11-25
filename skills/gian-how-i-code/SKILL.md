@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.4.42"
+  version: "1.4.43"
 ---
 
 # gian-how-i-code
@@ -34,7 +34,7 @@ No usar como única skill para: explicación genérica de React/Vue/Angular/Lara
 - Tests/contratos ejecutables del repo no se rompen para imponer estilo.
 - Tests siguen al requisito, no al borrado (`17`). Si el requisito desaparece: borrar el código y sus tests exclusivos; no agregar un test de "ya no existe". Si sigue: conservar o adaptar sus tests. Si la eliminación crea una garantía vigente: probar esa garantía.
 - String enum (TS) para conjuntos cerrados. PHP: backed Enum; en State Machine string-based (`asantibanez`), constantes `public const` como fuente única — ver `07`. `Record<Enum, V>` en mappings FE exhaustivos. Membresía 2+: `.includes()` / `in_array(..., true)` / `in (A, B)` en Python, no `=== || ===` — ver `07`.
-- Ownership **antes** de declarar `type`/union/enum/mapping: `APP_OWNED` \| `LIBRARY_OWNED` \| `EXTERNAL_GENERATED` \| `UNION LEGÍTIMA` — ver `07`. Antes de crear un enum, buscar en `enums/` de la feature uno con los mismos valores; si existe, se usa ese. Lo verifica `gian-ts-style` `assets/self-check.mjs` (`enum-ownership`, `library-shadow-type`, `named-interface`, `interface-object-shape`, `display-meta-location`, `parallel-meta`).
+- Ownership **antes** de declarar `type`/union/enum/mapping: `APP_OWNED` \| `LIBRARY_OWNED` \| `EXTERNAL_GENERATED` \| `UNION LEGÍTIMA` — ver `07`. Antes de crear un enum, buscar en `enums/` de la feature uno con los mismos valores; si existe, se usa ese. Si el valor es de una entidad de otra feature (estado de contrato en el dashboard central), se usa el enum y el `statusMeta` de la feature dueña y el payload se tipa con ese enum; prohibido el `Record<string, string>` local. Lo verifica `gian-ts-style` `assets/self-check.mjs` (`enum-ownership`, `library-shadow-type`, `named-interface`, `interface-object-shape`, `display-meta-location`, `parallel-meta`).
 - `APP_OWNED` cerrado y nombrado (incl. modos/estados de UI de feature) MUST ser string enum. Las únicas excepciones son las de `07` §Excepciones. `LIBRARY_OWNED` → tipo oficial de la lib; prohibido el shadow type.
 - Memoización React según `23` (A–E): no ceremonial (A); STYLE_GIAN multi-rama (C) y MRT/`11` (E) sí. C incluye un ternario cuya condición junta 3+ partes con `&&` / `||`, aunque tenga dos resultados: `useMemo` + `if` + early return.
 - Styling (adaptador React, `04`/`23`): Tailwind-first cuando existe una utility o un token bridge real equivalente; `cn()` cuando las clases se componen o varían por estado/props runtime; sin constantes locales `*_SX` / `get*Sx` ni strings de clases (`const cardClass = '…'`): las clases van inline y, si el bloque se repite, se extrae un componente; template literal, concatenación, ternario o join en `className` → el `cn()` del repo, sin crear otro ni importar `clsx`/`twMerge` directo; `sx={(theme) => ({ … theme.palette })}` como escape hatch sin equivalencia limpia; `useTheme()` solo si el theme sale de `sx`. En otro stack, las clases se componen con el mecanismo del framework. No se exige `cn()`, MUI ni `sx`.
