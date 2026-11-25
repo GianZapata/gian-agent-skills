@@ -861,6 +861,15 @@
         "Tipa el campo status del payload central como ContractStatus, sin cast ni Record<string, string>",
         "No crea contractStatusLabels en el helper del dashboard central"
       ]
+    },
+    {
+      "id": "impl-touched-file-folder",
+      "prompt": "Agrega al menú lateral un grupo colapsable nuevo. El archivo components/layouts/DashboardListItem.tsx ya tiene DashboardNavLink y DashboardNavChild como componentes privados.",
+      "expect": [
+        "Convierte el archivo en carpeta components/layouts/DashboardListItem/DashboardListItem.tsx con un archivo por subcomponente en el mismo cambio",
+        "No crea index.ts; actualiza el import de DashboardSideBar.tsx",
+        "No reorganiza otros archivos de components/layouts que el cambio no toca"
+      ]
     }
   ]
 }

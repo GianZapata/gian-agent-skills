@@ -266,6 +266,7 @@ components/
 
 - **Sin barrel `index.ts`.** Se importa por ruta completa: `@/features/<f>/components/CentralOverviewView/CentralOverviewView`.
 - Un solo subcomponente chico que no se reutiliza puede quedarse en el mismo archivo.
+- **Al tocar un archivo (Implementar, HARD).** Si después de tu cambio el archivo queda con 2+ componentes privados (`const X: FC` o `function X` no exportados, además del exportado), lo conviertes en carpeta en el mismo cambio, aunque los otros componentes no los hayas escrito tú. Agregar un componente privado a un archivo que ya tiene uno cuenta. El límite es ese archivo: no se reorganizan otros archivos que el cambio no toca. Aplica también fuera de `features/` (`components/layouts/`, `components/shared/`). Ejemplo: `components/layouts/DashboardListItem.tsx` con `DashboardNavLink`, `DashboardNavChild` y `DashboardNavGroup` → `components/layouts/DashboardListItem/DashboardListItem.tsx` + un archivo por subcomponente, y el import de `DashboardSideBar.tsx` actualizado.
 - Si otro componente o feature lo usa, sube a `features/<f>/components/` o a `components/shared/`.
 - Al mover, se actualizan los imports de los consumidores en el mismo cambio.
 
@@ -275,6 +276,7 @@ components/
 | Bloque JSX idéntico 2+ veces | Media (Baja si son 2 apariciones de 1–2 líneas) | Componente con props de variante |
 | Componente con 3+ secciones independientes o ~300+ líneas | Baja / Media (propuesta) | Extraer secciones; el padre orquesta |
 | 2+ subcomponentes privados sueltos en el archivo o en `components/` | Baja | Carpeta `<Comp>/<Comp>.tsx`, sin `index.ts` |
+| Cambio que deja 2+ componentes privados en el archivo que tocó | Media | Carpeta en el mismo cambio |
 | Barrel `index.ts` nuevo para la carpeta | Baja | Quitarlo; import por ruta completa |
 
 ## Skeleton de carga

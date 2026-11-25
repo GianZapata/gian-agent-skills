@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.44 — 2026-11-25
+
+- `04` §Carpeta del componente: al tocar un archivo, si el cambio lo deja con 2+ componentes privados, pasa a carpeta en el mismo cambio aunque los otros no sean tuyos (límite: ese archivo; vale también en `components/layouts` y `components/shared`). Fila de severidad Media y línea en la Hard Rule «Composición».
+- Eval `impl-touched-file-folder`.
+
 ## 1.4.43 — 2026-11-25
 
 - `07` §Checklist al declarar gana el punto 5: un valor de una entidad de otra feature usa el enum y el meta de la feature dueña (`ContractHelper.statusMeta`) y el payload se tipa con ese enum; prohibido el Record de labels local, `Record<string, string>` o cast; si la API devuelve otro conjunto, se verifica en la API antes de crear un enum propio. Fila de hallazgo en §Hallazgos típicos y línea en la Hard Rule de ownership.
