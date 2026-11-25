@@ -4,7 +4,7 @@ description: "Mandatory visual TS/TSX style for any TS stack. Load when creating
 license: Apache-2.0
 metadata:
   author: gian
-  version: "2.10.0"
+  version: "2.10.1"
 when-to-use: "Any .ts/.tsx create/edit/refactor/review/audit/fix in any TS stack (React, Vue sibling .ts or inline script setup lang=ts, Angular, Node); ts-style-audit; ts-style-fix; format TypeScript. Not for .js/.jsx/.mjs/.cjs, Vue template/style, Angular .html, PHP, CSS, SQL-only, or architecture-only consults."
 ---
 
@@ -44,7 +44,7 @@ No vender preferencias de Gian como best practice universal. `references/princip
 ## Hard Rules
 
 - WRITE/FIX **corrigen** el hunk; no se limitan a reportar. AUDIT no edita. `references/principles.md`
-- Alcance: código nuevo + **hunk/función tocada**. No migrar el archivo ni el repo. `references/principles.md`
+- Alcance: código nuevo + **hunk/función tocada**. No migrar el archivo ni el repo. Si una corrección amplía el alcance a una función entera: commit `style` previo de esa función, luego la corrección; nunca se pospone por eso. `references/principles.md`
 - Wrapping mecánico: Prettier manda. No pelear printWidth/quotes/semi/trailing comma/JSX wrap. `references/prettier-eslint-boundary.md`
 - Exported arrow default. `function` solo overload/hoisting/API real. `references/functions-arrows.md`
 - No-component + una expresión → implicit return (object literal `({ })`). `references/functions-arrows.md`

@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.10.1 — 2026-11-25
+
+- Alcance: una corrección que mete una función entera al self-check se resuelve con un commit `style` previo de esa función; no es razón para posponerla.
+
 ## 2.10.0 — 2026-11-25
 
 - `derived-multi-branch`: también entra un booleano de 3+ partes con `&&` / `||` asignado a una `const` dentro de un componente o hook (`useMemo<boolean>` + `if`). `self-check.mjs` lo marca FAIL.

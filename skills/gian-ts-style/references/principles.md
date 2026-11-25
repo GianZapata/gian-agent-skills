@@ -43,6 +43,7 @@ Una tarea normal (“agrega un filtro a esta tabla”) que edita `.ts`/`.tsx` es
 - Aplicar al código **nuevo** y al **hunk/función que la tarea ya está modificando**.
 - Si alrededor del hunk hay un `if (!user) { return null; }` y esa región entra en el cambio, compactarla.
 - No reformatear el resto de `users-table.tsx` ni el repositorio.
+- Si una corrección (por ejemplo, quitar un `useMemo`) mete una función entera en el alcance, esa función se deja en 0 en un commit `style(<scope>)` previo y la corrección va después. El alcance ampliado nunca es razón para no hacer la corrección.
 
 ## FIX safety classes
 
