@@ -15,7 +15,7 @@ Cierre obligatorio de toda implementación, también en bug y trivial. Sin este 
 7. **PROP**: «PROP: ninguna» o la lista.
 8. **Referencia o plan**: si se partió de uno, el bloque de `15` (*Sin datos todavía* / *Texto de la referencia que no publiqué*) con el `rg` corrido. Sin casos, cada lista dice «ninguno» y cita el `rg`.
 9. **Copy cambiado** (`15`): cada texto visible corregido, original → nuevo. Cada coincidencia conservada como término de dominio, con `archivo:línea`. Incluye el `rg` de vocabulario de arquitectura de `15`, juzgado solo sobre strings visibles.
-10. **Campos de formulario** (`10`): por cada campo creado o editado, la ayuda evaluada, aplicada / propuesta / descartada, y el motivo en una línea.
+10. **Campos de formulario** (`10`): por cada campo creado o editado, el control, la normalización y la ayuda evaluada, cada una aplicada / propuesta / descartada, y el motivo en una línea.
 11. **Formularios o validación user-facing**: el completion gate de `05` marcado punto por punto (`rules` / `messages` / copy / cobertura semántica / `attributes()` cuando un mensaje interpola `:attribute` con un nombre de columna o clave interna / 422 BE / consumo FE).
 12. **Verificación visual**: con UI, los viewports capturados y cada contenedor visto (`visual-quality.md`), y lo que no se vio, nombrado. Sin UI: «sin UI».
 13. **Diseño** (`22`): por cada archivo tocado, «Corregido» (los Altos de lo escrito o tocado) y «Pendiente (fuera de lo tocado)», agrupados por severidad, cada uno con `archivo:línea` y su propuesta. Sin hallazgos, «ninguno» por archivo.

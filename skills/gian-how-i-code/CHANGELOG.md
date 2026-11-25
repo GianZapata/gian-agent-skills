@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.37 — 2026-11-24
+
+- `10`: fila para identificadores con formato fijo (RFC, CURP, CLABE, código postal): string, normalización del valor real, `maxLength` y regex en un campo nuevo (PROP en uno existente), formato visible fuera del placeholder.
+- `10`: tabla de control según el número de opciones y fuente del combobox (componente y endpoint del repo; sin ellos, propuesta, no ruta inventada).
+- `10` y `21`: una línea por campo antes del edit, y el cierre reporta control, normalización y ayuda.
+
 ## 1.4.36 — 2026-11-24
 
 - `15` gana «Vocabulario de arquitectura»: `central`, `tenant`, base de datos, CRUD, módulo y similares no se publican, ni siquiera si vienen del prompt. El término es el que el producto ya usa, sin tabla fija. Incluye BAD/GOOD y un `rg` que solo juzga strings visibles. `21` punto 9 lo cita.
