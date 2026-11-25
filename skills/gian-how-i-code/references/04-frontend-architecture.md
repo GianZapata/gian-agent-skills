@@ -270,6 +270,47 @@ components/
 - Si otro componente o feature lo usa, sube a `features/<f>/components/` o a `components/shared/`.
 - Al mover, se actualizan los imports de los consumidores en el mismo cambio.
 
+### Dónde vive cada subcomponente
+
+Auditar + Implementar. Las carpetas reflejan el árbol de componentes.
+
+- Cada subcomponente vive en la carpeta del **ancestro común más cercano** que lo importa. Si lo usa un solo padre, va en la carpeta de ese padre. Si lo usan dos hermanos, sube a la carpeta del padre de ambos.
+- La regla de carpeta (2+ subcomponentes exclusivos → `<Comp>/<Comp>.tsx`) se repite en cada nivel, sin límite de profundidad. Un componente con un solo hijo exclusivo queda plano, junto a ese hijo.
+- Lo público (lo importa una ruta u otra feature además del padre) queda fuera de la carpeta del padre: `components/<área>/` o `components/shared/`. Un hijo privado nunca queda suelto junto a un componente público.
+- Al mover, se actualizan los imports en el mismo cambio. Sin `index.ts`.
+
+Ejemplo (`components/layouts/`; `DashboardLayout` solo lo usa la ruta, `DashboardLayoutContainer` lo usan muchas páginas; `DashboardRailProfile` lo usan Layout, Topbar y MobileNav):
+
+```text
+layouts/
+  DashboardLayoutContainer.tsx        público
+  DashboardLayout/
+    DashboardLayout.tsx
+    DashboardSideBar.tsx
+    DashboardMobileNav.tsx
+    DashboardRailBrand.tsx
+    DashboardRailProfile.tsx          ancestro común: DashboardLayout
+    DashboardTowerPill.tsx
+    DashboardLogoutDialog.tsx
+    DashboardTopbar/
+      DashboardTopbar.tsx
+      DashboardBreadcrumbs.tsx
+      DashboardNotifications.tsx
+    DashboardListItem/
+      DashboardListItem.tsx
+      DashboardNavLink.tsx
+      DashboardNavGroup.tsx           un solo hijo exclusivo → plano
+      DashboardNavChild.tsx
+      RailIcon.tsx
+```
+
+### Funciones de un árbol de componentes
+
+- Una función que usan solo un componente y sus descendientes no va en `.util.ts` ni en un `.ts` suelto: vive privada en el padre y el resultado baja por props (`isMenuHrefActive` queda en `DashboardListItem`, que pasa `isSelected`; se borra la prop `siblingHrefs`).
+- Un archivo de componente solo exporta componentes. Exportar funciones desde él provoca imports circulares y Vite pierde el Fast Refresh.
+- Una función que devuelve JSX es un componente: `railIcon(icon)` → `<RailIcon icon={icon} />`.
+- Pasa a `utils/` o a un helper solo cuando la usan componentes fuera de ese árbol (`23` §utils vs helpers).
+
 | Caso | Severidad | Corrección |
 |------|-----------|------------|
 | `.map` con lógica local, handlers o JSX largo inline | Media | `<XRow>` / `<XCard>` |
@@ -278,6 +319,8 @@ components/
 | 2+ subcomponentes privados sueltos en el archivo o en `components/` | Baja | Carpeta `<Comp>/<Comp>.tsx`, sin `index.ts` |
 | Cambio que deja 2+ componentes privados en el archivo que tocó | Media | Carpeta en el mismo cambio |
 | Barrel `index.ts` nuevo para la carpeta | Baja | Quitarlo; import por ruta completa |
+| Hijo privado fuera de la carpeta de su ancestro común | Baja (Media si queda suelto junto a un componente público) | Moverlo a la carpeta del ancestro común y actualizar imports |
+| Función o `.util.ts`/`.ts` suelto que solo usa un árbol de componentes, o función que devuelve JSX | Baja | Privada en el padre con props hacia abajo; JSX → componente |
 
 ## Skeleton de carga
 

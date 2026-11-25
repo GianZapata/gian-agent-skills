@@ -453,6 +453,16 @@
         "Corrección: borrar el Record local y tipar el payload con ContractStatus",
         "Roles: verificar en la API qué conjunto devuelve el payload antes de decidir UserRole o enum propio; no castear"
       ]
+    },
+    {
+      "id": "audit-loose-layout-children",
+      "prompt": "Audita la estructura de src/components/layouts: DashboardLayout.tsx, DashboardLayoutContainer.tsx (público), DashboardTopbar.tsx, DashboardBreadcrumbs.tsx, DashboardSideBar.tsx, MenuPath.util.ts y la carpeta DashboardListItem/ con railIcon.ts.",
+      "expect": [
+        "Reporta que los hijos privados de DashboardLayout están sueltos junto a un componente público (Media)",
+        "Propone DashboardLayout/ con sus hijos y DashboardTopbar/ como subcarpeta, árbol completo",
+        "Reporta MenuPath.util.ts y railIcon.ts como funciones sueltas del árbol (Baja) y propone función privada en el padre y <RailIcon />",
+        "Deja DashboardLayoutContainer fuera de la carpeta"
+      ]
     }
   ]
 }

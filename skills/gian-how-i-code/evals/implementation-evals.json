@@ -870,6 +870,27 @@
         "No crea index.ts; actualiza el import de DashboardSideBar.tsx",
         "No reorganiza otros archivos de components/layouts que el cambio no toca"
       ]
+    },
+    {
+      "id": "impl-subcomponent-common-ancestor",
+      "prompt": "Divide DashboardLayout.tsx (que solo usa la ruta) en subcomponentes: SideBar, Topbar (con Breadcrumbs y Notifications) y RailProfile, que usan Layout y Topbar. En la misma carpeta components/layouts está DashboardLayoutContainer, que usan muchas páginas.",
+      "expect": [
+        "Crea components/layouts/DashboardLayout/DashboardLayout.tsx y mete adentro los hijos privados",
+        "DashboardTopbar pasa a DashboardLayout/DashboardTopbar/ con Breadcrumbs y Notifications",
+        "DashboardRailProfile queda en DashboardLayout/ por ser el ancestro común de Layout y Topbar",
+        "DashboardLayoutContainer se queda en components/layouts/ por ser público",
+        "Actualiza imports en el mismo cambio y no crea index.ts"
+      ]
+    },
+    {
+      "id": "impl-tree-function-no-util",
+      "prompt": "DashboardListItem y sus hijos NavLink y NavGroup necesitan saber si un href está activo, y todos dibujan el ícono con tamaño 18. Impleméntalo.",
+      "expect": [
+        "La función isMenuHrefActive vive privada en DashboardListItem.tsx y pasa isSelected por props",
+        "No crea MenuPath.util.ts ni otro .ts suelto",
+        "No exporta funciones desde el archivo del componente",
+        "El ícono es un componente <RailIcon icon /> en su propio .tsx, no una función railIcon() que devuelve JSX"
+      ]
     }
   ]
 }

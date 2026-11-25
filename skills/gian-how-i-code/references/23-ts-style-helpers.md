@@ -337,6 +337,7 @@ Una constante o un `static readonly` que nadie usa (`rg -w <NOMBRE>` solo encuen
 - Una función del eje de un helper existente (fecha, número, teléfono, invalidación de queries, formato) se agrega como método a ese helper, aunque hoy se use una sola vez. Ver §Duplicación y §Fechas.
 - Un mapper propio del componente (`toFormValues(entity)`) se queda local. Pasa al entity helper cuando otro archivo lo reutiliza.
 - Si el repo no tiene un helper de ese eje, no se crea uno nuevo por una sola función (`22`).
+- Si la función la usa solo un árbol de componentes, se queda privada en el padre (`04` §Funciones de un árbol de componentes).
 
 ```ts
 // Mal — tres fuentes distintas del mismo valor

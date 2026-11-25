@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.45 — 2026-11-25
+
+- `04` §Carpeta del componente gana «Dónde vive cada subcomponente» (carpeta del ancestro común más cercano, árbol completo, lo público fuera; ejemplo `components/layouts`) y «Funciones de un árbol de componentes» (privada en el padre con props, sin `.util.ts`; archivo de componente solo exporta componentes; función que devuelve JSX → componente). Dos filas de severidad, puntero desde `23` §Funciones locales y línea en la Hard Rule «Composición».
+- Evals `impl-subcomponent-common-ancestor`, `impl-tree-function-no-util`, `audit-loose-layout-children`.
+
 ## 1.4.44 — 2026-11-25
 
 - `04` §Carpeta del componente: al tocar un archivo, si el cambio lo deja con 2+ componentes privados, pasa a carpeta en el mismo cambio aunque los otros no sean tuyos (límite: ese archivo; vale también en `components/layouts` y `components/shared`). Fila de severidad Media y línea en la Hard Rule «Composición».
