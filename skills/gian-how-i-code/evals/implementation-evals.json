@@ -910,6 +910,15 @@
         "No usa as unknown as Resolver ni as never ni as any",
         "Si queda un cast inevitable, va en una línea con comentario del motivo"
       ]
+    },
+    {
+      "id": "impl-blob-preview-hook",
+      "prompt": "Agrega preview del logo en GeneralForm: el usuario elige un File y se muestra la imagen antes de guardar.",
+      "expect": [
+        "Usa useObjectUrl(file) de shared/hooks (lo crea si no existe) en vez de useState + useEffect con createObjectURL/revokeObjectURL",
+        "El hook revoca la URL al cambiar de archivo y al desmontar",
+        "No guarda la URL en useState"
+      ]
     }
   ]
 }

@@ -472,6 +472,15 @@
         "Reporta el cast doble del resolver como Media y propone los genéricos z.input/z.output de useForm o alinear el schema",
         "Cita 12 §Efectos y 23 §Casts"
       ]
+    },
+    {
+      "id": "audit-manual-object-urls",
+      "prompt": "Audita el manejo de blobs en src: invoice-download.helper.ts, useExport.ts y central-dashboard.helper.ts crean y revocan URLs para descargar; GeneralForm.tsx y FileUploadField.tsx crean URLs de preview con useState + useEffect.",
+      "expect": [
+        "Corre rg 'URL\\\\.(createObjectURL|revokeObjectURL)' y lista cada hit fuera de FileHelper/useObjectUrl",
+        "Marca cada uno como Media",
+        "Propone FileHelper.download(blob, name) para las descargas y useObjectUrl(file) para los previews, en shared/"
+      ]
     }
   ]
 }

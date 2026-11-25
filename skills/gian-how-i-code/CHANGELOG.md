@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.47 — 2026-11-25
+
+- `23` §URLs blob: descarga con `FileHelper.download`, preview con `useObjectUrl` (crea al cambiar, revoca en cleanup); prohibido `createObjectURL`/`revokeObjectURL` a mano o URL en `useState` + efecto propio. rg de auditoría, fila de severidad Media y Hard Rule en `SKILL.md`.
+- Evals `impl-blob-preview-hook`, `audit-manual-object-urls`.
+
 ## 1.4.46 — 2026-11-25
 
 - `12` §Efectos: un efecto solo sincroniza con algo externo; tabla de reemplazos (derivado en render, reset con `{isOpen && <X />}` o `key`, reset o aviso en el handler, sin props token para disparar resets). Severidad Media y rg de auditoría.

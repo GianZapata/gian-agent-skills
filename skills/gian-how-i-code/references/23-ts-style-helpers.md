@@ -370,6 +370,20 @@ const example = DateHelper.formatZoneExample(zone);
 | Placeholder o copy puro | — | Permitido (`15`) |
 | Constante de styling | — | No es esta sección: `no-local-style-constants` (`04`) |
 
+## URLs blob (HARD, Auditar + Implementar)
+
+`URL.createObjectURL` / `revokeObjectURL` no se escriben a mano en componentes ni helpers de feature. Hay dos piezas compartidas; si no existen, se crean en `shared/` al primer uso:
+
+| Caso | Pieza | Qué hace |
+|------|-------|----------|
+| Descargar un `Blob` | `FileHelper.download(blob, fileName)` (`shared/helpers`) | Crea la URL, dispara el `<a download>`, la revoca en el mismo tick |
+| Preview de un `File`/`Blob` | `useObjectUrl(file)` (`shared/hooks`) → `string \| null` | Crea la URL cuando cambia `file`, la revoca en el cleanup (cambio de archivo y unmount) |
+
+- Abrir en otra pestaña usa la misma pieza de descarga (variante `FileHelper.open(blob)`), no otra copia.
+- Un preview con varios archivos llama al hook por ítem desde un componente de fila (`04` §Composición), no un array de URLs en `useState`.
+- Prohibido guardar la URL en `useState` + efecto propio de create/revoke: es justo lo que encapsula el hook (`12` §Efectos).
+- Auditoría: `rg -n 'URL\.(createObjectURL|revokeObjectURL)' src` — todo hit fuera de las dos piezas es hallazgo.
+
 ## Casts que apagan el tipado (HARD, Auditar + Implementar)
 
 - Prohibidos `as any`, `as unknown as X` y `as never`. Los tres apagan el chequeo de tipos igual.
@@ -397,6 +411,7 @@ const example = DateHelper.formatZoneExample(zone);
 | Template literal que compone una constante de clases | Media |
 | `sx` usado para layout/spacing/sizing ordinario pudiendo usar Tailwind | Media |
 | `useTheme()` solo para alimentar `sx` (usar `sx={theme => …}`) | Media |
+| `URL.createObjectURL`/`revokeObjectURL` a mano fuera de `FileHelper` / `useObjectUrl` | Media |
 | Constante/`static readonly` con valor distinto a otra fuente del mismo concepto (drift) | Alta (corrección a un solo valor) |
 | `as unknown as` / `as never` / `as any` sin comentario de excepción | Media |
 | Misma función local en 2+ archivos sin helper previo | Media |
