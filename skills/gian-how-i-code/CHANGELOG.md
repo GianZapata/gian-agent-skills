@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.51 — 2026-11-25
+
+- Evals: `impl-drop-ceremonial-usememo` contradecía el caso C (`displayFile` tiene 3 ramas). Ahora usa un `useMemo` ceremonial real (una expresión sin ramas); `displayFile` pasa al nuevo `impl-keep-case-c-usememo`, que espera conservar `useMemo<DisplayFile | null>`.
+
 ## 1.4.50 — 2026-11-25
 
 - `23` Memoización: el caso C incluye el booleano que junta 3+ partes con `&&` / `||` (`useMemo<boolean>` + `if`, ejemplo `showClearLogo`). Revierte la regla de 1.4.49 «booleano de 3+ partes → `const` con nombre por parte»: fila de §Lógica en JSX, bloque Mal/Bien y severidad.

@@ -374,11 +374,24 @@
     },
     {
       "id": "impl-drop-ceremonial-usememo",
+      "prompt": "Simplificá según how i code:\n\nconst fullName = useMemo(() => `${user.firstName} ${user.lastName}`, [user]);",
+      "expect": [
+        "Identifica useMemo ceremonial (una sola expresión, sin ramas)",
+        "const fullName = `${user.firstName} ${user.lastName}`; sin useMemo",
+        "Carga 23"
+      ]
+    },
+    {
+      "id": "impl-keep-case-c-usememo",
       "prompt": "Simplificá según how i code:\n\nconst displayFile = useMemo(() => {\n  if (state === \"default\") return null;\n  if (state === \"error\") return { name: \"x.exe\", sizeLabel: \"1 MB\" };\n  return selected ?? { name: \"a.pdf\", sizeLabel: \"2 MB\" };\n}, [selected, state]);",
       "expect": [
-        "Identifica useMemo ceremonial",
-        "Cálculo local directo / bloque local; sin useMemo; no extrae a display.config ni helper de UI",
+        "Identifica caso C (3 ramas): conserva useMemo + if + early return",
+        "Agrega genérico explícito useMemo<DisplayFile | null> (o el tipo del archivo)",
+        "No lo marca como ceremonial ni lo reemplaza por cálculo directo",
         "Carga 23"
+      ],
+      "forbid": [
+        "Quitar el useMemo"
       ]
     },
     {
