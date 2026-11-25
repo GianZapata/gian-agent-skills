@@ -1,6 +1,6 @@
 {
   "skill": "gian-how-i-code",
-  "version": "1.4.52",
+  "version": "1.4.54",
   "cases": [
     {
       "id": "audit-mold",
@@ -612,6 +612,18 @@
       "forbid": [
         "Instalar el paquete",
         "Severidad Media"
+      ]
+    },
+    {
+      "id": "audit-cross-feature-image-rules",
+      "prompt": "Audita: src/features/settings/schemas/settings.schema.ts importa TOWER_LOGO_MAX_BYTES de @/features/towers/constants/tower-image.constants e imageExceedsTowerDimension de @/features/towers/helpers/tower-image.helper (función suelta). El archivo de constantes mezcla TOWER_LOGO_MAX_BYTES y towerLogoSizeMessage, con 9 mensajes gemelos logo/portada.",
+      "expect": [
+        "Media: regla compartida vive en una feature; mover a shared/constants",
+        "Media: helper genérico con nombre de feature y función suelta → FileHelper.exceedsImageDimensions en shared/helpers",
+        "Baja/Media: estilos de nombre mezclados y constantes gemelas → registro por variante"
+      ],
+      "forbid": [
+        "Aceptar la importación entre features"
       ]
     }
   ]

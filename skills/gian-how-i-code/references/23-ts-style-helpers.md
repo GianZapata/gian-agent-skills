@@ -23,6 +23,8 @@ No usar `useMemo`, `useCallback` o `memo` por costumbre de performance.
 
 Todo `useMemo` lleva el genérico explícito: `useMemo<boolean>`, `useMemo<string | null>`, `useMemo<MRT_ColumnDef<Row>[]>`. Es el tipo de retorno declarado: si una rama no devuelve `T` (un `return;` suelto, un `undefined`), TypeScript lo marca. Sin genérico es Media (`usememo-explicit-generic`).
 
+Antes de quitar un `useMemo` como caso A, rastrear el valor hasta sus consumidores, incluidos los hijos que lo reciben como prop. Si el valor (o un objeto que se arma con él) acaba en dependencias de un efecto, un `useCallback` o una query key, es caso E: se queda. Ejemplo real: `const settings = emptySettings(catalogs, defaults)` sin `useMemo` crea un objeto por render; `BankForm` tiene `useEffect(() => reset(toBankValues(settings)), [reset, settings])` y borra lo escrito cuando el padre re-renderiza (`isPending`, carga de catálogos). Quitarlo es Alto. Un valor aleatorio (faker, `Date.now()`) tampoco se recalcula por render.
+
 ```ts
 // A — no
 const fullName = useMemo(

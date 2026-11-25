@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.54 — 2026-11-25
+
+- Memo (SKILL + `23`): antes de quitar un `useMemo`, rastrear consumidores incluidos los hijos; si termina en dependencias de un efecto/callback/query key es caso E y quitarlo es Alto. Valores aleatorios no se recalculan por render.
+- Helpers genéricos (HARD): van en `shared/helpers` en la clase del eje con métodos estáticos, sin nombre de feature; regla usada por 2 features va al dueño común; archivo de constantes con un solo estilo de nombre y registro por variante.
+- Corregir hallazgos: excepción cuando la regla que deja la función en rojo es la del propio hallazgo (un solo commit). Las herramientas en 0 no prueban corrección.
+- Evals: implementation +2 (78), audit +1.
+
 ## 1.4.53 — 2026-11-25
 
 - SKILL: corregir hallazgos (HARD). Solo se pospone por decisión de producto o PROP. «No queda en verde», «archivo grande» o «amplía el self-check» no son razones. Si amplía el alcance de `gian-ts-style`, primero va `style(<scope>)` de esa función y luego la corrección. Un commit, un hallazgo.

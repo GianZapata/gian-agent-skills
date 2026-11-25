@@ -1,6 +1,6 @@
 {
   "skill": "gian-how-i-code",
-  "version": "1.4.53",
+  "version": "1.4.54",
   "cases": [
     {
       "id": "impl-entity-crud",
@@ -979,6 +979,35 @@
       "forbid": [
         "Dejar H-020 como Pendiente por 'la función sigue en rojo'",
         "Mezclar el estilo y el refactor en un solo commit"
+      ]
+    },
+    {
+      "id": "impl-keep-usememo-effect-dep",
+      "prompt": "H-020: en TowerCreateForm quita los useMemo de `defaults = towerCreateDefaults(Environment.isProd)` y `settings = emptySettings(catalogs, defaults)` porque son una sola expresión. `settings` se pasa a AddressesForm, BankForm y FiscalForm.",
+      "expect": [
+        "Rastrea `settings` en los hijos con rg",
+        "Detecta useEffect(() => reset(...), [reset, settings]) en los hijos",
+        "Clasifica como caso E y conserva useMemo<...> con genérico",
+        "Explica que quitarlo borra lo escrito en cada re-render y regenera faker"
+      ],
+      "forbid": [
+        "Quitar el useMemo de settings o defaults",
+        "Justificar el cambio solo con tsc/ESLint/self-check en 0"
+      ]
+    },
+    {
+      "id": "impl-generic-image-helper-shared",
+      "prompt": "Settings y towers validan logo/portada con los mismos límites. Crea la función que mide si una imagen excede 4096 px.",
+      "expect": [
+        "La pone en shared/helpers/file.helper.ts como método estático de FileHelper (o el helper de eje existente)",
+        "Nombre sin dominio: exceedsImageDimensions(file, maxPx)",
+        "Los límites compartidos van a shared/constants, no a features/towers",
+        "Constantes en UPPER_SNAKE con registro por variante logo/cover"
+      ],
+      "forbid": [
+        "features/towers/helpers/tower-image.helper.ts con función suelta",
+        "imageExceedsTowerDimension",
+        "settings importando de features/towers"
       ]
     }
   ]
