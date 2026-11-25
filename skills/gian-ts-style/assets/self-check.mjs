@@ -412,11 +412,19 @@ const check = (file) => {
           report('FAIL', file, at(statement), 'derived-multi-branch', `${name}: ternario con una condición de ${operandCount(value.condition)} partes → useMemo (Vue: computed) con if y early return (gian-how-i-code 23 caso C)`);
         }
 
+        if (ts.isBinaryExpression(value) && operandCount(value) >= 3) {
+          report('FAIL', file, at(statement), 'derived-multi-branch', `${name}: booleano de ${operandCount(value)} partes → useMemo<boolean> (Vue: computed) con if y early return (gian-how-i-code 23 caso C)`);
+        }
+
         if (ts.isCallExpression(value) && value.arguments.length === 0 && isFunctionLike(strip(value.expression))) {
           report('FAIL', file, at(statement), 'derived-multi-branch', `${name}: IIFE prohibida → useMemo con if y early return (gian-how-i-code 23 caso C)`);
         }
 
         if (calleeName(value) === 'useMemo' && ts.isCallExpression(value)) {
+          if (!value.typeArguments?.length) {
+            report('FAIL', file, at(statement), 'usememo-explicit-generic', `${name}: useMemo sin genérico explícito → useMemo<T> (gian-ts-style expressions-ternaries)`);
+          }
+
           const callback = value.arguments[0];
           const body = callback && isFunctionLike(callback) ? callback.body : null;
           const single = body && (!ts.isBlock(body) || (body.statements.length === 1 && ts.isReturnStatement(body.statements[0])));

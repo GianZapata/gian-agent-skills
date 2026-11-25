@@ -8,7 +8,7 @@ const statusLabel = isLoading
       : 'Listo';
 
 // b18 AFTER — useMemo + if + early return
-const statusLabel = useMemo(() => {
+const statusLabel = useMemo<string>(() => {
   if (isLoading) return 'Cargando';
   if (hasError) return 'Error';
   if (isEmpty) return 'Sin registros';

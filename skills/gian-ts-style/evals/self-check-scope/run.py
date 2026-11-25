@@ -118,7 +118,7 @@ export const Widget: FC = () => {
     memo_base = """import { useMemo } from 'react';
 
 export const useTotal = (value: string) => {
-  const total = useMemo(() => {
+  const total = useMemo<number | null>(() => {
     const number = Number(value);
     if (!Number.isFinite(number)) return null;
 

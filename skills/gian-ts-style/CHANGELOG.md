@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.10.0 — 2026-11-25
+
+- `derived-multi-branch`: también entra un booleano de 3+ partes con `&&` / `||` asignado a una `const` dentro de un componente o hook (`useMemo<boolean>` + `if`). `self-check.mjs` lo marca FAIL.
+- Regla HARD `usememo-explicit-generic`: todo `useMemo` lleva `<T>`. `self-check.mjs` marca FAIL el `useMemo` sin genérico.
+- `references/expressions-ternaries.md` y `SKILL.md` alineados con `gian-how-i-code` 1.4.50; fixtures con genérico.
+
 ## 2.9.1 — 2026-10-26
 
 - §className y `assets/audit-template.md`: el cierre corre `self-check.mjs`, no un script de shell. El script cubre `classname-cn`, pero no detecta `clsx`/`classnames`/`twMerge` directo ni `const xClass = '…'`. Esos dos `rg` se siguen corriendo a mano.

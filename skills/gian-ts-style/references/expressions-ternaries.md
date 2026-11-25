@@ -16,12 +16,13 @@ El rewrite a if/return se hace siempre. GAP solo si el ternario está en un defa
 `derived-multi-branch`. Entra aquí un valor derivado que cumple una de estas:
 
 - tiene 3 o más ramas;
-- es un ternario cuya condición junta 3 o más partes con `&&` / `||`, aunque solo tenga dos resultados.
+- es un ternario cuya condición junta 3 o más partes con `&&` / `||`, aunque solo tenga dos resultados;
+- es un booleano que junta 3 o más partes con `&&` / `||` asignado a una `const` (no aplica a la condición de un `if` ni a una expresión dentro del JSX).
 
 Dentro de un componente o hook React: `useMemo` con `if` y early return (`gian-how-i-code` `23` caso C). En Vue: `computed`. Es claridad, no performance.
 
 ```tsx
-const orderMessage = useMemo(() => {
+const orderMessage = useMemo<string | null>(() => {
   if (fromMessage !== null || toMessage !== null) return null;
   if (localFrom === null || localTo === null) return null;
   if (!localTo.startOf('day').isBefore(localFrom.startOf('day'))) return null;
@@ -29,6 +30,23 @@ const orderMessage = useMemo(() => {
   return DashboardHelper.periodMessages.order;
 }, [fromMessage, toMessage, localFrom, localTo]);
 ```
+
+```tsx
+// Mal — booleano de 4 partes en una const
+const showClearLogo = !readOnly && (Boolean(logoFile) || removeLogo || (!deferred && Boolean(settings.logo?.url)));
+
+// Bien
+const showClearLogo = useMemo<boolean>(() => {
+  if (readOnly) return false;
+  if (logoFile || removeLogo) return true;
+
+  return !deferred && Boolean(settings.logo?.url);
+}, [readOnly, logoFile, removeLogo, deferred, settings.logo?.url]);
+```
+
+### Genérico explícito (HARD)
+
+`usememo-explicit-generic`. Todo `useMemo` lleva `<T>`: `useMemo<boolean>`, `useMemo<string | null>`, `useMemo<MRT_ColumnDef<Row>[]>`. El genérico es el tipo de retorno declarado; si una rama devuelve otra cosa, TypeScript lo marca en vez de ensanchar el tipo inferido.
 
 Los guards siguen el orden de `26`: invalidez, ausencia, conflicto, precondición. El valor del camino feliz va al final.
 
@@ -73,4 +91,4 @@ Dos resultados con una condición de 1 o 2 partes → ternario simple (`simple-j
 
 ## Memoización
 
-Cuándo usar o quitar `useMemo` / `computed` lo decide `gian-how-i-code` `23`. `assets/self-check.mjs` marca FAIL `derived-multi-branch` y `no-nested-ternary`, y GAP `memo-ceremonial` para un `useMemo` de una sola expresión sin ramas.
+Cuándo usar o quitar `useMemo` / `computed` lo decide `gian-how-i-code` `23`. `assets/self-check.mjs` marca FAIL `derived-multi-branch` y `no-nested-ternary`, `usememo-explicit-generic` para un `useMemo` sin `<T>`, y GAP `memo-ceremonial` para un `useMemo` de una sola expresión sin ramas.
