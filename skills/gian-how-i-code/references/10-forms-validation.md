@@ -10,7 +10,7 @@ Cargar cuando: formularios, RHF, Zod, DTOs de mutation (body HTTP), campos condi
 
 ## Stack (adaptador React)
 
-RHF + Zod + zodResolver. Schemas fuera del componente. Tipos con `z.infer` / `z.input` / `z.output`. No form state solo con `useState` (salvo micro-forms locales justificados).
+RHF + Zod + zodResolver. Schemas fuera del componente. Tipos con `z.infer` / `z.input` / `z.output`. No form state solo con `useState` (salvo micro-forms locales justificados). Resolver sin cast: `useForm<z.input<…>, unknown, z.output<…>>` o schema alineado (`23` §Casts).
 
 ## Input / DTO (regla)
 

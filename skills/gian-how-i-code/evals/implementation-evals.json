@@ -891,6 +891,25 @@
         "No exporta funciones desde el archivo del componente",
         "El ícono es un componente <RailIcon icon /> en su propio .tsx, no una función railIcon() que devuelve JSX"
       ]
+    },
+    {
+      "id": "impl-effect-reset-by-mount",
+      "prompt": "El menú de perfil debe cerrarse cuando el usuario navega y su buscador interno debe vaciarse cada vez que se abre. Impleméntalo.",
+      "expect": [
+        "No usa useEffect para setIsOpen(false) ni para vaciar el buscador",
+        "Cierra el menú en el handler de navegación",
+        "El contenido se monta con {isOpen && <ProfileMenu />} para que el buscador nazca vacío",
+        "No agrega una prop token o contador para disparar el reset"
+      ]
+    },
+    {
+      "id": "impl-form-resolver-no-cast",
+      "prompt": "Crea TowerForm con react-hook-form y zod; el schema usa z.coerce.number() para el número de pisos y el tipo de entrada no coincide con la salida.",
+      "expect": [
+        "Usa useForm<z.input<typeof schema>, unknown, z.output<typeof schema>>",
+        "No usa as unknown as Resolver ni as never ni as any",
+        "Si queda un cast inevitable, va en una línea con comentario del motivo"
+      ]
     }
   ]
 }

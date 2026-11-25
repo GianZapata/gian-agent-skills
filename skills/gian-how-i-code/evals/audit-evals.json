@@ -463,6 +463,15 @@
         "Reporta MenuPath.util.ts y railIcon.ts como funciones sueltas del árbol (Baja) y propone función privada en el padre y <RailIcon />",
         "Deja DashboardLayoutContainer fuera de la carpeta"
       ]
+    },
+    {
+      "id": "audit-effects-and-casts",
+      "prompt": "Audita DashboardRailProfile.tsx (useEffect(() => setIsOpen(false), [closeToken])) y GeneralForm.tsx (resolver: zodResolver(schema) as unknown as Resolver<FormValues>).",
+      "expect": [
+        "Reporta el efecto de reset por closeToken como Media y propone controlar isOpen desde el padre o desmontar",
+        "Reporta el cast doble del resolver como Media y propone los genéricos z.input/z.output de useForm o alinear el schema",
+        "Cita 12 §Efectos y 23 §Casts"
+      ]
     }
   ]
 }

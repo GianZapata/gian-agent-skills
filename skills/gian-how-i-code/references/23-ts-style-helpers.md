@@ -370,6 +370,14 @@ const example = DateHelper.formatZoneExample(zone);
 | Placeholder o copy puro | — | Permitido (`15`) |
 | Constante de styling | — | No es esta sección: `no-local-style-constants` (`04`) |
 
+## Casts que apagan el tipado (HARD, Auditar + Implementar)
+
+- Prohibidos `as any`, `as unknown as X` y `as never`. Los tres apagan el chequeo de tipos igual.
+- La corrección va en el origen: tipar la fuente, alinear el schema o usar el genérico de la librería.
+- Forms (RHF + Zod): si el resolver no encaja, el form usa `useForm<z.input<typeof schema>, unknown, z.output<typeof schema>>({ resolver: zodResolver(schema) })` o se alinea el schema (`.default`, `coerce`) con los valores del form (`10` §Stack). Prohibido `resolver: zodResolver(schema) as unknown as Resolver<…>`.
+- Única excepción: la librería no deja otra salida. Entonces el cast va en una sola línea con un comentario que dice por qué.
+- rg: `rg -n 'as unknown as|as never\b|as any\b' src`.
+
 ## Severidades (auditoría)
 
 | Observado | Severidad |
@@ -390,6 +398,7 @@ const example = DateHelper.formatZoneExample(zone);
 | `sx` usado para layout/spacing/sizing ordinario pudiendo usar Tailwind | Media |
 | `useTheme()` solo para alimentar `sx` (usar `sx={theme => …}`) | Media |
 | Constante/`static readonly` con valor distinto a otra fuente del mismo concepto (drift) | Alta (corrección a un solo valor) |
+| `as unknown as` / `as never` / `as any` sin comentario de excepción | Media |
 | Misma función local en 2+ archivos sin helper previo | Media |
 | Constante / `static readonly` sin consumidores | Baja |
 | Constante local que duplica una global o de helper | Media |

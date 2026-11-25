@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.46 — 2026-11-25
+
+- `12` §Efectos: un efecto solo sincroniza con algo externo; tabla de reemplazos (derivado en render, reset con `{isOpen && <X />}` o `key`, reset o aviso en el handler, sin props token para disparar resets). Severidad Media y rg de auditoría.
+- `23` §Casts que apagan el tipado: `as any`, `as unknown as` y `as never` prohibidos; corrección en el origen; forms con `useForm<z.input, unknown, z.output>`; excepción con comentario. Fila de severidad Media y puntero desde `10` §Stack.
+- Hard Rules «Efectos» y «Casts» en `SKILL.md`. Evals `impl-effect-reset-by-mount`, `impl-form-resolver-no-cast`, `audit-effects-and-casts`.
+
 ## 1.4.45 — 2026-11-25
 
 - `04` §Carpeta del componente gana «Dónde vive cada subcomponente» (carpeta del ancestro común más cercano, árbol completo, lo público fuera; ejemplo `components/layouts`) y «Funciones de un árbol de componentes» (privada en el padre con props, sin `.util.ts`; archivo de componente solo exporta componentes; función que devuelve JSX → componente). Dos filas de severidad, puntero desde `23` §Funciones locales y línea en la Hard Rule «Composición».
