@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.4.42 — 2026-11-25
+
+- Nueva `30-screen-audit`: auditoría por pantalla en 7 pasos (quién y para qué, cada elemento contra la pregunta, lenguaje, acciones coherentes, densidad y jerarquía, estados, visto en vivo), severidades y formato de hallazgo con «visto en vivo / leído, no visto».
+- Hard Rule «Pantalla coherente» y fila de routing en `SKILL.md`; punteros en `11` §Tablas resumen y `15` §Copy; `24` gana categoría «Pantallas» (por pantalla) y su línea de cobertura; `00-index` fila 30.
+- Evals `screen-audit-action-coherence`, `screen-audit-technical-term`, `screen-audit-table-density`.
+
+## 1.4.41 — 2026-11-25
+
+- `24` gana §4.1 «Comparación entre archivos»: Pasada 1 arma cuatro tablas (constantes, enums y labels, funciones locales agrupadas por nombre y propósito, constantes sin consumidores); Pasada 2 compara cada archivo contra ellas, con un hallazgo por grupo de funciones duplicadas. §4.2 «Cobertura por eje»: barrido textual y lectura se reportan por separado; una cifra que los mezcla es `audit_incomplete`. Gate actualizado.
+- `23` §Valores: el drift se corrige a un solo valor (el usuario decide cuál; follow-up cruzado con la API; datos guardados no se migran); constante sin consumidores → borrar (Baja). §Duplicación: misma función local en 2+ archivos sin helper previo = Media.
+- Evals `audit-cross-file-local-functions`, `audit-coverage-per-axis`, `audit-drift-single-value`.
+
+## 1.4.40 — 2026-11-25
+
+- `23` §Duplicación gana «Formato inline»: `toFixed`, `toLocaleString`, `Intl.*Format`, bytes→MB, porcentaje o dinero escritos directo en el componente van al helper del eje (`NumberHelper`, `HumanFormatsHelper`, `DateHelper`); si falta el método, se agrega. Sin helper del eje, se crea en `shared/helpers` con 2+ archivos. Locale y moneda no van en el call site. Filas de severidad, línea en la Hard Rule «Valores» y eval `audit-inline-formatting`.
+
+## 1.4.39 — 2026-11-25
+
+- `23` gana §Valores (Auditar + Implementar): buscar con `rg` antes de declarar; un valor sale del archivo si ya existe, si se usa en 2+ archivos o si es configuración de negocio; orden de ubicación (helper de eje > constantes globales > `features/<f>/constants/`); drift entre fuentes = Alta; un conjunto cerrado repetido va a enum (`07`); el copy que repite un valor se interpola; una función del eje de un helper existente va al helper. Constante de UI de un solo archivo y placeholders: permitidos.
+- `23` gana §Lógica en JSX: derivación repetida → helper; expresión larga → `const` (A/B); `useMemo` solo para 3+ ramas o condición de 3+ partes (C), nunca para concatenar.
+- `04` gana §Composición: un `.map` con lógica pasa a componente; un bloque JSX repetido 2+ veces pasa a componente con prop de variante; un componente con 3+ secciones se divide; con 2+ subcomponentes privados se crea la carpeta `<Comp>/<Comp>.tsx` sin `index.ts`. `04` regla 4 ahora remite a esta sección. `25` checklist la cita.
+- `SKILL.md`: Hard Rules «Valores» y «Composición», y fila de routing. Evals `audit-duplicated-constants-drift`, `audit-component-composition`, `impl-reuse-existing-constant`, `impl-map-row-component`.
+
 ## 1.4.38 — 2026-11-24
 
 - `15`: un texto visible de un spec, plan o ticket que el usuario no dictó es una propuesta; pasa por el `rg` de vocabulario al escribirse y al implementarse, y el cierre avisa del cambio. BAD/GOOD genérico.

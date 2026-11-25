@@ -130,7 +130,7 @@ Sí:
 >
 ```
 
-Si el mismo bloque se repite, se extrae un componente (`<SummaryCard prominent>`), no un string ni un objeto. Al tocar un componente que usa la constante, se inlinea en ese componente; el resto del archivo no se migra.
+Si el mismo bloque se repite, se extrae un componente (`<SummaryCard prominent>`), no un string ni un objeto. Esto vale para cualquier bloque, no solo el styling: ver §Composición. Al tocar un componente que usa la constante, se inlinea en ese componente; el resto del archivo no se migra.
 
 Excepción cerrada. Se conserva un primitive o un mapa de variantes que ya existe en el repo y que importan otros archivos. Se compone con `cn()`, nunca con template literal. Crear uno nuevo está prohibido.
 
@@ -224,6 +224,58 @@ Selectores `'& .Mui…'` solo si el componente no documenta un slot para ese ele
 ### Grid MUI
 
 `size={{ xs: 12, md: 6 }}` (no props legacy `item` / `xs`).
+
+## Composición: `.map`, bloques repetidos, secciones y carpeta (Auditar + Implementar)
+
+Núcleo. En Vue el componente es un SFC hijo con la misma carpeta (`25`).
+
+### `.map` → componente
+
+El callback de un `.map` se extrae a un componente (`<EntityRow entity onOpen />`) si cumple **una** de estas condiciones:
+
+- declara variables o lógica local (`const ready = …`, `const summary = Helper.x(item)`);
+- tiene handlers propios o más de un nivel de condicionales;
+- el JSX pasa de ~15 líneas o es una fila o tarjeta con varias celdas.
+
+Un `.map` que renderiza un solo elemento simple (skeleton, chip, botón de filtro con `cn()`) se queda inline. La `key` va en el call site.
+
+### Bloque JSX repetido → componente
+
+Si el mismo bloque (misma estructura y clases; cambian datos o un tono) aparece 2+ veces, se extrae un componente con props (`<CoverageBadge>`, `<SummaryStat label value tone>`).
+
+- Las variantes van como prop enum o boolean (`tone={StatTone.Warning}`, `prominent`), no como `className` desde afuera.
+- Un array de config + `.map` es opcional y solo con items homogéneos.
+- No se extrae un string ni un objeto de clases (`no-local-style-constants`, §Regla 4).
+
+### Componente con varias responsabilidades
+
+Si un componente tiene 3+ secciones con su propio estado de carga/error o su propio `aria-label`, o pasa de ~300 líneas, cada sección pasa a su propio componente (`EntityKpiGrid`, `EntitySummaryStrip`, `EntityTable`) y el padre solo orquesta los datos y el layout. El número de líneas es una señal; lo que decide son las responsabilidades. Es una propuesta, no un Alto.
+
+### Carpeta del componente
+
+Cuando un componente extrae **2+ subcomponentes privados**, pasa a ser carpeta:
+
+```
+components/
+  CentralOverviewView/
+    CentralOverviewView.tsx
+    CentralKpiGrid.tsx
+    CentralTowerRow.tsx
+    CoverageBadge.tsx
+```
+
+- **Sin barrel `index.ts`.** Se importa por ruta completa: `@/features/<f>/components/CentralOverviewView/CentralOverviewView`.
+- Un solo subcomponente chico que no se reutiliza puede quedarse en el mismo archivo.
+- Si otro componente o feature lo usa, sube a `features/<f>/components/` o a `components/shared/`.
+- Al mover, se actualizan los imports de los consumidores en el mismo cambio.
+
+| Caso | Severidad | Corrección |
+|------|-----------|------------|
+| `.map` con lógica local, handlers o JSX largo inline | Media | `<XRow>` / `<XCard>` |
+| Bloque JSX idéntico 2+ veces | Media (Baja si son 2 apariciones de 1–2 líneas) | Componente con props de variante |
+| Componente con 3+ secciones independientes o ~300+ líneas | Baja / Media (propuesta) | Extraer secciones; el padre orquesta |
+| 2+ subcomponentes privados sueltos en el archivo o en `components/` | Baja | Carpeta `<Comp>/<Comp>.tsx`, sin `index.ts` |
+| Barrel `index.ts` nuevo para la carpeta | Baja | Quitarlo; import por ruta completa |
 
 ## Skeleton de carga
 

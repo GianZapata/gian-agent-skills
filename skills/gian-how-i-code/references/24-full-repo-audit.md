@@ -82,8 +82,55 @@ Categorías mínimas a cubrir (contrastar con references vigentes):
 | Orden del cuerpo de función | `26` |
 | Tenancy (condicional) | `16` |
 | Vue SFC (condicional) | `25` |
+| Pantallas (UI visible) | `30` — se audita **por pantalla**, no por archivo |
 
 Las categorías condicionales se marcan «No aplicable» con evidencia (p. ej. `rg` sin tenancy en manifests y config, ningún `.vue` en el inventario). Ninguna categoría queda sin estado.
+
+### 4.1 Comparación entre archivos (frontend)
+
+`rg` encuentra literales idénticos. No encuentra dos funciones que hacen lo mismo con otro nombre ni con un cuerpo un poco distinto. Para eso hay que comparar los archivos entre sí, en dos pasadas.
+
+**Pasada 1: inventario de fuentes.** Antes de revisar archivo por archivo, se arman cuatro tablas:
+
+1. **Constantes:** globales (`config/constants/*`), `static readonly` de helpers y `features/<f>/constants/*`, con su valor.
+2. **Enums y Records de labels:** cada enum y cada `Record` de metadata, con sus keys.
+3. **Funciones locales:** toda función que no sea componente ni hook y que esté fuera de `helpers/` (`const x = (`, `function x(`), en `.ts` y `.tsx`. Se agrupa por nombre y por propósito: valores por defecto del form, draft de filtros, mapper a form, formato, validación, opciones de select.
+4. **Constantes sin consumidores:** `rg -w <NOMBRE>` para cada constante de la tabla 1. Si solo aparece en su declaración, nadie la usa.
+
+Búsqueda base de la tabla 3:
+
+```bash
+rg -o --no-filename "^(export )?(const|function) ([a-z][A-Za-z0-9]+)( = \(|\()" -r '$3' -g '*.{ts,tsx}' -g '!**/helpers/**' src | sort | uniq -c | sort -rn
+```
+
+Un nombre que aparece en 2+ archivos se abre en todos esos archivos y se compara su cuerpo. La búsqueda por nombre no basta: dentro de cada grupo de propósito también se comparan las funciones que tienen nombre distinto.
+
+**Pasada 2: por archivo.** Cada archivo leído se compara contra las cuatro tablas:
+
+- Si un literal ya está en la tabla 1, se aplica `23` §Valores. Si el valor es distinto al de esa fuente, es drift.
+- Si una función local está en un grupo de la tabla 3 con 2+ miembros, se aplica `23` §Duplicación y se reporta un **solo hallazgo por grupo**, con todos los archivos y la fuente propuesta: el helper de la feature, `shared/helpers` o un hook.
+- Si un `Record` de labels no cubre el enum o usa keys distintas, se aplica `07`.
+
+Las cuatro tablas van en el reporte, o en el coverage-ledger. Sin ellas, el Gate no se cumple.
+
+### 4.2 Cobertura por eje
+
+Un archivo cuenta como cubierto **solo para los ejes con que se revisó**:
+
+- El barrido textual (`rg`) cubre los ejes literales: §Valores, §Formato inline, `cn`, `new Date`.
+- La lectura directa cubre los ejes que necesitan ver el archivo: §Composición (`04`), §Lógica en JSX (`23`), la comparación de cuerpos de 4.1 y el orden de la función (`26`).
+
+La cobertura se reporta por eje, nunca como una sola cifra:
+
+```text
+Cobertura:
+- Valores / formato inline: 451/451 (barrido textual)
+- Funciones locales: 37/37 grupos comparados (lectura)
+- Composición / lógica en JSX: 180/260 .tsx (lectura); pendientes: <lista o ledger>
+- Pantallas (`30`): 14/22 auditadas; 9/22 vistas en vivo; resto «leído, no visto»
+```
+
+Si una sola cifra mezcla archivos barridos y archivos leídos, la disposición es `audit_incomplete`.
 
 ### Patrones orientativos (no son la regla)
 
@@ -180,6 +227,9 @@ No cerrar como completo hasta:
 - [ ] Tablas / estado / tests / orden de función cubiertos
 - [ ] Tenancy y Vue cubiertos o «No aplicable» con evidencia
 - [ ] Variante documentada (matriz)
+- [ ] Inventario de fuentes de §4.1: las cuatro tablas (constantes, enums y labels, funciones locales agrupadas, constantes sin uso)
+- [ ] Grupos de funciones locales con 2+ miembros comparados por cuerpo
+- [ ] Cobertura reportada por eje (§4.2), con los pendientes listados
 - [ ] Categorías sin hallazgos con evidencia
 - [ ] PROP con costos/riesgos reales
 - [ ] Registro de búsquedas
@@ -201,7 +251,7 @@ Una de:
 ```text
 Archivos en alcance:
 Archivos cubiertos:
-Cobertura:
+Cobertura (por eje, §4.2):
 Features revisadas:
 Categorías revisadas:
 Búsquedas ejecutadas:

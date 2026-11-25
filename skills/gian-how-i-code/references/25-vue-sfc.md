@@ -179,6 +179,7 @@ No instalar Vue Router, Pinia ni TanStack Vue Query porque un ejemplo los use. E
 - [ ] Composable con `interface <Composable>Props` (mismo shape) e `interface <Composable>Emits` (call signatures de `<Componente>Emits`)
 - [ ] `defineModel` solo para un `v-model` real; overlay con `isOpen` + emit, montado con `v-if`
 - [ ] `computed` según A–E de `23`
+- [ ] `v-for` con lógica o bloque repetido 2+ veces → SFC hijo; con 2+ hijos privados, carpeta `<Comp>/<Comp>.vue` sin `index.ts` (`04` §Composición). Valores y constantes según `23` §Valores
 - [ ] `<style scoped>` en el `.vue`; componentes PascalCase en el template; emits camelCase
 - [ ] `defineSlots` si renderiza un slot con props; `defineExpose` si un padre usa un ref; `generic="T"` si el padre elige el tipo; con `interface <Componente>Slots` local
 - [ ] Clases condicionales con `:class` array u objeto; sin interpolar ni concatenar

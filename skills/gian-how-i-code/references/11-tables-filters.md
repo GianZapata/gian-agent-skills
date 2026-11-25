@@ -26,3 +26,7 @@ No aplicar a status de flujo de órdenes.
 ## Filtros / sorts
 
 Alineados a AllowedFilters/Sorts del Query backend. Conteos ordenables = `withCount` forzado en BE.
+
+## Tablas resumen (dashboard)
+
+Una tabla dentro de un dashboard u overview responde «¿cuál necesita atención?»: máximo 5–6 columnas y 2 líneas por celda, sin varias métricas en una celda; el detalle va en la vista de detalle. Procedimiento y severidad: `30` punto 5.

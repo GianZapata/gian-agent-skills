@@ -349,6 +349,101 @@
         "campo obligatorio sin required en el Store",
         "Sin editar código"
       ]
+    },
+    {
+      "id": "audit-duplicated-constants-drift",
+      "prompt": "Audita este form: declara const DEFAULT_TIMEZONE = 'America/Monterrey' aunque existe APP_TIMEZONE = 'America/Mexico_City' y DateHelper.DEFAULT_BUSINESS_TIMEZONE; LOGO_MAX_BYTES está también en el schema; el error dice 'no puede exceder 2 MB' escrito a mano; 'MXN' aparece en 10 archivos; timezoneExample usa dayjs().tz().format() local; los placeholders dicen 'Ej. Torre Santa Catarina'.",
+      "expect": [
+        "Carga 23 §Valores",
+        "Hallazgo Alta por drift de timezone entre tres fuentes; propone una sola (DateHelper/APP_TIMEZONE)",
+        "Media: LOGO_MAX_BYTES a constante de feature compartida por schema y form",
+        "Media: mensaje MB interpolado desde la constante",
+        "Media: 'MXN' → string enum Currency + DEFAULT_CURRENCY (07), no const MXN",
+        "Media: timezoneExample → método de DateHelper",
+        "No reporta placeholders de copy puro ni constantes de UI de un solo archivo"
+      ]
+    },
+    {
+      "id": "audit-component-composition",
+      "prompt": "Audita CentralOverviewView.tsx: 645 líneas, un .map de 130 líneas con const ready/pendingAudit dentro, el mismo badge span repetido 5 veces, 9 celdas de stat iguales, `ready ? Helper.format(x) : '—'` repetido 7 veces, footnotes con template literal largo y la condición !(pending && !rows) && !error && rows.length repetida en dos bloques.",
+      "expect": [
+        "Carga 04 §Composición y 23 §Lógica en JSX",
+        "Media: .map → <CentralTowerRow>",
+        "Media: badge y celda repetidos → componentes con prop tone (no className externo)",
+        "Media: derivación repetida → método de CentralDashboardHelper",
+        "C: tableState con useMemo + if y string enum",
+        "No propone useMemo para concatenación ni para las expresiones A/B",
+        "Propuesta de carpeta CentralOverviewView/CentralOverviewView.tsx sin index.ts y actualizar import del consumidor"
+      ]
+    },
+    {
+      "id": "audit-inline-formatting",
+      "prompt": "Audita: un dialog formatea bytes con `${(bytes / (1024 * 1024)).toFixed(1)} MB`, una página usa total.toLocaleString('es-MX') y otro form hace (a - b).toFixed(2). El repo tiene NumberHelper y HumanFormatsHelper.",
+      "expect": [
+        "Carga 23 §Formato inline",
+        "Media: cada formato inline → método de NumberHelper/HumanFormatsHelper (agregarlo si falta)",
+        "El locale 'es-MX' sale del helper, no del call site",
+        "No propone una función local en el componente"
+      ]
+    },
+    {
+      "id": "audit-cross-file-local-functions",
+      "prompt": "Audita el repo completo: seis componentes de filtros definen cada uno emptyDraft, draftToPatch y draftFromFilter; cinco forms definen getEditDefaultValues. No hay helper compartido para eso.",
+      "expect": [
+        "Carga 24 §4.1 y arma el inventario de funciones locales agrupadas",
+        "Abre todos los archivos de cada grupo y compara cuerpos",
+        "Un hallazgo Media por grupo con todos los archivos y fuente propuesta (helper de feature, shared/helpers o hook)",
+        "No reporta solo la primera coincidencia"
+      ]
+    },
+    {
+      "id": "audit-coverage-per-axis",
+      "prompt": "Audita el repo completo (451 archivos). Barriste todo con rg pero solo leíste 120 .tsx. ¿Cómo reportas la cobertura?",
+      "expect": [
+        "Reporta cobertura por eje (24 §4.2): valores 451/451 por barrido, composición 120/N por lectura",
+        "Lista los pendientes de lectura",
+        "No declara 451/451 global; si lo hiciera sería audit_incomplete"
+      ]
+    },
+    {
+      "id": "audit-drift-single-value",
+      "prompt": "Audita: DashboardHelper.fallbackTimezone y dos forms usan 'America/Monterrey'; APP_TIMEZONE es 'America/Mexico_City'. La API también mezcla ambas. Además DEBOUNCE_FILTER_TIME no tiene consumidores.",
+      "expect": [
+        "Alta: drift; la corrección deja un solo valor y pide al usuario cuál",
+        "No propone una segunda constante DEFAULT_TOWER_TIMEZONE sin confirmación",
+        "Follow-up cruzado a la API; no migra timezones ya guardadas",
+        "Baja: borrar DEBOUNCE_FILTER_TIME"
+      ]
+    },
+    {
+      "id": "screen-audit-action-coherence",
+      "prompt": "Audita el dashboard central: el aviso dice '3 torres con alertas' y el botón 'Ver con alertas →' llama onScopeChange(CentralDashboardScope.Attention), pero la vista resultante muestra todas las torres sin filtro visible.",
+      "expect": [
+        "Carga 30-screen-audit",
+        "Alta: la acción no lleva al filtro ni a la cantidad que el texto promete",
+        "Propone cambiar el texto o la acción para que coincidan, no dejar ambos",
+        "Verifica el destino comparando el scope contra lo renderizado y pide verlo en vivo"
+      ]
+    },
+    {
+      "id": "screen-audit-technical-term",
+      "prompt": "Revisa la sección del detalle de torre que muestra 'Webhooks Stripe fallidos — últimos 30 días' a administradores de torre.",
+      "expect": [
+        "Carga 30-screen-audit y 15 §Copy",
+        "Media: término técnico en el contenido; nombra lo que significa para quien lee",
+        "Propone algo como 'Pagos sin confirmar'",
+        "No conserva el nombre del proveedor salvo que el lector lo opere"
+      ]
+    },
+    {
+      "id": "screen-audit-table-density",
+      "prompt": "La tabla 'Torres' del dashboard tiene 9 columnas y celdas con 3 líneas (deptos + %, contratos · clientes · usuarios, última actividad). Se ve todo pegado. ¿Qué hago?",
+      "expect": [
+        "Escribe primero quién lee y qué pregunta responde la tabla",
+        "Media: tabla resumen >6 columnas y celdas de 3+ líneas; varias métricas en una celda",
+        "Propone 5–6 columnas, máx 2 líneas por celda, detalle en vista de detalle, riesgo con token semántico",
+        "Carga visual-quality.md antes de proponer el rediseño y pide verla en vivo"
+      ]
     }
   ]
 }

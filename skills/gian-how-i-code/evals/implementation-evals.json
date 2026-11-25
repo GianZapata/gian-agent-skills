@@ -834,6 +834,24 @@
         "Base abstracta compartida entre Invoice y Entity solo por la dirección",
         "Trait que declara rules() o lee $this->route()"
       ]
+    },
+    {
+      "id": "impl-reuse-existing-constant",
+      "prompt": "Agrega un campo de zona horaria con valor por defecto al form de settings.",
+      "expect": [
+        "Busca con rg/codegraph la constante o el static del helper antes de declarar",
+        "Importa DateHelper.DEFAULT_BUSINESS_TIMEZONE / APP_TIMEZONE; no declara un literal local",
+        "Si el helpText muestra un ejemplo de hora, agrega el método a DateHelper"
+      ]
+    },
+    {
+      "id": "impl-map-row-component",
+      "prompt": "Crea una tabla de torres donde cada fila calcula si las métricas están listas, un resumen de pendientes y abre el detalle al hacer clic.",
+      "expect": [
+        "Fila extraída a <TowerRow> (no .map inline con lógica)",
+        "Con 2+ subcomponentes privados crea carpeta <Comp>/<Comp>.tsx sin index.ts",
+        "Derivaciones repetidas en el helper de la feature; useMemo solo en caso C"
+      ]
     }
   ]
 }

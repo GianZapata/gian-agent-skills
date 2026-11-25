@@ -120,6 +120,7 @@ El `rg` solo encuentra candidatos. Se juzga lo que es string visible: texto JSX,
 - Tono natural
 - Sentence case. Prohibido Title Case en títulos, botones y toasts (`08`)
 - Título ↔ botón consistentes: el botón primario usa el verbo de la operación del título
+- Texto ↔ acción: cada botón, link o fila clicable lleva a la pantalla, filtro y cantidad que su texto nombra. Métricas y títulos nombran lo que significa para quien lee, no el mecanismo («Pagos sin confirmar», no «Webhooks Stripe fallidos»). Ver `30` puntos 3 y 4
 - Toast: qué pasó y a dónde. «A dónde» es la pantalla o la tarea, no un valor fijo de prueba
 - Key puede ser técnica; value humano
 - `data-testid` en inglés técnico OK

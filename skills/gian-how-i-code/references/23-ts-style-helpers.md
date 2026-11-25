@@ -1,6 +1,6 @@
 # 23 — Memoización, cn, dayjs, utils y helpers
 
-Cargar cuando: Implementar FE, crear util/helper, fechas en frontend, multipart/`FormDataHelper`, consultar memoización/`cn`/dayjs, constantes `*_SX` / concat de `className`.
+Cargar cuando: Implementar FE, crear util/helper, fechas en frontend, multipart/`FormDataHelper`, consultar memoización/`cn`/dayjs, constantes `*_SX` / concat de `className`, constantes o literales de negocio repetidos (timezone, moneda, límites), enums de dominio, lógica derivada en JSX.
 
 ## Alcance
 
@@ -53,6 +53,39 @@ const orderMessage = useMemo(() => {
 ```
 
 Lo verifica `gian-ts-style` `assets/self-check.mjs` (`derived-multi-branch`, `no-nested-ternary`; `memo-ceremonial` como GAP).
+
+### Lógica en JSX (Auditar + Implementar)
+
+`useMemo` no sirve para concatenar. Lo que decide es la forma de la lógica:
+
+| Forma | Qué hacer |
+|---|---|
+| La misma derivación se repite 2+ veces (p. ej. `ready ? Helper.format(x) : '—'` en cuatro KPIs) | Método del helper de la feature (`Helper.metricValue(metric)`). Media |
+| Expresión larga en una prop o en el JSX: template con 2+ llamadas, o ternario + `??` | `const` con nombre antes del `return`, sin `useMemo` (caso A/B) |
+| 3+ ramas o condición de 3+ partes, sobre todo si se repite en varios bloques del JSX | `useMemo` + `if` (caso C). El JSX hace `if` / early return o un `switch` sobre el resultado (caso D) |
+
+```tsx
+// Mal — la condición se repite en dos bloques y junta 4 partes
+{!(tablePending && !tableRows) && !tableError && (tableRows ?? []).length === 0 ? <Empty /> : null}
+{!(tablePending && !tableRows) && !tableError && (tableRows ?? []).length > 0 ? <Table /> : null}
+
+// Bien — se deriva una vez (C)
+const tableState = useMemo(() => {
+  if (tablePending && !tableRows) return TableState.Loading;
+  if (tableError) return TableState.Error;
+  if (!tableRows?.length) return TableState.Empty;
+
+  return TableState.Ready;
+}, [tablePending, tableRows, tableError]);
+
+// Mal — template largo dentro de la prop
+footnote={row ? `Cobrado ${DashboardHelper.money(row.collected, row.currency)} de ${DashboardHelper.money(row.expected, row.currency)}` : (reason ?? 'Sin datos')}
+
+// Bien — const con nombre (A/B) o método del helper si se repite
+const cohortFootnote = CentralDashboardHelper.cohortFootnote(data.cohort);
+```
+
+El estado derivado de UI (`TableState`) es `APP_OWNED` cerrado: string enum (`07`).
 
 ## `cn()` y styling local
 
@@ -224,8 +257,117 @@ Si ya existe un helper/util de área (`DateHelper`, `NumberHelper`, util compart
 | Util local mínimo casi idéntico **solo** dentro del mismo feature, sin shared | Baja | Consolidar en el helper/util de la feature o shared si ya aplica |
 | Labels/colores de UI duplicados entre componentes | — | **Permitido** (`08`); no es este hallazgo |
 | Una sola coincidencia accidental trivial **sin** abstracción previa | Baja | Baja; se reporta con propuesta genérica (`22`) |
+| Misma función local (mismo nombre o mismo propósito) en 2+ archivos **sin** helper previo (p. ej. `emptyDraft` / `draftToPatch` en 6 filtros, `getEditDefaultValues` en 5 forms) | Media | Un hallazgo por grupo, con todos los archivos. Mismo cuerpo → helper de la feature o `shared/helpers`. Cuerpo con la misma forma y distinto tipo → helper genérico o hook. Cuerpo distinto con el mismo nombre → se reporta y se deja local |
+
+Para encontrar estas funciones, el inventario de funciones locales y la comparación de cuerpos están en `24` §4.1. Aunque no sea una auditoría de repo completo, antes de escribir una función local se busca su nombre y su propósito en otros archivos.
+
+### Formato inline (sin función local)
+
+También es hallazgo cuando el formato se escribe **directo** en el componente o en el JSX, sin envolverlo en una función: `toFixed`, `toLocaleString`, `Intl.NumberFormat`, `Intl.DateTimeFormat`, cálculo de bytes a KB/MB, porcentaje (`${(x * 100).toFixed(1)}%`), dinero con `$` concatenado o fecha con `dayjs().format()`.
+
+- Si existe el helper del eje (`NumberHelper`, `HumanFormatsHelper`, `DateHelper`), se usa. Si le falta el método, se agrega al helper (`HumanFormatsHelper.fileSize(bytes)`, `NumberHelper.percent(rate)`), aunque hoy se use una sola vez.
+- Si no existe el helper del eje, se crea uno en `shared/helpers/` solo cuando el mismo formato aparece en 2+ archivos. Con un solo uso, Baja con propuesta.
+- El locale (`'es-MX'`) y la moneda no se escriben en el call site; salen del helper o de §Valores.
+
+```tsx
+// Mal
+{`${(bytes / (1024 * 1024)).toFixed(1)} MB`}
+{total.toLocaleString('es-MX')}
+{(amountWithTax - amount).toFixed(2)}
+
+// Bien
+{HumanFormatsHelper.fileSize(bytes)}
+{NumberHelper.integer(total)}
+{NumberHelper.decimal(amountWithTax - amount)}
+```
+
+Búsqueda: `rg "toFixed\(|toLocaleString\(|Intl\.(Number|DateTime)Format|1024 \* 1024" -g '*.tsx'`.
 
 Tooling: Serena/codegraph para localizar `DateHelper` / `NumberHelper`; ast-grep para `dayjs($X).format` u wrappers `format*Date` locales.
+
+## Valores: constantes, enums y helpers (Auditar + Implementar)
+
+Núcleo. Complementa §Duplicación, que mira funciones; esta sección mira **valores**: literales, constantes locales y textos que repiten configuración.
+
+### Buscar antes de declarar
+
+Antes de escribir `const X = '<literal>'` o un literal de negocio, buscar si ya existe: `rg "'<literal>'" src/`, codegraph para `*_TIMEZONE`, `*_MAX_*`, `DEFAULT_*`, y los `static readonly` de los helpers de área. Si existe, se importa. Una cuarta fuente del mismo valor es hallazgo.
+
+### Cuándo un valor sale del archivo
+
+Sale si cumple **una** de estas condiciones:
+
+1. Ya existe una constante global o un `static readonly` de helper equivalente.
+2. Se usa en 2+ archivos (p. ej. schema y form de la misma feature).
+3. Es valor de negocio o configuración: timezone, moneda, límites de archivo, MIME aceptados, tamaño de página, debounce.
+
+Una constante de un solo archivo que es detalle de UI se queda local, arriba del archivo. No se arma un `constants` cajón.
+
+### Drift: se corrige a un solo valor
+
+Cuando dos fuentes del mismo concepto tienen valores distintos (`'America/Monterrey'` contra `APP_TIMEZONE = 'America/Mexico_City'`):
+
+- La corrección deja **un solo valor**, que normalmente es el de la fuente de eje o global. No se legitiman los dos valores creando una segunda constante con nombre propio. Eso solo se hace si el usuario confirma que son dos conceptos de negocio distintos.
+- Cuál valor es el correcto es una decisión del usuario. El hallazgo la pide, con la evidencia de los dos valores, y no la da por resuelta.
+- Si el otro repo (API) tiene el mismo drift, se reporta como follow-up cruzado. Si solo se corrige un lado, el drift queda entre los dos repos.
+- Los valores que ya están guardados (por ejemplo, la timezone de las torres que ya existen) no se migran como parte de la corrección. Solo cambia el valor por defecto. Migrarlos es una decisión aparte y de riesgo alto.
+
+### Constante sin consumidores
+
+Una constante o un `static readonly` que nadie usa (`rg -w <NOMBRE>` solo encuentra su declaración) se borra. Por ejemplo, `DEBOUNCE_FILTER_TIME` junto a `SEARCH_DEBOUNCE_MS`. Si su valor contradice el de la constante que sí se usa, no se reporta como drift: es código muerto. Severidad Baja.
+
+### Dónde va (en orden)
+
+1. Si el valor es del eje de un helper (timezone → `DateHelper.DEFAULT_BUSINESS_TIMEZONE`), se consume desde ahí. No se crea otra fuente.
+2. Si lo usan varias features, va al archivo de constantes global que encuentre el discovery (`02`), p. ej. `config/constants/app.constants.ts`.
+3. Si lo usa una sola feature, va a `features/<f>/constants/<f>.constants.ts`.
+
+### Constante o enum
+
+- Un literal de dominio de un **conjunto cerrado** (`'MXN'`, un estado, un tipo) → string enum (`07`). El default va como constante tipada: `DEFAULT_CURRENCY = Currency.MXN`. Prohibido `const MXN = 'MXN'`.
+- Un valor de configuración (número, string, objeto de MIME) → constante `SCREAMING_SNAKE_CASE`.
+
+### Copy que repite un valor
+
+- El copy puro (`'Ej. Torre Santa Catarina'`) se queda inline o en i18n (`15`). No va a `constants`.
+- El copy que **repite** un valor de configuración se interpola desde la constante: `` `Ej. ${DateHelper.DEFAULT_BUSINESS_TIMEZONE}` ``, `` `no puede exceder ${LOGO_MAX_MB} MB` ``. Si se escribe a mano, el texto y la validación terminan diciendo cosas distintas.
+
+### Funciones locales
+
+- Una función del eje de un helper existente (fecha, número, teléfono, invalidación de queries, formato) se agrega como método a ese helper, aunque hoy se use una sola vez. Ver §Duplicación y §Fechas.
+- Un mapper propio del componente (`toFormValues(entity)`) se queda local. Pasa al entity helper cuando otro archivo lo reutiliza.
+- Si el repo no tiene un helper de ese eje, no se crea uno nuevo por una sola función (`22`).
+
+```ts
+// Mal — tres fuentes distintas del mismo valor
+const DEFAULT_TIMEZONE = 'America/Monterrey';          // GeneralForm.tsx
+static readonly fallbackTimezone = 'America/Monterrey'; // DashboardHelper
+export const APP_TIMEZONE = 'America/Mexico_City';     // app.constants.ts
+
+const LOGO_MAX_BYTES = 2 * 1024 * 1024; // form, y otra vez en el schema
+setLogoError('El logo no puede exceder 2 MB');
+currency: 'MXN',
+const timezoneExample = (zone: string) => dayjs().tz(zone).format('D [de] MMMM');
+
+// Bien
+timezone: settings.timezone || DateHelper.DEFAULT_BUSINESS_TIMEZONE,
+maxSize: SETTINGS_LOGO_MAX_BYTES, // features/settings/constants/settings.constants.ts, también lo importa el schema
+setLogoError(`El logo no puede exceder ${SETTINGS_LOGO_MAX_MB} MB`);
+currency: DEFAULT_CURRENCY,
+const example = DateHelper.formatZoneExample(zone);
+```
+
+| Caso | Severidad | Corrección |
+|------|-----------|------------|
+| Constante local o `static readonly` con **valor distinto** a otra fuente del mismo concepto (drift) | Alta | Elegir una sola fuente, borrar las demás y revisar qué valor es el correcto |
+| Constante local con el mismo valor que una global o de helper existente | Media | Importar la existente |
+| Valor de configuración repetido en 2+ archivos sin fuente común (schema + UI) | Media | Constante de feature o global |
+| Literal de dominio de un conjunto cerrado repetido en 2+ archivos | Media | String enum (`07`) + default tipado |
+| Copy que escribe a mano un valor de configuración (límite, timezone, moneda) | Media | Interpolar desde la constante |
+| Función local del eje de un helper existente | Media | Método en el helper (§Duplicación) |
+| Constante de UI de un solo archivo | — | Permitido, arriba del archivo |
+| Placeholder o copy puro | — | Permitido (`15`) |
+| Constante de styling | — | No es esta sección: `no-local-style-constants` (`04`) |
 
 ## Severidades (auditoría)
 
@@ -234,6 +376,8 @@ Tooling: Serena/codegraph para localizar `DateHelper` / `NumberHelper`; ast-grep
 | Falta dayjs en deps FE / uso sistemático de `new Date` para negocio | Alta |
 | dayjs crudo pese a módulo configurado del proyecto | Media |
 | Función/util local que duplica `DateHelper` / `NumberHelper` / helper compartido | Media |
+| Formato inline (`toFixed`, `toLocaleString`, `Intl.*Format`, bytes→MB, `%`) con helper del eje existente | Media |
+| Formato inline sin helper del eje y en 2+ archivos | Media (crear helper en `shared/helpers`) |
 | Helper de display suelto / `*.display.config.ts` / `t: TFunction` en helper o schema | Media |
 | `*Helper` cajón multi-dominio | Media |
 | `useMemo` / `useCallback` / `memo` ceremonial (caso A; no C ni E) | Media |
@@ -244,6 +388,14 @@ Tooling: Serena/codegraph para localizar `DateHelper` / `NumberHelper`; ast-grep
 | Template literal que compone una constante de clases | Media |
 | `sx` usado para layout/spacing/sizing ordinario pudiendo usar Tailwind | Media |
 | `useTheme()` solo para alimentar `sx` (usar `sx={theme => …}`) | Media |
+| Constante/`static readonly` con valor distinto a otra fuente del mismo concepto (drift) | Alta (corrección a un solo valor) |
+| Misma función local en 2+ archivos sin helper previo | Media |
+| Constante / `static readonly` sin consumidores | Baja |
+| Constante local que duplica una global o de helper | Media |
+| Valor de configuración o literal de dominio repetido en 2+ archivos | Media |
+| Copy que escribe a mano un valor de configuración | Media |
+| Derivación repetida 2+ veces en JSX en vez de método del helper | Media |
+| Condición de 3+ partes repetida en JSX en vez de estado derivado (C) | Media |
 | Clase estática sin `cn()` | — permitido |
 | UI construye `FormData` / formatea fechas para el payload | Media |
 | Multipart a mano en el service pese a existir `FormDataHelper` | Media |
