@@ -18,7 +18,8 @@ Cierre obligatorio de toda implementación, también en bug y trivial. Sin este 
 10. **Campos de formulario** (`10`): por cada campo creado o editado, el control, la normalización y la ayuda evaluada, cada una aplicada / propuesta / descartada, y el motivo en una línea.
 11. **Formularios o validación user-facing**: el completion gate de `05` marcado punto por punto (`rules` / `messages` / copy / cobertura semántica / `attributes()` cuando un mensaje interpola `:attribute` con un nombre de columna o clave interna / 422 BE / consumo FE).
 12. **Verificación visual**: con UI, los viewports capturados y cada contenedor visto (`visual-quality.md`), y lo que no se vio, nombrado. Sin UI: «sin UI».
-13. **Diseño** (`22`): por cada archivo tocado, «Corregido» (los Altos de lo escrito o tocado) y «Pendiente (fuera de lo tocado)», agrupados por severidad, cada uno con `archivo:línea` y su propuesta. Sin hallazgos, «ninguno» por archivo.
+13. **Contraste backend** (`23` §Contraste con el backend): `Contraste backend: N verificados · M sin verificar · K desfases`, con cada desfase y su `archivo:línea` en ambos repos. Si no se tocaron valores de regla del servidor: «no aplica». Sin esta línea la tarea no está terminada.
+14. **Diseño** (`22`): por cada archivo tocado, «Corregido» (los Altos de lo escrito o tocado) y «Pendiente (fuera de lo tocado)», agrupados por severidad, cada uno con `archivo:línea` y su propuesta. Sin hallazgos, «ninguno» por archivo.
 
 Formato breve de ejemplo:
 
@@ -37,6 +38,7 @@ Copy: "Pago registrado correctamente!" → "Pago registrado" (es.json:41)
 Campos: note — ayuda evaluada: contador de caracteres; descartada: el campo no tiene límite
 Gate 05: rules ✔ messages ✔ attributes ✔ 422 ✔ consumo FE ✔
 Visual: 375/768/1440, drawer abierto y cerrado; sin pendientes
+Contraste backend: 3 verificados · 0 sin verificar · 0 desfases (PayInvoiceRequest.php:21)
 Diseño: PayInvoice.php — Corregido: Alta, la Action leía request()->user(); ahora recibe el actor (PayInvoice.php:14). InvoiceDrawer.tsx — Pendiente: Media, el mismo cálculo de total en :31 y :58 (extraer helper local)
 ```
 
@@ -44,6 +46,7 @@ Diseño: PayInvoice.php — Corregido: Alta, la Action leía request()->user(); 
 
 - Un solo archivo: `docs/pattern-audit/YYYY-MM-DD-<alcance>-auditoria.md`, en la raíz git del repo auditado. Si el `.gitignore` de esa raíz no ignora `docs/pattern-audit/`, se agrega esa línea (`18`).
 - Español: Contexto, Resumen, Hallazgos, Propuestas, Lotes
+- Línea `Contraste backend: N verificados · M sin verificar · K desfases` y tabla de paridad por form tocado (`23` §Contraste con el backend)
 - Sin cambios de código
 - Sin carpetas multi-archivo por feature
 

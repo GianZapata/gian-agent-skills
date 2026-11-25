@@ -97,6 +97,8 @@ La tabla no limita la regla. Si el campo no aparece, se identifica qué represen
 
 ### Aplicar y proponer
 
+- **Paridad con el backend (HARD):** cada campo tocado se compara con su regla del FormRequest (required/nullable, longitud, rango, MIME, tamaño, dimensiones) y su default (`23` §Contraste con el backend). Alinear el front a una regla que el backend ya aplica no es PROP.
+
 - **Se aplica** en el campo tocado lo que no rechaza un valor que hoy pasa: el `type` que le corresponde, `inputmode`, `autocomplete` y normalización sin pérdida. Los ejemplos de la tabla (`trim`, teléfono a dígitos y `+`) no agotan la lista. Minúsculas en todo el email no son ese default. Un monto `type="number"` libre pasa a decimal con 2 decimales, usando el schema de dinero o decimal del repo, sin parseo por float.
 - **Se propone (PROP)** lo que puede rechazar datos ya guardados o cambiar el contrato. Los ejemplos (nombre o apellidos sin dígitos, reescribir un identificador ya guardado, rangos de negocio, un tope nuevo, una longitud máxima nueva) no agotan la lista. No se aplica en silencio.
 - **El control sigue a la elección, no al gusto.** Un widget que ya existe no se convierte, y no se recorre el formulario cambiando widgets. En un campo nuevo:

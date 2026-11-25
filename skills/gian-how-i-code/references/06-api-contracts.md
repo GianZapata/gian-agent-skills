@@ -91,6 +91,8 @@ export interface EntityListParams {
 
 ## Cadena a validar
 
+Los valores que la UI muestra o valida (límites, MIME, enums, defaults) se corroboran contra el FormRequest/config/enum de esta cadena: `23` §Contraste con el backend.
+
 ```text
 Route → Controller → FormRequest → Action/Query → Resource
 → interface/DTO → service → hook → query key / invalidation

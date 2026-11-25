@@ -62,7 +62,8 @@ Lo verifica `gian-ts-style` `assets/self-check.mjs` (`derived-multi-branch`, `no
 |---|---|
 | La misma derivación se repite 2+ veces (p. ej. `ready ? Helper.format(x) : '—'` en cuatro KPIs) | Método del helper de la feature (`Helper.metricValue(metric)`). Media |
 | Expresión larga en una prop o en el JSX: template con 2+ llamadas, o ternario + `??` | `const` con nombre antes del `return`, sin `useMemo` (caso A/B) |
-| 3+ ramas o condición de 3+ partes, sobre todo si se repite en varios bloques del JSX | `useMemo` + `if` (caso C). El JSX hace `if` / early return o un `switch` sobre el resultado (caso D) |
+| Un booleano de 3+ partes (`!readOnly && (a || b || (!c && d))`) | Partir en `const` con nombre por parte y componer: `const showClear = !readOnly && (hasPendingChange || hasSavedLogo)`. Sin `useMemo` (A/B). Media |
+| 3+ ramas (el resultado es uno de varios estados), sobre todo si se repite en varios bloques del JSX | `useMemo` + `if` (caso C). El JSX hace `if` / early return o un `switch` sobre el resultado (caso D) |
 
 ```tsx
 // Mal — la condición se repite en dos bloques y junta 4 partes
@@ -83,6 +84,17 @@ footnote={row ? `Cobrado ${DashboardHelper.money(row.collected, row.currency)} d
 
 // Bien — const con nombre (A/B) o método del helper si se repite
 const cohortFootnote = CentralDashboardHelper.cohortFootnote(data.cohort);
+```
+
+```tsx
+// Mal — booleano de 4 partes sin nombre
+const showClearLogo =
+  !readOnly && (Boolean(logoFile) || removeLogo || (!deferred && Boolean(settings.logo?.url)));
+
+// Bien — cada parte con nombre
+const hasPendingLogoChange = Boolean(logoFile) || removeLogo;
+const hasSavedLogo = !deferred && Boolean(settings.logo?.url);
+const showClearLogo = !readOnly && (hasPendingLogoChange || hasSavedLogo);
 ```
 
 El estado derivado de UI (`TableState`) es `APP_OWNED` cerrado: string enum (`07`).
@@ -332,6 +344,48 @@ Una constante o un `static readonly` que nadie usa (`rg -w <NOMBRE>` solo encuen
 - El copy puro (`'Ej. Torre Santa Catarina'`) se queda inline o en i18n (`15`). No va a `constants`.
 - El copy que **repite** un valor de configuración se interpola desde la constante: `` `Ej. ${DateHelper.DEFAULT_BUSINESS_TIMEZONE}` ``, `` `no puede exceder ${LOGO_MAX_MB} MB` ``. Si se escribe a mano, el texto y la validación terminan diciendo cosas distintas.
 
+### Contraste con el backend (HARD, Auditar + Implementar)
+
+Todo valor que la UI muestra o valida y que codifica una regla del servidor se corrobora contra el backend: límites de tamaño, MIME, dimensiones, rangos, longitudes, required/nullable, enums y estados, defaults (timezone, moneda, `per_page`, estado inicial).
+
+**Siempre, no solo en auditoría.** Al implementar o tocar un form, un schema, un enum o un label, un copy con límites o un default, se corrobora en ese mismo cambio, aunque nadie lo pida. Un desfase que se encuentra después ya es un 422 o un label roto en producción.
+
+Cómo:
+
+1. **Buscar la fuente del backend:** FormRequest o `rules()`, `config/*.php`, enum, Resource o Action. Si el repo de la API está en el workspace (hermano, monorepo), se lee y se cita `archivo:línea`. Si no está, la fila queda «sin verificar». Eso no es un OK y se dice en la salida.
+2. **Paridad campo a campo:** por cada campo del form o schema tocado se compara con su regla del backend: required o nullable, tipo, max de longitud, min/max numérico, MIME, tamaño y dimensiones. En auditoría se entrega una tabla:
+
+   | Campo | Front | Backend (archivo:línea) | Estado |
+   |---|---|---|---|
+   | `logo` | MIME jpeg/png/webp · ≤ 2 MB · sin dimensiones | `UpdateGeneralSettingsRequest.php:67` `mimes:jpeg,png,webp` `max:2048` `dimensions:max_width=4096,max_height=4096` | Falta dimensiones |
+
+3. **Enums exhaustivos:** cada caso del enum o estado del backend tiene su caso en el front y su label o meta en un `Record<Enum, …>` exhaustivo, nunca en un `Record<string, …>` (`07`). Si falta un caso (`rescinded`) o existe uno que el backend no tiene (`operator`), es Alta.
+4. **Defaults iguales:** los valores iniciales del form y los fallbacks son iguales al default del backend o vienen de la respuesta. Si difieren, es Alta (p. ej. `America/Monterrey` en el front contra `America/Mexico_City` en la API).
+5. **Una sola fuente en el front:** la constante se declara una vez, se exporta, y de ella salen el schema, `accept`, el hint y el mensaje de error. `accept` y la lista de formatos se derivan de `*_MIME_TYPES`, y los MB de `*_MAX_BYTES` (con `NumberHelper` o `HumanFormatsHelper`, §Formato inline). La constante lleva un comentario de una línea con la fuente: `// fortezza-api UpdateGeneralSettingsRequest: max:2048`.
+6. **Si el backend expone el valor** (config o meta en la respuesta), el front lo consume y no lo duplica. Exponerlo cuando hoy no lo expone es **PROP**: no se cambia la API en silencio.
+
+Ante un desfase:
+
+- Se alinea el lado que se está editando con el **dueño** del valor. El dueño es el backend, salvo evidencia contraria.
+- Alinear el front a una regla que el backend **ya** aplica se aplica directo: no es un tope nuevo ni PROP (`10` §Aplicar y proponer), porque esos datos ya los rechaza la API.
+- Si el que está mal es el backend y la tarea no lo incluye, se reporta como follow-up cruzado y no se edita la API.
+
+```tsx
+// Mal — límite y formatos escritos a mano en tres lugares
+const LOGO_MAX_BYTES = 2 * 1024 * 1024; // privada en settings.schema.ts
+return 'PNG, JPEG o WebP · Máx. 2 MB';
+<input accept='image/png,image/jpeg,image/webp' />
+
+// Bien — una fuente exportada y corroborada
+// fortezza-api UpdateGeneralSettingsRequest:67 — mimes:jpeg,png,webp · max:2048 · dimensions 4096
+export const LOGO_MAX_BYTES = 2 * 1024 * 1024;
+export const LOGO_MAX_DIMENSION = 4096;
+export const IMAGE_MIME_TYPES = [ImageMime.Png, ImageMime.Jpeg, ImageMime.Webp];
+
+return `${FileHelper.formatList(IMAGE_MIME_TYPES)} · Máx. ${HumanFormatsHelper.bytes(LOGO_MAX_BYTES)}`;
+<input accept={IMAGE_MIME_TYPES.join(',')} />
+```
+
 ### Funciones locales
 
 - Una función del eje de un helper existente (fecha, número, teléfono, invalidación de queries, formato) se agrega como método a ese helper, aunque hoy se use una sola vez. Ver §Duplicación y §Fechas.
@@ -365,6 +419,9 @@ const example = DateHelper.formatZoneExample(zone);
 | Valor de configuración repetido en 2+ archivos sin fuente común (schema + UI) | Media | Constante de feature o global |
 | Literal de dominio de un conjunto cerrado repetido en 2+ archivos | Media | String enum (`07`) + default tipado |
 | Copy que escribe a mano un valor de configuración (límite, timezone, moneda) | Media | Interpolar desde la constante |
+| El front permite lo que el backend rechaza, o el valor difiere del backend (límite, MIME, default, caso de enum) | Alta | Alinear al dueño (§Contraste con el backend) |
+| Regla del backend que el front no refleja (p. ej. `dimensions`), o el front es más estricto sin motivo | Media | Agregar validación y hint, o alinear |
+| Valor de regla del servidor sin corroborar ni marcar «sin verificar» | Media | Corroborar y citar `archivo:línea` |
 | Función local del eje de un helper existente | Media | Método en el helper (§Duplicación) |
 | Constante de UI de un solo archivo | — | Permitido, arriba del archivo |
 | Placeholder o copy puro | — | Permitido (`15`) |
@@ -419,8 +476,11 @@ const example = DateHelper.formatZoneExample(zone);
 | Constante local que duplica una global o de helper | Media |
 | Valor de configuración o literal de dominio repetido en 2+ archivos | Media |
 | Copy que escribe a mano un valor de configuración | Media |
+| Front permite lo que el backend rechaza / default o caso de enum distinto al backend | Alta |
+| Regla del backend no reflejada en el front | Media |
 | Derivación repetida 2+ veces en JSX en vez de método del helper | Media |
-| Condición de 3+ partes repetida en JSX en vez de estado derivado (C) | Media |
+| 3+ ramas repetidas en JSX en vez de estado derivado (C) | Media |
+| Booleano de 3+ partes sin `const` con nombre por parte | Media |
 | Clase estática sin `cn()` | — permitido |
 | UI construye `FormData` / formatea fechas para el payload | Media |
 | Multipart a mano en el service pese a existir `FormDataHelper` | Media |

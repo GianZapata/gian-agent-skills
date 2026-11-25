@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.49 — 2026-11-25
+
+- `23` §Contraste con el backend (HARD, Implementar + Auditar): todo valor de regla del servidor que la UI muestra o valida se corrobora contra FormRequest/config/enum de la API con `archivo:línea` o «sin verificar»; paridad campo a campo, enums exhaustivos, defaults iguales, una sola fuente exportada con comentario de fuente; alinear a una regla que el backend ya aplica no es PROP; filas de severidad Alta/Media.
+- `23` §Lógica en JSX: booleano de 3+ partes → `const` con nombre por parte; `useMemo` (C) queda para 3+ ramas.
+- `21`: línea `Contraste backend` en el cierre de Implementar y Auditar. Punteros en `06`, `07` (checklist 6), `10`, `24` §4.1 (columna Fuente backend).
+- Evals `impl-upload-limits-from-backend`, `audit-ui-values-vs-backend`, `audit-long-boolean-condition`, `audit-enum-parity-backend`, `audit-default-drift-backend`.
+
 ## 1.4.48 — 2026-11-25
 
 - `13` §Pasar una query a un componente: si un componente usa 2+ piezas de la misma query, recibe el objeto completo (`UseQueryResult<T, CustomError>`, sin `Pick`); el padre elige el objeto una vez en vez de repetir el ternario por pieza; excepción para componentes genéricos de `shared/`. rg de auditoría, hallazgo Media, ítem de checklist, puntero en `04` §Composición y Hard Rule en `SKILL.md`.

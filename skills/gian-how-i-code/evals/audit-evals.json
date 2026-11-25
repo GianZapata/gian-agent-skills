@@ -490,6 +490,43 @@
         "Reporta el ternario de selección repetido por pieza",
         "Propone elegir el objeto una vez y pasar la query completa (13 §Pasar una query a un componente)"
       ]
+    },
+    {
+      "id": "audit-ui-values-vs-backend",
+      "prompt": "Audita settings/GeneralForm.tsx: hint 'PNG, JPEG o WebP · Máx. 2 MB', accept='image/png,image/jpeg,image/webp' y LOGO_MAX_BYTES privada en settings.schema.ts. La API tiene mimes:jpeg,png,webp|max:2048|dimensions:max_width=4096,max_height=4096.",
+      "expect": [
+        "Tabla de paridad Campo | Front | Backend (archivo:línea) | Estado",
+        "Media: regla dimensions del backend no reflejada en el front",
+        "Media: copy y accept escritos a mano; deben salir de la constante exportada",
+        "Línea Contraste backend en el documento"
+      ]
+    },
+    {
+      "id": "audit-long-boolean-condition",
+      "prompt": "Audita: const showClearLogo = !readOnly && (Boolean(logoFile) || removeLogo || (!deferred && Boolean(settings.logo?.url)));",
+      "expect": [
+        "Media: booleano de 4 partes sin nombre",
+        "Propone const con nombre por parte (hasPendingLogoChange, hasSavedLogo) y composición",
+        "No propone useMemo"
+      ]
+    },
+    {
+      "id": "audit-enum-parity-backend",
+      "prompt": "Audita userRoleLabels (admin/operator/viewer/super_admin) y contractStatusLabels del dashboard central contra los enums de la API (UserRole admin/operation/manager/accountant/maintenance; ContractStatus incluye rescinded).",
+      "expect": [
+        "Alta: casos que sobran (operator, viewer) y que faltan (operation, manager, accountant, maintenance, rescinded)",
+        "Cita el enum del backend con archivo:línea",
+        "Propone Record<Enum, Meta> exhaustivo del dueño en vez de Record<string, string>"
+      ]
+    },
+    {
+      "id": "audit-default-drift-backend",
+      "prompt": "Audita el default de timezone del form de torre: DEFAULT_TIMEZONE = 'America/Monterrey'; la API usa config fortezza.timezone = 'America/Mexico_City'.",
+      "expect": [
+        "Alta: default distinto al backend",
+        "Cita config/fortezza.php con línea",
+        "Alinea al dueño o propone consumirlo de la respuesta (PROP si la API no lo expone)"
+      ]
     }
   ]
 }

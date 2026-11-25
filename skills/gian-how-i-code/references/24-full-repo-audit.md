@@ -92,7 +92,7 @@ Las categorías condicionales se marcan «No aplicable» con evidencia (p. ej. `
 
 **Pasada 1: inventario de fuentes.** Antes de revisar archivo por archivo, se arman cuatro tablas:
 
-1. **Constantes:** globales (`config/constants/*`), `static readonly` de helpers y `features/<f>/constants/*`, con su valor.
+1. **Constantes:** globales (`config/constants/*`), `static readonly` de helpers y `features/<f>/constants/*`, con su valor y la columna **Fuente backend** (`archivo:línea` de la regla en la API, o «sin verificar»; `23` §Contraste con el backend).
 2. **Enums y Records de labels:** cada enum y cada `Record` de metadata, con sus keys.
 3. **Funciones locales:** toda función que no sea componente ni hook y que esté fuera de `helpers/` (`const x = (`, `function x(`), en `.ts` y `.tsx`. Se agrupa por nombre y por propósito: valores por defecto del form, draft de filtros, mapper a form, formato, validación, opciones de select.
 4. **Constantes sin consumidores:** `rg -w <NOMBRE>` para cada constante de la tabla 1. Si solo aparece en su declaración, nadie la usa.
@@ -110,6 +110,7 @@ Un nombre que aparece en 2+ archivos se abre en todos esos archivos y se compara
 - Si un literal ya está en la tabla 1, se aplica `23` §Valores. Si el valor es distinto al de esa fuente, es drift.
 - Si una función local está en un grupo de la tabla 3 con 2+ miembros, se aplica `23` §Duplicación y se reporta un **solo hallazgo por grupo**, con todos los archivos y la fuente propuesta: el helper de la feature, `shared/helpers` o un hook.
 - Si un `Record` de labels no cubre el enum o usa keys distintas, se aplica `07`.
+- Cada form, enum o default se compara con el backend (`23` §Contraste con el backend): la tabla de paridad campo a campo va en el documento.
 
 Las cuatro tablas van en el reporte, o en el coverage-ledger. Sin ellas, el Gate no se cumple.
 

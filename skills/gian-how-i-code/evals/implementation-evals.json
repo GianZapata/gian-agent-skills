@@ -929,6 +929,16 @@
         "No pasa pending, error, onRetry y rows como props sueltas",
         "ErrorBanner (shared) sigue recibiendo message y onRetry"
       ]
+    },
+    {
+      "id": "impl-upload-limits-from-backend",
+      "prompt": "En GeneralForm muestra debajo del logo el hint con formatos permitidos y tamaño máximo.",
+      "expect": [
+        "Lee la regla del logo en el FormRequest de la API (mimes, max, dimensions) y cita archivo:línea",
+        "Exporta una sola constante (MIME, max bytes) con comentario de fuente; schema, accept y hint salen de ella",
+        "Detecta que el backend limita dimensiones 4096 y el front no; lo agrega o lo reporta",
+        "El cierre incluye la línea Contraste backend con verificados / sin verificar / desfases"
+      ]
     }
   ]
 }
