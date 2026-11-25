@@ -66,6 +66,7 @@ Categorías mínimas a cubrir (contrastar con references vigentes):
 | Mutations | `13` |
 | Queries / subscriptions / realtime | `13`, `20` |
 | Validación en el borde | `10`, `01` |
+| Control de formulario / ayudas ágiles | `31`, `10` |
 | Display | `08` |
 | Overlays | `09` |
 | Fechas / helpers / duplicación | `23` |

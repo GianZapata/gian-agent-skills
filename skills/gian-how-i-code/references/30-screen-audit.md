@@ -18,7 +18,7 @@ Si no se puede escribir esa frase, la pantalla no tiene foco: primer hallazgo.
 
 ### 2. Cada elemento contra la pregunta
 
-Cada métrica, columna, tarjeta o bloque ayuda a responder la pregunta del punto 1, o no. Lo que no ayuda se mueve a la vista de detalle o se quita. Se juzga con datos reales (o seed realista), no con el mock.
+Cada métrica, columna, tarjeta o bloque ayuda a responder la pregunta del punto 1, o no. Lo que no ayuda se mueve a la vista de detalle o se quita. Se juzga con datos reales (o seed realista), no con el mock. Un control que no encaja con el dato o el contexto, o una ayuda ágil que falta (slug, dominio, dinero, default visible, fecha con atajos), es hallazgo según `31`.
 
 ### 3. Lenguaje
 

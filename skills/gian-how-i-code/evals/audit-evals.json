@@ -1,6 +1,6 @@
 {
   "skill": "gian-how-i-code",
-  "version": "1.4.6",
+  "version": "1.4.52",
   "cases": [
     {
       "id": "audit-mold",
@@ -551,6 +551,67 @@
       ],
       "forbid": [
         "Mover el copy puro a constants"
+      ]
+    },
+    {
+      "id": "audit-native-date-with-picker",
+      "prompt": "Audita (repo con @mui/material y @mui/x-date-pickers en package.json):\n<TextField type=\"date\" label=\"Fecha de entrega\" {...register('deliveredAt')} />",
+      "expect": [
+        "Media: fecha nativa con picker disponible",
+        "PROP a DatePicker del repo con Controller",
+        "Payload ISO sin cambio"
+      ],
+      "forbid": [
+        "Instalar dependencias"
+      ]
+    },
+    {
+      "id": "audit-select-large-catalog",
+      "prompt": "Audita: <Select label=\"Cliente\">{clients.map(c => <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>)}</Select> — clients viene de GET /clients con ~300 registros.",
+      "expect": [
+        "Media: catálogo grande en select sin búsqueda",
+        "Propone Autocomplete con búsqueda en servidor contra el endpoint existente",
+        "Cita 31"
+      ],
+      "forbid": [
+        "Inventar un endpoint nuevo"
+      ]
+    },
+    {
+      "id": "audit-plans-radio-cards",
+      "prompt": "Audita el alta de suscripción (formulario de página): <Select label=\"Plan\"> con Básico $499, Pro $999, Empresa $1,999. La migración tiene ->default('basic'). La tabla de suscripciones filtra por plan con el mismo Select.",
+      "expect": [
+        "Baja: opciones con precio escondidas en select en el alta",
+        "Propone radio cards con precio visible y 'basic' ya seleccionado (default de la migración)",
+        "El select del filtro no es hallazgo"
+      ],
+      "forbid": [
+        "Radio cards en la barra de filtros"
+      ]
+    },
+    {
+      "id": "audit-slug-without-helpers",
+      "prompt": "Audita el form de torre: <TextField label=\"Nombre\" {...register('name')} /> y <TextField label=\"Slug\" {...register('slug')} />. La API tiene GET /towers/slug-availability.",
+      "expect": [
+        "Media: slug sin ayudas",
+        "Autogenerado desde el nombre hasta la edición manual",
+        "Check en vivo con debounce contra el endpoint existente y alternativas si está ocupado",
+        "Prefijo de URL como adornment y preview"
+      ],
+      "forbid": [
+        "Texto 'Disponible'"
+      ]
+    },
+    {
+      "id": "audit-picker-missing-dependency",
+      "prompt": "Audita (repo con @mui/material, SIN @mui/x-date-pickers): <TextField type=\"date\" label=\"Inicio\" {...register('startsAt')} />",
+      "expect": [
+        "Sin hallazgo Media por la fecha nativa",
+        "Propuesta de stack 19 con @mui/x-date-pickers, porqué y costo"
+      ],
+      "forbid": [
+        "Instalar el paquete",
+        "Severidad Media"
       ]
     }
   ]

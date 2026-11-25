@@ -1,6 +1,6 @@
 {
   "skill": "gian-how-i-code",
-  "version": "1.4.6",
+  "version": "1.4.52",
   "cases": [
     {
       "id": "impl-entity-crud",
@@ -951,6 +951,20 @@
         "Exporta una sola constante (MIME, max bytes) con comentario de fuente; schema, accept y hint salen de ella",
         "Detecta que el backend limita dimensiones 4096 y el front no; lo agrega o lo reporta",
         "El cierre incluye la línea Contraste backend con verificados / sin verificar / desfases"
+      ]
+    },
+    {
+      "id": "impl-new-form-applies-31",
+      "prompt": "Crea el formulario de alta de desarrollo inmobiliario: nombre, slug público, precio desde (MXN), vigencia de preventa (rango de fechas) y tipo (3 opciones con default en la migración). El repo usa MUI con x-date-pickers y existe GET /developments/slug-availability.",
+      "expect": [
+        "Slug autogenerado del nombre hasta edición manual, check en vivo contra el endpoint existente, prefijo adornment",
+        "Precio con adornment $ / MXN y número limpio en el payload",
+        "DateRangePicker con presets y min/max de negocio",
+        "Tipo como radio cards o radio con el default de la migración ya marcado"
+      ],
+      "forbid": [
+        "Instalar dependencias",
+        "Inventar endpoints"
       ]
     }
   ]

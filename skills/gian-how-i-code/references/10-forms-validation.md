@@ -88,8 +88,8 @@ La tabla no limita la regla. Si el campo no aparece, se identifica qué represen
 | Email | `type="email"`, `autocomplete="email"`. `trim`. El dominio puede ir en minúsculas. La parte antes de `@` no se fuerza a minúsculas: es decisión de producto. Schema: email válido. En el borde, la regla de email del stack. |
 | Nombre / apellidos | Letras con acentos, espacios, apóstrofo y guion. Sin dígitos. `trim` y espacios colapsados. `autocomplete="given-name"` / `"family-name"`. |
 | Teléfono | `type="tel"`, `inputmode="tel"`, `autocomplete="tel"`. Se normaliza a dígitos y un `+` inicial antes de enviar. Un número con guiones o espacios se normaliza; no se rechaza el pegado. |
-| Fecha | Date input nativo o el DatePicker del repo. ISO en el payload. Texto libre no es el tipo. |
-| Hora | `type="time"` o el picker del repo. `HH:mm` en el payload. |
+| Fecha | El DatePicker del repo (control y contexto en `31`). ISO en el payload. Texto libre no es el tipo. |
+| Hora | El TimePicker del repo; `type="time"` solo si no hay (`31`). `HH:mm` en el payload. |
 | Entero | `inputmode="numeric"` y entero. `min` / `max` cuando el dominio ya los tiene. |
 | Decimal / dinero | `inputmode="decimal"`. Dinero: 2 decimales, sin redondeo por float. Si el repo tiene schema de dinero o decimal, se usa. |
 | Identificador con formato fijo (RFC, CURP, CLABE, código postal) | Siempre string, nunca `type="number"`: se pierden los ceros a la izquierda. Se normaliza el valor real, no con CSS: mayúsculas en RFC y CURP, `trim`, y quitar espacios y guiones al pegar. `inputmode="numeric"` si son solo dígitos. En un campo nuevo, `maxLength` y regex del formato. En uno existente, son PROP. El formato que decide la validez se ve en un addon o en una ayuda corta, no solo en el placeholder, que desaparece al escribir. |
@@ -101,15 +101,7 @@ La tabla no limita la regla. Si el campo no aparece, se identifica qué represen
 
 - **Se aplica** en el campo tocado lo que no rechaza un valor que hoy pasa: el `type` que le corresponde, `inputmode`, `autocomplete` y normalización sin pérdida. Los ejemplos de la tabla (`trim`, teléfono a dígitos y `+`) no agotan la lista. Minúsculas en todo el email no son ese default. Un monto `type="number"` libre pasa a decimal con 2 decimales, usando el schema de dinero o decimal del repo, sin parseo por float.
 - **Se propone (PROP)** lo que puede rechazar datos ya guardados o cambiar el contrato. Los ejemplos (nombre o apellidos sin dígitos, reescribir un identificador ya guardado, rangos de negocio, un tope nuevo, una longitud máxima nueva) no agotan la lista. No se aplica en silencio.
-- **El control sigue a la elección, no al gusto.** Un widget que ya existe no se convierte, y no se recorre el formulario cambiando widgets. En un campo nuevo:
-
-| Opciones | Control |
-|---|---|
-| 2 exclusivas | radio |
-| 2 a 4 con datos que hay que comparar (precio, límite), formulario nuevo | radio cards |
-| 3 a 7 fijas, sin datos que comparar | select del repo; radio si hay que verlas juntas para decidir |
-| muchas, o un catálogo dinámico (clientes, ciudades, productos) | combobox o autocomplete del repo |
-
+- **El control sigue a la elección y al contexto, no al gusto.** Qué control y qué ayuda ágil corresponden según el dato, las opciones y dónde se muestra (página, dialog, filtro de tabla, celda) vive en `31-form-controls-ux`. En un formulario nuevo se aplica. Un widget que ya existe no se convierte sin preguntar: es PROP según `31`, y no se recorre el formulario cambiando widgets.
 - **Fuente del combobox.** Antes de usarlo se verifica que el repo tenga el componente y de dónde salen las opciones. Catálogo ya cargado o chico: filtrado en cliente. Catálogo grande: búsqueda en servidor con el endpoint que ya existe. Sin componente o sin endpoint, es propuesta (`19`): no se inventa una ruta ni se construye en el mismo corte, y mientras tanto queda el control que el repo ya tiene.
 - **Una línea por campo, antes del edit.** Antes de escribir el formulario, una línea por campo creado o editado: qué representa, tipo, control, normalización y ayuda. Va en el plan, o antes del primer edit si no hay plan. El cierre (`21`) la repite con lo aplicado, propuesto o descartado.
 - **La misma regla** va en el schema del form y en el borde (FormRequest, body model de Pydantic, schema del handler), con mensaje de dominio y 422 por campo (`05`, `15`).

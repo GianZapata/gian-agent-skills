@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.52 — 2026-11-25
+
+- Nueva `31-form-controls-ux`: matriz dato × número de opciones × contexto (formulario de página, dialog/drawer, barra de filtros, edición inline), ayudas ágiles con su disparador (slug autogenerado con check en vivo contra un endpoint existente, dominio con adornment y preview, dinero/unidades, default visible desde migración → modelo/FormRequest → seeder → supuesto, máscaras, fechas con presets y min/max), aplicar en un formulario nuevo vs PROP en uno existente, componente ausente → `19` sin instalar, severidad de auditoría.
+- `10`: la tabla de controles y la preferencia de picker se mueven a `31`; un widget existente que no encaja se propone, no se ignora.
+- `24` categoría «Control de formulario / ayudas ágiles»; `30` §2 apunta a `31`.
+- Evals: audit +5 (53), implementation +1 (75).
+
 ## 1.4.51 — 2026-11-25
 
 - Evals: `impl-drop-ceremonial-usememo` contradecía el caso C (`displayFile` tiene 3 ramas). Ahora usa un `useMemo` ceremonial real (una expresión sin ramas); `displayFile` pasa al nuevo `impl-keep-case-c-usememo`, que espera conservar `useMemo<DisplayFile | null>`.
