@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.48 — 2026-11-25
+
+- `13` §Pasar una query a un componente: si un componente usa 2+ piezas de la misma query, recibe el objeto completo (`UseQueryResult<T, CustomError>`, sin `Pick`); el padre elige el objeto una vez en vez de repetir el ternario por pieza; excepción para componentes genéricos de `shared/`. rg de auditoría, hallazgo Media, ítem de checklist, puntero en `04` §Composición y Hard Rule en `SKILL.md`.
+- Evals `impl-pass-whole-query`, `audit-split-query-props`.
+
 ## 1.4.47 — 2026-11-25
 
 - `23` §URLs blob: descarga con `FileHelper.download`, preview con `useObjectUrl` (crea al cambiar, revoca en cleanup); prohibido `createObjectURL`/`revokeObjectURL` a mano o URL en `useState` + efecto propio. rg de auditoría, fila de severidad Media y Hard Rule en `SKILL.md`.

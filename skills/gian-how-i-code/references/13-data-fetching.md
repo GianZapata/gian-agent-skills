@@ -138,6 +138,40 @@ Error: `CustomError` (o el del proyecto).
 
 No imponer todas las opciones en cada query.
 
+### Pasar una query a un componente (Auditar + Implementar)
+
+Si un componente consume **2+ piezas de la misma query** (`isPending`, `error`, `refetch`, `data`), recibe el **objeto de la query completo** en una sola prop y deriva adentro. No se parte en `pending`, `error`, `onRetry` y `rows` sueltas.
+
+- Tipo de la prop: el objeto completo, `UseQueryResult<T, CustomError>` (o el tipo de retorno del hook de query del repo). Sin `Pick` ni alias angosto.
+- Si el padre elige entre dos queries, elige el **objeto** una vez (`const towersQuery = scope === All ? overviewQuery : tableQuery`) y no repite el ternario en cada pieza.
+- Excepción: un componente genérico y reusable de `shared/` (p. ej. `ErrorBanner`) recibe primitivos (`message`, `onRetry`). El componente de la feature que lo usa sí recibe la query y le pasa `query.error?.message`.
+
+Antes (`CentralDashboardPage` → `CentralOverviewView` → `CentralTowersSection`):
+
+```tsx
+<CentralOverviewView
+  tablePending={scope === All ? overviewQuery.isPending : tableQuery.isPending}
+  tableError={scope === All ? overviewQuery.error?.message ?? null : tableQuery.error?.message ?? null}
+  onRetryTable={() => void (scope === All ? overviewQuery.refetch() : tableQuery.refetch())}
+  tableRows={tableRows}
+/>
+```
+
+Después:
+
+```tsx
+const towersQuery = scope === All ? overviewQuery : tableQuery;
+
+<CentralOverviewView towersQuery={towersQuery} />
+
+// CentralTowersSection
+interface CentralTowersSectionProps {
+  towersQuery: UseQueryResult<CentralDashboardResponse, CustomError>;
+}
+```
+
+Auditoría: `rg -n '(Pending|Error|Loading|Fetching)=\{' src` y revisar si 2+ props del mismo componente salen de la misma query. Hallazgo **Media**: 2+ piezas de la misma query como props sueltas, o ternario de selección repetido por pieza.
+
 ## 4. Mutations e invalidación
 
 ### Separación ruta vs DTO (HARD)
@@ -336,6 +370,7 @@ Devtools: útil en dev; no es dependencia de producción obligatoria. Devtools d
 - [ ] Variables del `queryFn` están en la key
 - [ ] QueryClient central reutilizado (no uno por feature)
 - [ ] Query: interface `*QueryProps` con `Omit<UseQueryOptions…, 'queryKey' | 'queryFn'>`
+- [ ] Componente que usa 2+ piezas de una query recibe el objeto completo (§3 Pasar una query)
 - [ ] Mutation: interface `Use*MutationOptions` + solo `mutationFn` en el hook; toast/invalidate en el caller
 - [ ] DTO con `z.infer`; `TVariables` = DTO o envelope `*Variables` según la tabla de §4
 - [ ] `useMutation<TData, CustomError, TVariables>` con los 3 genéricos

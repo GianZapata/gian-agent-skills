@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.4.47"
+  version: "1.4.48"
 ---
 
 # gian-how-i-code
@@ -46,6 +46,7 @@ No usar como única skill para: explicación genérica de React/Vue/Angular/Lara
 - Casts (`23` §Casts): prohibidos `as any`, `as unknown as` y `as never`; se corrige el origen (en forms, genéricos `z.input`/`z.output` de `useForm`). Excepción solo con comentario.
 - URLs blob (`23` §URLs blob): descarga con `FileHelper.download(blob, name)`, preview con `useObjectUrl(file)`; `createObjectURL`/`revokeObjectURL` a mano fuera de esas piezas es hallazgo Media.
 - Composición (núcleo, `04` §Composición, `23` §Lógica en JSX): un `.map` con lógica local, handlers o JSX largo → componente (`<XRow>`). Bloque JSX igual 2+ veces → componente con prop de variante. 3+ secciones independientes → componentes de sección. Con 2+ subcomponentes privados → carpeta `<Comp>/<Comp>.tsx`, **sin `index.ts`**; si tu cambio deja un archivo con 2+ componentes privados, lo vuelves carpeta en ese mismo cambio, aunque no los hayas escrito tú. Cada subcomponente vive en la carpeta de su ancestro común más cercano, en todos los niveles (`04` §Dónde vive cada subcomponente); lo público queda fuera. Una función que solo usa ese árbol queda privada en el padre, no en `.util.ts`; si devuelve JSX, es componente. Derivación repetida → helper; expresión larga → `const` (A/B); `useMemo` solo para 3+ ramas o condición de 3+ partes (C), nunca para concatenar.
+- Query como prop (`13` §Pasar una query a un componente): si un componente usa 2+ piezas de la misma query (estado, error, retry, data), recibe el objeto completo `UseQueryResult<T, CustomError>`, sin `Pick`. Si el padre elige entre dos queries, elige el objeto una vez. Solo los componentes genéricos de `shared/` reciben primitivos.
 - Display FE: metadata exhaustiva en una propiedad pública `static readonly Record<Enum, Meta>` de `<entity>.helper.ts`; getter de `label` con `i18n.t()` para resolver el locale al leer; `getXMeta(Enum | null | undefined)` con `unknownMeta` y resolver privados. Si el valor puede ser `null`/`undefined`, el consumidor MUST llamar a `getXMeta()`. El acceso directo al Record solo vale con enum garantizado o al iterar. No ampliar a `string`, usar casts ni fallbacks para ocultar drift. If-chain ad-hoc en el componente con `t()`. Prohibido `*.display.config.ts`, inyectar `TFunction`, `labelKey` diferido — ver `07`/`08`/`15`.
 - Contrato de lectura (núcleo): el serializer no dispara queries; las relaciones se cargan antes, sin N+1. En Laravel: `new XResource($this->whenLoaded('rel'))` / `::collection($this->whenLoaded('rels'))`, sin callback `fn() => new X($this->rel)` salvo lógica extra — ver `06`. En Python: `response_model` o un serializer sobre datos ya cargados.
 - Mutaciones: IDs de ruta nunca se mezclan con el DTO del body. 1 ID: `(id, data: TDto)`; 2+: `(params, data: TDto)`. El DTO sale de un schema nombrado; en TypeScript ese schema es Zod, en Python un body model de Pydantic. El envelope `*Variables` es del adaptador React Query o Vue Query (`13`). UI no arma FormData — ver `13`/`10`/`23`.

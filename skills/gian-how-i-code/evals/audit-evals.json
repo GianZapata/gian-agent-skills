@@ -481,6 +481,15 @@
         "Marca cada uno como Media",
         "Propone FileHelper.download(blob, name) para las descargas y useObjectUrl(file) para los previews, en shared/"
       ]
+    },
+    {
+      "id": "audit-split-query-props",
+      "prompt": "Audita CentralDashboardPage y CentralTowersSection: la página pasa tablePending, tableError, onRetryTable y tableRows, cada una con scope === All ? overviewQuery : tableQuery.",
+      "expect": [
+        "Reporta hallazgo Media: 2+ piezas de la misma query como props sueltas",
+        "Reporta el ternario de selección repetido por pieza",
+        "Propone elegir el objeto una vez y pasar la query completa (13 §Pasar una query a un componente)"
+      ]
     }
   ]
 }

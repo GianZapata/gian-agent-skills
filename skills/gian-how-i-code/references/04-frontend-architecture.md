@@ -229,6 +229,8 @@ Selectores `'& .Mui…'` solo si el componente no documenta un slot para ese ele
 
 Núcleo. En Vue el componente es un SFC hijo con la misma carpeta (`25`).
 
+Props de una query: si el componente usa 2+ piezas de la misma query, recibe el objeto completo (`13` §Pasar una query a un componente).
+
 ### `.map` → componente
 
 El callback de un `.map` se extrae a un componente (`<EntityRow entity onOpen />`) si cumple **una** de estas condiciones:

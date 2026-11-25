@@ -919,6 +919,16 @@
         "El hook revoca la URL al cambiar de archivo y al desmontar",
         "No guarda la URL en useState"
       ]
+    },
+    {
+      "id": "impl-pass-whole-query",
+      "prompt": "La página tiene overviewQuery y tableQuery; según el scope, la sección de torres muestra una u otra con loading, error y reintentar. Implementa la sección.",
+      "expect": [
+        "El padre elige el objeto una vez (const towersQuery = scope === All ? overviewQuery : tableQuery)",
+        "La sección recibe towersQuery tipada como UseQueryResult<T, CustomError> completa, sin Pick",
+        "No pasa pending, error, onRetry y rows como props sueltas",
+        "ErrorBanner (shared) sigue recibiendo message y onRetry"
+      ]
     }
   ]
 }
