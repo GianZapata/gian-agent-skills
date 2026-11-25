@@ -92,6 +92,8 @@ El término que va es el que el producto ya usa para esa entidad, en navegación
 
 Cuentan como copy las etiquetas de grupo de la navegación y los encabezados de sección. Un subtítulo no describe el interior del sistema.
 
+Un texto visible escrito en un spec, plan o ticket que el usuario no dictó con ese texto exacto es una propuesta, no un contrato. Pasa por el mismo `rg` al escribirse en el spec y otra vez al implementarlo. Copiarlo del spec no lo vuelve válido: se corrige y el cierre avisa del cambio. Un rótulo nombra el efecto para quien lee, no el mecanismo que lo produce.
+
 ```text
 BAD:  grupos de navegación «Central» y «Tenant»
 GOOD: «Administración», o un grupo sin etiqueta
@@ -101,6 +103,9 @@ GOOD: Nueva empresa
 
 BAD:  Panel central multitenant · Gestión de tenants en la base central
 GOOD: Empresas · Administra las empresas activas y sus planes.
+
+BAD:  Webhooks de pagos fallidos (copiado de un spec)
+GOOD: Pagos en línea sin registrar
 ```
 
 Antes de cerrar, sobre los archivos de locale o de copy si el repo los tiene, y después sobre los archivos tocados:

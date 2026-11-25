@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.38 — 2026-11-24
+
+- `15`: un texto visible de un spec, plan o ticket que el usuario no dictó es una propuesta; pasa por el `rg` de vocabulario al escribirse y al implementarse, y el cierre avisa del cambio. BAD/GOOD genérico.
+- `gian-development-workflow` `visual-quality` obligación 12: cada acción muestra su efecto donde el usuario mira (scroll y foco, o no se pone); al arreglar «no pasa nada» se reproduce antes.
+- `tools/run-behavior.py`: evals de comportamiento (Grok CLI, cursor-agent, claude) que editan un worktree desechable y califican el diff.
+
 ## 1.4.37 — 2026-11-24
 
 - `10`: fila para identificadores con formato fijo (RFC, CURP, CLABE, código postal): string, normalización del valor real, `maxLength` y regex en un campo nuevo (PROP en uno existente), formato visible fuera del placeholder.

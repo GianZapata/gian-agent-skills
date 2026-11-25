@@ -114,6 +114,14 @@ python3 tools/run-evals.py --skill <name>
 
 To have another model write the answers (for example Grok), add `--answer-model <id>` (ids from `cursor-agent --list-models`). The judge stays `claude -p`; `--model` only changes the Claude calls. `--judge-model <id>` grades through `cursor-agent` too, for when Claude is unavailable.
 
+`tools/run-behavior.py` measures application, not description: an agent edits a disposable `git worktree` and the diff is graded.
+
+```bash
+python3 tools/run-behavior.py --cases <cases.json> --host grok|cursor|claude --model <id> --repeat 2 --judge-model <id>
+```
+
+The cases file holds `repo`, `base`, optional `link` (for example `node_modules`) and `cases` with `prompt`, optional `setup_files`, and the checks `forbid_added`, `require_added`, `require_removed` (regexes on the diff), `require_read`, `commands` and `expect` (judged). Runs take minutes each, so run cases in parallel and keep the cases file outside this repo when it names a client.
+
 That applies to `skills/<name>/` only. Do not commit `evals/` or `evals-results/`. The same order is in `AGENTS.md`.
 
 ## Update

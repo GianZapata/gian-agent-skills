@@ -79,7 +79,7 @@ No descartar la principal ni `impeccable` para preferir contexto de código. Una
 
 ## Obligaciones
 
-Aplican siempre, incluidas 2, 6, 8, 9, 10 y 11. Solo 1, 3 y 5 se pueden omitir, y solo en un ajuste menor (sección Rediseño autorizado); el cierre declara cuáles se omitieron.
+Aplican siempre, incluidas 2, 6, 8, 9, 10, 11 y 12. Solo 1, 3 y 5 se pueden omitir, y solo en un ajuste menor (sección Rediseño autorizado); el cierre declara cuáles se omitieron.
 
 1. Audiencia, tarea, contenido, frecuencia y restricciones antes del layout. Preguntar solo si no están y la decisión es material.
 2. Inspeccionar UI, tokens y componentes. En un refinamiento, conservar la identidad y corregir el defecto.
@@ -92,3 +92,4 @@ Aplican siempre, incluidas 2, 6, 8, 9, 10 y 11. Solo 1, 3 y 5 se pueden omitir, 
 9. Abrir la UI con el navegador disponible y revisar lo renderizado en cada contenedor que el cambio toca o abre. Capturas en los breakpoints que declara el repo; si no declara, 375, 768 y 1440. Tests en verde no alcanzan.
 10. Si no se vio después de intentarlo (9), decir exactamente qué falta y por qué. No afirmar acabado solo con código.
 11. La referencia (HTML, captura, Figma, plan) aporta composición, tokens y datos de ejemplo. Su título, sus notas de fase, muestra, Mock o entrega no son copy. Sección sin datos: constante + `TODO(datos)` en código, sin rótulo. Fuera de alcance: no se monta. Detectarlo, implementarlo igual y avisar en el plan y en el cierre (*Sin datos todavía*, *Texto de la referencia que no publiqué*). Ver `gian-how-i-code` `15`.
+12. Cada acción muestra su efecto donde el usuario está mirando. Si el efecto cae fuera del viewport (por ejemplo, filtra una tabla más abajo), la acción lleva hasta ahí con scroll y foco, o no se pone. Una flecha `→` promete navegación. Una acción no desaparece antes de que su resultado se vea. Al arreglar «no pasa nada», reproducir primero qué cambia y dónde, y no declarar que funciona sin verlo.
