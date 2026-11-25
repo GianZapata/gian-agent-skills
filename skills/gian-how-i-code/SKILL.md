@@ -133,7 +133,7 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 |-----------|------|
 | Arranque / índice humano | `00-index`, `01-principles` |
 | Toca repo | `02-repository-discovery` (inventario + tooling) |
-| Feature FE | `03-feature-mold`, `04-frontend-architecture`, `13-data-fetching`, `23-ts-style-helpers` |
+| Feature FE | `03-feature-mold`, `04-frontend-architecture`, `13-data-fetching`, `15-i18n-copy`, `23-ts-style-helpers` |
 | Constantes, literales de negocio repetidos, `.map` con lógica, bloques JSX repetidos, componente grande o carpeta de componente | `04-frontend-architecture` §Composición, `23-ts-style-helpers` §Valores y §Lógica en JSX, `07-types-enums-statuses` |
 | Cuerpo de un componente, hook o composable | `04-frontend-architecture` (slots) y `26-function-body-order` (casos del slot). Al tocarlo, reordenar esa función |
 | Método PHP o función plana `.ts` | `26-function-body-order`. Al tocarlo, reordenar esa función. El formato visual sigue en `gian-php-style` o `gian-ts-style` |
@@ -161,7 +161,7 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 | Contratos HTTP / envelopes / whenLoaded Resource | `06-api-contracts` |
 | Errores / toasts / cliente HTTP compartido + mapper de errores (`apiFetcher` en React) | `14-errors-feedback` |
 | `abort`, mensaje HTTP, o un texto que pueda mostrarse al retirar o bloquear una acción | `15-i18n-copy` |
-| i18n / copy / `t()` vs `i18n.t()` | `15-i18n-copy`, `08-display-conventions`, `10-forms-validation` |
+| i18n / copy visible (títulos, descripciones, vacíos, helpers, toasts) / `t()` vs `i18n.t()` | `15-i18n-copy`, `08-display-conventions`, `10-forms-validation` |
 | Valor fijo de prueba, desvío de un registro, o un aviso que nombra ese destino | `15-i18n-copy` |
 | Referencia visual, mockup, spec o plan con rótulos de fase, muestra o Mock | `15-i18n-copy`, `08-display-conventions` |
 | Central/tenant | `16-multi-tenant` |

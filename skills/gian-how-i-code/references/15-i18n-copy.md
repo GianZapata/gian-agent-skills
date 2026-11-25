@@ -84,8 +84,8 @@ Si el usuario pide explícitamente solo analizar, o no modificar archivos, se en
 Las palabras que nombran cómo está construido el sistema no se publican. Las palabras del prompt, del plan o del ticket tampoco son copy: describen el sistema para quien lo construye, no la tarea para quien lo usa.
 
 - Alcance o contexto: `central`, `tenant`, `shared`, `multitenant`.
-- Datos e infraestructura: base de datos, conexión, cola, job, webhook.
-- Patrones: CRUD, Action, Query, Resource, módulo.
+- Datos, modelado e infraestructura: base de datos, conexión, cola, job, webhook, `snapshot`, `payload`, `schema`, caché, `backfill`, `seed`, entidad, instancia.
+- Patrones y mecanismos de UI: CRUD, Action, Query, Resource, módulo, «solo lectura» / `read-only` como descargo innecesario, `modal`, `drawer`, `toast`.
 - Nombres de carpetas, casos de enum y de rol (`super_admin`).
 
 El término que va es el que el producto ya usa para esa entidad, en navegación, breadcrumbs, títulos o locale. Si no existe, el sustantivo del dominio de quien lee, y el cierre lo registra como decisión. Una entidad lleva la misma palabra en todas las pantallas. No hay tabla fija: en un producto de cobranza el término puede ser «Empresas»; en otro, «Clientes».
@@ -111,7 +111,7 @@ GOOD: Pagos en línea sin registrar
 Antes de cerrar, sobre los archivos de locale o de copy si el repo los tiene, y después sobre los archivos tocados:
 
 ```bash
-rg -n -i "\b(tenants?|central|multi-?tenant|crud|base de datos|m[oó]dulo|webhook|super_admin)\b" <archivos tocados>
+rg -n -i "\b(tenants?|central|multi-?tenant|crud|base de datos|m[oó]dulo|webhook|super_admin|snapshot|payload|schema|cach[eé]|backfill|seed|entidad|instancia|solo lectura|read-?only)\b" <archivos tocados>
 ```
 
 El `rg` solo encuentra candidatos. Se juzga lo que es string visible: texto JSX, `title`, `label`, `placeholder`, `description`, `aria-label`, toasts, valores de locale y el `message` de `abort` o de un JSON. Imports, tipos (`TenantId`), rutas (`/tenants`), props y keys se descartan sin listarlos. Cada coincidencia visible se corrige, o se conserva con su motivo si es un término del dominio de quien lee («registro» en un producto de auditoría). En auditoría es hallazgo Media, y Alto si está en la navegación o en el título principal.

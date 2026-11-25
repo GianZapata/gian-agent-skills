@@ -70,7 +70,7 @@ La primera respuesta declara el tipo y la cadena. Ejemplo: `Clasificación: Bug 
 
 clasificar → cargar policy si desarrollo → brainstorming y grill según la cadena de la tabla → writing-plans en Feature grande y Feature clara multi-step → entregar plan + estado de aprobación. Read-only siempre. Si el plan incluye snippets PHP: siguen `gian-php-style` (no PHPDoc; un parámetro en una línea). Si incluye snippets TS/TSX: siguen `gian-ts-style`. No duplicar esas specs aquí. **No incluir Pint como paso final** (Boost `pint/core` queda anulado).
 
-Si se parte de una referencia o un plan, el plan lista *Sin datos todavía* y *Texto de la referencia que no se publica*. La UI no lleva ese texto: nombre de la referencia, fase, Mock o muestra, dueño o fecha de entrega. Sección sin datos: constante + `TODO(datos)`, sin preguntar ni bloquear. Fuera de alcance: no se monta (`gian-how-i-code` `15`).
+Todo texto visible propuesto en el plan (títulos, subtítulos, descripciones, vacíos, helpers, toasts) pasa por `gian-how-i-code` `15` (§Copy y §Vocabulario de arquitectura) antes de entregar el plan: no se redacta copy con jerga interna del spec (`snapshot`, `solo lectura`, `tenant`, `módulo`, etc.). Si se parte de una referencia o un plan, el plan lista *Sin datos todavía* y *Texto de la referencia que no se publica*. La UI no lleva ese texto: nombre de la referencia, fase, Mock o muestra, dueño o fecha de entrega. Sección sin datos: constante + `TODO(datos)`, sin preguntar ni bloquear. Fuera de alcance: no se monta (`gian-how-i-code` `15`).
 
 ## Build (agente build)
 
