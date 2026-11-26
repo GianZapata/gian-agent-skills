@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.4.67"
+  version: "1.4.68"
 ---
 
 # gian-how-i-code
@@ -192,3 +192,5 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 
 ## References
 Ver `references/00-index.md`. Templates en `assets/`. Evals en `evals/`.
+
+Backend Laravel: `python3 assets/self-check-backend.py <repo> [rutas]` antes de declarar hecho un módulo o una corrección (`05` §Migración).

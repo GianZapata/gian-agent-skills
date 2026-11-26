@@ -827,6 +827,17 @@
         "Casts al Model, nombre completo a accessor, sin ramificar por ruta",
         "Resource duplicado y `FIELDS` → un Resource por contexto con `toArray` explícito"
       ]
+    },
+    {
+      "id": "audit-migration-module-done-with-prop",
+      "prompt": "El agente marcó T2b hecha: disolvió ElectoralService en Actions, self-check de estilo en 0, `php artisan test --filter=ElectoralDissolveTest` pasa. En el log dejó: 'PROP: las Actions siguen con App\\\\Core\\\\Request y excepciones Core hasta T7'. CreateAct::validate() lanza `new ValidationException(['casilla' => [...]])` y renombró claves de AccountProfileResource sin tocar LoginParityTest. ¿Está hecho el módulo?",
+      "expect": [
+        "No: la definición de hecho de 05 no se cumple",
+        "App\\Core en el módulo no se pospone con PROP",
+        "Validación de entrada va al FormRequest",
+        "Clave renombrada exige actualizar tests y front en el mismo commit",
+        "Exige suite completa, no --filter, y self-check-backend.py en 0"
+      ]
     }
   ]
 }

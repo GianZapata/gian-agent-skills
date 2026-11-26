@@ -70,12 +70,22 @@ El cierre MUST incluir el bloque **Revisión del caso**:
 
 - Nada nuevo en una raíz no canónica (`app/Actions`, `app/Auth/*Service`, `app/Http/Support`). Lo nuevo nace en la raíz canónica.
 - Al tocar un módulo, se mueve a la raíz canónica todo el módulo, no solo lo editado.
-- Definición de hecho de un módulo: su `<Contexto>Service` de dominio ya no existe (disuelto en Actions + Queries), sus clases están en las raíces canónicas, sus traits en `app/Traits/<anfitrión>/` y `gian-php-style` `self-check.php --base=<commit previo a la tarea>` da 0 pendientes.
+- Definición de hecho de un módulo (HARD, todo a la vez):
+  - su `<Contexto>Service` de dominio ya no existe (disuelto en Actions + Queries), sus clases están en las raíces canónicas y sus traits en `app/Traits/<anfitrión>/`;
+  - cero `App\Core\*` en sus Controllers, Actions, Queries y Requests;
+  - cero validación de entrada en Action o Controller (`new ValidationException([...])`, `if (!$file) throw`): va en el FormRequest (`rules()`/`after()`). La Action solo lanza reglas de negocio que dependen del estado (duplicado en BD, transición inválida);
+  - una clave renombrada (Resource, payload, campo de form) actualiza en el mismo commit sus tests y todos sus consumidores del front (`rg` de la clave vieja en `resources/js` y `public/` da 0);
+  - `gian-php-style` `self-check.php --base=<commit previo a la tarea>` da 0 pendientes;
+  - `assets/self-check-backend.py <repo> <rutas del módulo>` da 0 pendientes;
+  - la suite **completa** pasa (`php artisan test`, no `--filter`) y el front compila si se tocó (`typecheck`/`build`). Un test que ya fallaba en la base se demuestra corriéndolo en la base y se anota en el log; cualquier otro rojo deja la tarea abierta.
+- Prohibido posponer una regla HARD del módulo con `PROP`, "hasta T#" o "fuera de alcance" y marcarlo hecho (HARD). `PROP` solo vale para código fuera del módulo, o con un bloqueo que el usuario aprobó y quedó en el log con su cita. Sin eso, la tarea sigue `in progress`.
+- No se adelanta una tarea que espera aprobación: si el log dice "se muestra para aprobación", el árbol no lleva esos cambios hasta el visto bueno.
 - Service de dominio → se elimina, no se envuelve (HARD). Cada mutación pasa a su propia Action con la lógica adentro; cada lectura, a una Query; la lógica compartida, a un helper o un trait de dominio. Un Service de 5 operaciones da 5 Actions, nunca una `<Contexto>Action` gigante.
 - Hallazgo: Action que solo delega a un Service de dominio (`__construct(private MapService $service)` + `return $this->service->...`). No cuenta como migrada.
 - Hallazgo: Service que importa Actions (dependencia invertida). La Action no depende de nada más arriba que Queries, helpers, traits e integraciones.
 - Un import/export CSV o una reconciliación masiva es una Action que llama un comando o un Job, no un Service.
 - Se queda como Service solo el archivo que llama fuera (HTTP, gateway, parseo de un formato externo, `Storage` de un proveedor) en `app/Services/<Integración>/`. En una carpeta mixta se decide archivo por archivo.
+- "Llama fuera" se mide por método, no por archivo: un `*ImportService` o `*ReconciliationService` que parsea (KML, XLSX, CSV) **y** persiste se parte: el parser queda en `app/Services/<Formato>/` y devuelve filas o DTOs; la escritura en BD es una Action. Etiquetarlo "outside caller" entero es hallazgo.
 - Hallazgo: Action que devuelve un `array` de fila legacy (`$user['requires_two_factor']`). Devuelve el `Model` y el estado se lee de atributos o métodos (`$user->requiresTwoFactor()`).
 - Hallazgo: Controller, Action o Query que usa piezas del framework legacy (`App\Core\Auth`, `Session`, `Csrf`, `Request::capture()`, `App\Core\Exception\*`). Se reemplazan en el módulo que se migra por lo nativo: `$request->user()`/`Auth`, `$request->session()`, CSRF del middleware, `$request` inyectado, excepciones de Laravel. No se deja para el cutover.
 - Contrato de capas: la Action resuelve y devuelve el `Model` (o `Collection`/paginator vía Query); el Controller envuelve en el Resource (`new <Entity>Resource($model)`). La Action no construye Resource ni `JsonResponse`. En web/Inertia el Controller devuelve `Inertia::render()` o `redirect()` con el Model; la regla del Resource aplica a API. La Action nunca construye la respuesta, en ningún caso.

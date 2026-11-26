@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.68 — 2026-11-26
+
+- `05` §Migración: definición de hecho HARD ampliada: cero `App\Core\*`, cero validación de entrada en Action/Controller, clave renombrada actualiza tests y front en el mismo commit, `self-check-backend.py` en 0, suite completa en verde (no `--filter`).
+- `05`: prohibido posponer una regla HARD del módulo con PROP/"hasta T#" y marcarlo hecho; no se adelanta una tarea que espera aprobación.
+- `05`: un Service que parsea y persiste se parte (parser en `Services/<Formato>`, escritura en Action).
+- Nuevo `assets/self-check-backend.py`: legacy-core, inline-new, service-imports-action, input-validation-in-code, resource-resolve/fields-map/cast/route-branch, raíz no canónica, archivo suelto, Action que usa un Service de dominio. GAP exit 2 sin archivos.
+
 ## 1.4.67 — 2026-11-26
 
 - `32` §7: kit de Rules copiado (`EmailAddress`, `HumanName`, `StrongPassword`, `E164Phone`, `Clabe`, `RfcStructural` y las otras clases idénticas). El FormRequest usa la clase que ya existe. Test en `tests/Unit/Rules` con `AssertsValidationRule`. El correo inline del FormRequest no se convierte a esa clase en la misma tarea.
