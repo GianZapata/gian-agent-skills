@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.66 — 2026-11-26
+
+- `05` Claves del Resource HARD: clave = columna en inglés del esquema/glosario, sin alias ni mezcla de idiomas; un concepto un nombre; booleanos `is_`/`has_`/`can_`, conteos `_count`, códigos `_code`; nombre descriptivo del dominio, no traducción literal; casts en el Model y derivados en accessor; el Resource no ramifica por ruta; un Resource por entidad y contexto, solo `toArray` explícito (sin `FIELDS`); en migración se corrige el glosario antes del esquema. Eval `audit-resource-key-naming` (caso bonito).
+
 ## 1.4.65 — 2026-11-26
 
 - `05` Respuesta del Controller HARD: prohibido `->resolve()` en controllers (el front lee `x.data`, misma forma en API e Inertia); API `return new XResource($x)` con `->additional()`; listados `XResource::collection($paginator)`, nunca `getCollection()` + meta/links aparte; Inertia arma `$props` y `return Inertia::render('<page>', $props)`. Eval `audit-controller-resource-resolve` (caso bonito `ActController`).

@@ -1,6 +1,6 @@
 {
   "skill": "gian-how-i-code",
-  "version": "1.4.65",
+  "version": "1.4.66",
   "cases": [
     {
       "id": "audit-mold",
@@ -814,6 +814,18 @@
         "API: `return (new ActResource($act))->additional(['prep_url' => ...])`, sin `response()->json(['data' => ...])`",
         "Listado: `ActResource::collection($paginator)`; elimina `getCollection()` y `Pagination::meta/links`",
         "Inertia: props en `$props = [...]` y `return Inertia::render('admin/acts/Index', $props)`"
+      ]
+    },
+    {
+      "id": "audit-resource-key-naming",
+      "prompt": "Audita los Resources de una migración: `ActResource` expone `type`, `state_key`, `state`, `box`, `box_type`, `votes`, `nominal_list`, `people_voted`, `valid_sum` (bool), `incidents` (bool), `source`, con `(int)` por campo, `surveyor` con `implode` del nombre y `photo_url` que cambia con `$request->is('api/*')`. El glosario de renombres dice `tipo → act_type`, `entidad → entity`, `casilla → polling_station`. `BallotResource` usa `entity` y `gender`; `CitizenResource` usa `nombre`, `apellido_paterno`, `sexo`. Hay `ColonyResource` en Admin y en Catalog con forma distinta; 5 Resources usan `FIELDS`.",
+      "expect": [
+        "Alta: claves distintas al glosario (`box` vs `polling_station`, `type` vs `act_type`) y mezcla de idiomas (`CitizenResource`)",
+        "Un concepto un nombre: `state` vs `entity`, `sex` vs `gender`",
+        "Booleanos `is_sum_valid`/`has_incidents`; conteos `registered_voters_count`, `voters_count`; `party_votes`, `capture_source`",
+        "Corrige el glosario antes del esquema (`entity` → `state`, `nominal_list` → `registered_voters_count`)",
+        "Casts al Model, nombre completo a accessor, sin ramificar por ruta",
+        "Resource duplicado y `FIELDS` → un Resource por contexto con `toArray` explícito"
       ]
     }
   ]

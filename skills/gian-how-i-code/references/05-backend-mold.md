@@ -84,6 +84,14 @@ El cierre MUST incluir el bloque **Revisión del caso**:
   - API: `return new <Entity>Resource($model)`; claves extra con `->additional([...])`. Prohibido `response()->json(['data' => <Entity>Resource::make($x)->resolve()])`.
   - Listados: `<Entity>Resource::collection($paginator)`. Prohibido `->getCollection()` con `meta`/`links` armados aparte (`Pagination::meta()`).
   - Inertia: con más de una prop o alguna calculada, se arman en `$props = [...]` y luego `return Inertia::render('<page>', $props);`. Una sola prop literal puede ir inline.
+- Claves del Resource (HARD):
+  - Clave = nombre de la columna en inglés del esquema (o del glosario de renombres en una migración). Prohibido inventar alias (`box` cuando la columna es `polling_station`) o mezclar idiomas entre Resources.
+  - Un concepto, un nombre en todo el backend (`state` en todos, no `state`/`entity`; `sex` o `gender`, uno).
+  - Booleanos con `is_`/`has_`/`can_` (`is_active`, `has_incidents`); conteos con `_count` (`uses_count`, `voters_count`); códigos con `_code`.
+  - El nombre describe el dato del dominio, no la traducción literal (`lista_nominal` → `registered_voters_count`, no `nominal_list`; `votos` por partido → `party_votes`; `fuente` → `capture_source`).
+  - Casts en `$casts` del Model, no `(int)`/`(bool)` por campo; nombre completo y derivados en accessor del Model. El Resource no ramifica por ruta (`$request->is('api/*')`).
+  - Un Resource por entidad y contexto; prohibido el mismo `<Entity>Resource` con forma distinta en dos carpetas y mezclar mapas mágicos (`FIELDS`) con `toArray` explícito: solo `toArray` explícito.
+  - Migración: se corrige el glosario (descriptivo, booleanos/conteos con prefijo/sufijo) antes de construir el esquema; el Resource lo sigue.
 - Si el plan (ODD, spec) fija otra raíz, se corrige el plan antes de seguir; no se sigue un plan que contradice esta tabla.
 
 ## Dónde va un valor, no en Support
@@ -363,6 +371,8 @@ final class UpdateInvoiceRequest extends InvoiceRequest {
 ### Bloque de reglas en entidades distintas
 
 Si el mismo bloque (dirección, contacto, periodo) se valida en requests de entidades distintas: trait en `app/Traits/Requests/<Eje>Rules.php`, namespace `App\Traits\Requests`. Expone métodos con el nombre del eje (`addressRules(string $prefix = '')`, `addressMessages(string $prefix = '')`). No declara `rules()`, `messages()` ni `authorize()`, y no lee `$this->route()`. Cada request arma su `rules()` con `...$this->addressRules('billing.')` y su `messages()` con `...$this->addressMessages('billing.')`.
+
+Si el repo ya tiene `EmailAddress`, `RfcStructural`, `Clabe`, `E164Phone`, `HumanName` o `StrongPassword`, el request usa esa clase. No se reimplementa el regex ahí (`32` §7).
 
 ### User-Facing Validation Contracts (HARD)
 
