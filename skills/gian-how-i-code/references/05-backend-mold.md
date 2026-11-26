@@ -79,6 +79,11 @@ El cierre MUST incluir el bloque **Revisión del caso**:
 - Hallazgo: Action que devuelve un `array` de fila legacy (`$user['requires_two_factor']`). Devuelve el `Model` y el estado se lee de atributos o métodos (`$user->requiresTwoFactor()`).
 - Hallazgo: Controller, Action o Query que usa piezas del framework legacy (`App\Core\Auth`, `Session`, `Csrf`, `Request::capture()`, `App\Core\Exception\*`). Se reemplazan en el módulo que se migra por lo nativo: `$request->user()`/`Auth`, `$request->session()`, CSRF del middleware, `$request` inyectado, excepciones de Laravel. No se deja para el cutover.
 - Contrato de capas: la Action resuelve y devuelve el `Model` (o `Collection`/paginator vía Query); el Controller envuelve en el Resource (`new <Entity>Resource($model)`). La Action no construye Resource ni `JsonResponse`. En web/Inertia el Controller devuelve `Inertia::render()` o `redirect()` con el Model; la regla del Resource aplica a API. La Action nunca construye la respuesta, en ningún caso.
+- Respuesta del Controller (HARD):
+  - Prohibido `->resolve()` sobre un Resource en el Controller. El wrapper `data` se conserva en API e Inertia; el front lee `x.data`.
+  - API: `return new <Entity>Resource($model)`; claves extra con `->additional([...])`. Prohibido `response()->json(['data' => <Entity>Resource::make($x)->resolve()])`.
+  - Listados: `<Entity>Resource::collection($paginator)`. Prohibido `->getCollection()` con `meta`/`links` armados aparte (`Pagination::meta()`).
+  - Inertia: con más de una prop o alguna calculada, se arman en `$props = [...]` y luego `return Inertia::render('<page>', $props);`. Una sola prop literal puede ir inline.
 - Si el plan (ODD, spec) fija otra raíz, se corrige el plan antes de seguir; no se sigue un plan que contradice esta tabla.
 
 ## Dónde va un valor, no en Support

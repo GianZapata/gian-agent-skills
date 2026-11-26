@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.65 — 2026-11-26
+
+- `05` Respuesta del Controller HARD: prohibido `->resolve()` en controllers (el front lee `x.data`, misma forma en API e Inertia); API `return new XResource($x)` con `->additional()`; listados `XResource::collection($paginator)`, nunca `getCollection()` + meta/links aparte; Inertia arma `$props` y `return Inertia::render('<page>', $props)`. Eval `audit-controller-resource-resolve` (caso bonito `ActController`).
+
 ## 1.4.64 — 2026-11-26
 
 - `22` Inyección HARD: ninguna clase crea o resuelve Action/Service/adaptador con `new`, `app()`, `resolve()` o Facade. Controller por método (`CreateUser $action` → `$action->handle()`), nunca estático; Action/Job/Listener/Command por constructor; Query por `::make()`; `new` solo para Model, DTO, excepción, Resource, Carbon.

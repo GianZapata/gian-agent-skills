@@ -1,6 +1,6 @@
 {
   "skill": "gian-how-i-code",
-  "version": "1.4.64",
+  "version": "1.4.65",
   "cases": [
     {
       "id": "audit-mold",
@@ -804,6 +804,16 @@
         "Propone `app(LoginService::class)` como arreglo",
         "Propone `AuthenticateLogin::handle()` estático",
         "Exige un Resource en el controller Inertia"
+      ]
+    },
+    {
+      "id": "audit-controller-resource-resolve",
+      "prompt": "Audita `Api/ActController::show()`: `return response()->json(['data' => ActResource::make($act)->resolve(), 'prep_url' => $service->prepUrl($act)]);` y `Admin/ActController::index()`: `return Inertia::render('admin/acts/Index', ['acts' => ActResource::collection($paginator->getCollection())->resolve(), 'stats' => ..., 'filters' => $filters, 'pagination' => Pagination::meta($paginator), 'links' => Pagination::links($paginator), 'catalogs' => [...]]);`",
+      "expect": [
+        "Alta: `->resolve()` en controller; el wrapper `data` se conserva y el front lee `x.data`",
+        "API: `return (new ActResource($act))->additional(['prep_url' => ...])`, sin `response()->json(['data' => ...])`",
+        "Listado: `ActResource::collection($paginator)`; elimina `getCollection()` y `Pagination::meta/links`",
+        "Inertia: props en `$props = [...]` y `return Inertia::render('admin/acts/Index', $props)`"
       ]
     }
   ]
