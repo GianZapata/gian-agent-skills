@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.55 — 2026-11-26
+
+- SKILL: ejecución de correcciones de auditoría de corrido (HARD). Sin pausas ni reportes intermedios; decisiones de producto se anotan como «Pendiente — decisión» y se sigue; fallo doble → revertir y «Bloqueado»; orden regresiones/Alto/Media/Baja; cierre único con preguntas al final.
+- Evals: implementation +1 (`impl-audit-fixes-continuous`, 79).
+
 ## 1.4.54 — 2026-11-25
 
 - Memo (SKILL + `23`): antes de quitar un `useMemo`, rastrear consumidores incluidos los hijos; si termina en dependencias de un efecto/callback/query key es caso E y quitarlo es Alto. Valores aleatorios no se recalculan por render.

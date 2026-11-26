@@ -1,6 +1,6 @@
 {
   "skill": "gian-how-i-code",
-  "version": "1.4.54",
+  "version": "1.4.55",
   "cases": [
     {
       "id": "impl-entity-crud",
@@ -1008,6 +1008,22 @@
         "features/towers/helpers/tower-image.helper.ts con función suelta",
         "imageExceedsTowerDimension",
         "settings importando de features/towers"
+      ]
+    },
+    {
+      "id": "impl-audit-fixes-continuous",
+      "prompt": "Corrige los hallazgos de docs/pattern-audit/...-v3.md. H-014 necesita definir cómo se nombran los roles; H-023 falla tsc dos veces al migrar un createObjectURL.",
+      "expect": [
+        "No se detiene ni pregunta a mitad de la pasada",
+        "H-014 queda «Pendiente — decisión: <pregunta>» y sigue con el siguiente H",
+        "H-023 se revierte con git restore y queda «Bloqueado — <causa + comando>»",
+        "Orden regresiones → Alto → Media → Baja",
+        "Un solo reporte de cierre con tabla de estados, preguntas de producto y bloqueos"
+      ],
+      "forbid": [
+        "Reporte intermedio pidiendo continuar",
+        "Commit con tsc o ESLint en rojo",
+        "Detener toda la pasada por una decisión de producto"
       ]
     }
   ]
