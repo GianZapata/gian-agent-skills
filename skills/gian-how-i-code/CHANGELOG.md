@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.62 — 2026-11-26
+
+- `05` §Una raíz por tipo (HARD): Actions solo en `app/Http/Actions/<Contexto>/` (molde fortezza/elcaba; nunca `app/Actions`), Queries en `app/Queries/<Contexto>/`, Services solo integraciones en `app/Services/<Integración>/`; nada suelto en la raíz; mismo `<Contexto>` en todas; Service de dominio no se crea; carpeta de primer nivel con un archivo = hallazgo; `app/Actions` ya agrupado = PROP.
+- `05` §Migración: nada nuevo en raíz no canónica; el módulo tocado se mueve entero; definición de hecho (Service de dominio disuelto, raíces canónicas, traits en `app/Traits/<anfitrión>/`, php self-check `--base` en 0); un plan que contradice la tabla se corrige antes.
+- `21`: ejemplo `app/Http/Actions/Invoice/PayInvoice.php`. Eval `audit-backend-single-root-per-type` (caso bonito).
+
 ## 1.4.61 — 2026-11-26
 
 - `32` §3 corregido: los traits van en `app/Traits/<anfitrión>/` (regla existente de `05`/`22`), no en `Concerns/`. La 1.4.60 la contradecía. `32` §2/§4, `05` §Query (`FiltersDateRange` → `app/Traits/Queries/`) y §State machines, `00-index` y 4 evals alineados. Trait en `Concerns/` = Baja, se mueve al tocarlo.

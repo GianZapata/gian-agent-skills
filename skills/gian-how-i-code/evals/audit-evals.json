@@ -1,6 +1,6 @@
 {
   "skill": "gian-how-i-code",
-  "version": "1.4.60",
+  "version": "1.4.62",
   "cases": [
     {
       "id": "audit-mold",
@@ -759,6 +759,21 @@
       "forbid": [
         "Elige una copia sin comparar",
         "Crea una tercera versión"
+      ]
+    },
+    {
+      "id": "audit-backend-single-root-per-type",
+      "prompt": "Audita la estructura de `app/` en una migración legacy → Laravel. Hay `app/Http/Actions/<Contexto>/` (30 Actions heredadas agrupadas) y `app/Actions/` con `AuthenticateLogin.php`, `ChangePassword.php` sueltas más `Catalog/` y `Zone/`; `app/Services/Zone/ZoneService.php` (Eloquent puro) sigue vivo junto a `app/Actions/Zone/CreateZone.php`; `app/Auth/LoginService.php`; `app/Queries/AccountProfileQuery.php` en la raíz; `app/Audit/AuditLogger.php` solo. El plan ODD dice 'Single app/Actions/ tree (remove app/Http/Actions/)'.",
+      "expect": [
+        "Alta: dos raíces de Actions; la canónica es `app/Http/Actions/<Contexto>/`",
+        "Mover `app/Actions/*` (incluidas las sueltas, a `Http/Actions/Auth/`), no las heredadas",
+        "Corregir el plan ODD antes de seguir (contradice la raíz canónica)",
+        "`ZoneService` de dominio se disuelve en Actions + Queries; definición de hecho del módulo",
+        "Query suelta en la raíz → `app/Queries/<Contexto>/`; `app/Audit` de un archivo es hallazgo"
+      ],
+      "forbid": [
+        "Propone mover las 30 heredadas a `app/Actions`",
+        "Deja `ZoneService` junto a las Actions de Zone"
       ]
     }
   ]

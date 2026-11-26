@@ -24,7 +24,7 @@ Cierre obligatorio de toda implementación, también en bug y trivial. Sin este 
 Formato breve de ejemplo:
 
 ```text
-Archivos: features/invoices/components/InvoiceDrawer.tsx, app/Actions/PayInvoice.php
+Archivos: features/invoices/components/InvoiceDrawer.tsx, app/Http/Actions/Invoice/PayInvoice.php
 References: 01, 03, 04, 09, 13, 22, 26; gian-ts-style; gian-php-style; visual-quality.md
 Reglas: 09 isOpen + entidad tipada (InvoiceDrawer.tsx:12); 13 ruta ≠ body (usePayInvoice.ts:8)
 GAP: ninguno

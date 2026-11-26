@@ -51,6 +51,28 @@ El cierre MUST incluir el bloque **Revisión del caso**:
 - Lista: `Resource::collection` o el `ResourceCollection` de la feature si la lista necesita envoltura propia. No una clase aparte para el arreglo.
 - Services Laravel: solo integraciones externas
 
+### Una raíz por tipo (HARD)
+
+| Tipo | Raíz única |
+|---|---|
+| Action | `app/Http/Actions/<Contexto>/` (forma de fortezza-api / elcaba-api). Nunca `app/Actions/` |
+| Query | `app/Queries/<Contexto>/` |
+| Service (integración externa) | `app/Services/<Integración>/` |
+
+- Ninguna Action, Query ni Service suelta en la raíz de su tipo. Siempre dentro de `<Contexto>/`.
+- El `<Contexto>` es el mismo nombre en las tres raíces (`Zone` en Actions y Queries).
+- Un Job o un comando que llama una Action la importa desde `App\Http\Actions\...`. No es motivo para otra raíz.
+- Un `<Contexto>Service` de dominio (sin integración externa) no se crea. Sus mutaciones son Actions y sus lecturas, Queries.
+- Una carpeta de primer nivel en `app/` con un solo archivo (`app/Audit/AuditLogger.php`) es hallazgo de auditoría: el archivo va a la capa que nombra qué es.
+- Repo existente con `app/Actions/<Contexto>/` ya agrupado: mover a `Http/Actions` es PROP, no hallazgo. Actions sueltas en la raíz sí son hallazgo.
+
+### Migración (legacy → Laravel)
+
+- Nada nuevo en una raíz no canónica (`app/Actions`, `app/Auth/*Service`, `app/Http/Support`). Lo nuevo nace en la raíz canónica.
+- Al tocar un módulo, se mueve a la raíz canónica todo el módulo, no solo lo editado.
+- Definición de hecho de un módulo: su `<Contexto>Service` de dominio ya no existe (disuelto en Actions + Queries), sus clases están en las raíces canónicas, sus traits en `app/Traits/<anfitrión>/` y `gian-php-style` `self-check.php --base=<commit previo a la tarea>` da 0 pendientes.
+- Si el plan (ODD, spec) fija otra raíz, se corrige el plan antes de seguir; no se sigue un plan que contradice esta tabla.
+
 ## Dónde va un valor, no en Support
 
 Antes de crear el archivo, nombrar qué es. No agregarlo a `Support` o `Supports` porque la carpeta ya existe. Una feature nueva no abre esa carpeta ni le suma archivos. Si el repo ya la tiene, no es el molde y no se migra en silencio.
