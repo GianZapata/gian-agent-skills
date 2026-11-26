@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.63 — 2026-11-26
+
+- `05` §Migración: Service de dominio se elimina, no se envuelve (HARD): mutación → Action con la lógica, lectura → Query, compartido → helper/trait; N operaciones = N Actions. Hallazgos: Action que solo delega a un Service de dominio, Service que importa Actions. CSV/reconciliación = Action llamada por comando/Job. Solo el archivo que llama fuera queda en `app/Services/<Integración>/`. Contrato: la Action devuelve el Model, el Controller construye el Resource. §Qué es una Query: el agregado es una Action de lectura que compone Queries. Eval `audit-action-wraps-domain-service` (caso bonito).
+
 ## 1.4.62 — 2026-11-26
 
 - `05` §Una raíz por tipo (HARD): Actions solo en `app/Http/Actions/<Contexto>/` (molde fortezza/elcaba; nunca `app/Actions`), Queries en `app/Queries/<Contexto>/`, Services solo integraciones en `app/Services/<Integración>/`; nada suelto en la raíz; mismo `<Contexto>` en todas; Service de dominio no se crea; carpeta de primer nivel con un archivo = hallazgo; `app/Actions` ya agrupado = PROP.

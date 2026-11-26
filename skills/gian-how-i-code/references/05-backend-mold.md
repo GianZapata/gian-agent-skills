@@ -71,6 +71,12 @@ El cierre MUST incluir el bloque **Revisión del caso**:
 - Nada nuevo en una raíz no canónica (`app/Actions`, `app/Auth/*Service`, `app/Http/Support`). Lo nuevo nace en la raíz canónica.
 - Al tocar un módulo, se mueve a la raíz canónica todo el módulo, no solo lo editado.
 - Definición de hecho de un módulo: su `<Contexto>Service` de dominio ya no existe (disuelto en Actions + Queries), sus clases están en las raíces canónicas, sus traits en `app/Traits/<anfitrión>/` y `gian-php-style` `self-check.php --base=<commit previo a la tarea>` da 0 pendientes.
+- Service de dominio → se elimina, no se envuelve (HARD). Cada mutación pasa a su propia Action con la lógica adentro; cada lectura, a una Query; la lógica compartida, a un helper o un trait de dominio. Un Service de 5 operaciones da 5 Actions, nunca una `<Contexto>Action` gigante.
+- Hallazgo: Action que solo delega a un Service de dominio (`__construct(private MapService $service)` + `return $this->service->...`). No cuenta como migrada.
+- Hallazgo: Service que importa Actions (dependencia invertida). La Action no depende de nada más arriba que Queries, helpers, traits e integraciones.
+- Un import/export CSV o una reconciliación masiva es una Action que llama un comando o un Job, no un Service.
+- Se queda como Service solo el archivo que llama fuera (HTTP, gateway, parseo de un formato externo, `Storage` de un proveedor) en `app/Services/<Integración>/`. En una carpeta mixta se decide archivo por archivo.
+- Contrato de capas: la Action resuelve y devuelve el `Model` (o `Collection`/paginator vía Query); el Controller envuelve en el Resource (`new <Entity>Resource($model)`). La Action no construye Resource ni `JsonResponse`.
 - Si el plan (ODD, spec) fija otra raíz, se corrige el plan antes de seguir; no se sigue un plan que contradice esta tabla.
 
 ## Dónde va un valor, no en Support
@@ -120,7 +126,7 @@ Los efectos de afuera no los deshace la base. Por cada efecto externo creado o t
 
 ## Query (molde, HARD)
 
-Qué es una Query: lectura Eloquent con Spatie QueryBuilder que devuelve `Model`, `Collection` o paginator. Un agregado que junta servicios y devuelve un `array` (perfil + 2FA + sesiones) no es Query: es un Service de lectura o una Action, y no se llama `*Query`.
+Qué es una Query: lectura Eloquent con Spatie QueryBuilder que devuelve `Model`, `Collection` o paginator. Un agregado que junta servicios y devuelve un `array` (perfil + 2FA + sesiones) no es Query: es una Action de lectura que compone Queries, y no se llama `*Query` ni `*Service`.
 
 Una base por repo: `app/Queries/BaseQuery.php`. Cada Query es `final class <Entity>Query extends BaseQuery` en `app/Queries/<Contexto>/`. El molde (forma de elcaba-api / fortezza-api, pulida):
 

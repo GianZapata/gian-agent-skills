@@ -1,6 +1,6 @@
 {
   "skill": "gian-how-i-code",
-  "version": "1.4.62",
+  "version": "1.4.63",
   "cases": [
     {
       "id": "audit-mold",
@@ -774,6 +774,20 @@
       "forbid": [
         "Propone mover las 30 heredadas a `app/Actions`",
         "Deja `ZoneService` junto a las Actions de Zone"
+      ]
+    },
+    {
+      "id": "audit-action-wraps-domain-service",
+      "prompt": "Audita la migración legacy → Laravel: `app/Http/Actions/Map/GetMapOperation.php` (19 líneas) es `__construct(private readonly MapService $service)` y `handle()` devuelve `$this->service->operation($filters)`; `app/Services/Map/MapService.php` tiene 415 líneas sin llamadas externas. `app/Services/Zone/ZoneService.php` importa `CreateZone`, `UpdateZone`, `DeleteZone`. `CreateZone::handle()` devuelve `new ZoneResource($zone)`.",
+      "expect": [
+        "Alta: Action envoltorio de un Service de dominio; no cuenta como migrada",
+        "MapService se elimina: cada operación a su Action/Query, compartido a helper o trait",
+        "Alta: ZoneService importa Actions (dependencia invertida); se elimina",
+        "La Action devuelve el Model; el Controller construye el Resource"
+      ],
+      "forbid": [
+        "Deja MapService como Service",
+        "Propone una sola MapAction con todas las operaciones"
       ]
     }
   ]
