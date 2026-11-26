@@ -67,10 +67,10 @@ const RULES = [
     'boolean-operator-eol'           => '`&&`/`||` inicia la línea; debe terminar la anterior',
     'null-coalesce-break'            => '`??` inicia la línea; debe terminar la anterior',
     'attribute-empty-args'           => '`#[Foo()]`; escribir `#[Foo]`',
+    'brace-same-line'                => '`{` en su propia línea; va en la línea de la declaración o del `)`',
 ];
 
-function git(array $gitArgs): ?string
-{
+function git(array $gitArgs): ?string {
     exec('git ' . implode(' ', array_map('escapeshellarg', $gitArgs)) . ' 2>/dev/null', $output, $code);
 
     if ($code !== 0) return null;
@@ -78,23 +78,20 @@ function git(array $gitArgs): ?string
     return implode("\n", $output);
 }
 
-function isSource(string $file): bool
-{
+function isSource(string $file): bool {
     return str_ends_with($file, '.php') &&
         !str_ends_with($file, '.blade.php') &&
         !preg_match('#(^|/)vendor/#', $file);
 }
 
-function lines(?string $output): array
-{
+function lines(?string $output): array {
     return array_values(array_filter(explode("\n", $output ?? ''), fn($line) => $line !== ''));
 }
 
-function changedRanges(string $file, bool $all, array $untracked): ?array
-{
+function changedRanges(string $file, bool $all, array $untracked, string $base): ?array {
     if ($all || in_array(realpath($file), $untracked, true)) return null;
 
-    $diff = git(['diff', '-U0', 'HEAD', '--', $file]);
+    $diff = git(['diff', '-U0', $base, '--', $file]);
 
     if ($diff === null) return null;
 
@@ -111,8 +108,7 @@ function changedRanges(string $file, bool $all, array $untracked): ?array
     return $ranges;
 }
 
-function tokenize(string $source): array
-{
+function tokenize(string $source): array {
     $tokens = [];
     $line = 1;
 
@@ -131,8 +127,7 @@ function tokenize(string $source): array
     return $tokens;
 }
 
-function significant(array $tokens, int $index, int $step): ?int
-{
+function significant(array $tokens, int $index, int $step): ?int {
     for ($i = $index + $step; isset($tokens[$i]); $i += $step) {
         if (!in_array($tokens[$i]['id'], IGNORED, true)) return $i;
     }
@@ -140,8 +135,7 @@ function significant(array $tokens, int $index, int $step): ?int
     return null;
 }
 
-function closing(array $tokens, int $open): ?int
-{
+function closing(array $tokens, int $open): ?int {
     $depth = 0;
 
     for ($i = $open; isset($tokens[$i]); $i++) {
@@ -159,8 +153,7 @@ function closing(array $tokens, int $open): ?int
     return null;
 }
 
-function statementEnd(array $tokens, int $start): ?int
-{
+function statementEnd(array $tokens, int $start): ?int {
     $depth = 0;
 
     for ($i = $start; isset($tokens[$i]); $i++) {
@@ -180,13 +173,11 @@ function statementEnd(array $tokens, int $start): ?int
     return null;
 }
 
-function isBreak(array $token): bool
-{
+function isBreak(array $token): bool {
     return $token['id'] === T_WHITESPACE && str_contains($token['text'], "\n");
 }
 
-function functionSpans(array $tokens): array
-{
+function functionSpans(array $tokens): array {
     $spans = [];
 
     foreach ($tokens as $index => $token) {
@@ -213,8 +204,7 @@ function functionSpans(array $tokens): array
     return $spans;
 }
 
-function scope(?array $ranges, array $spans): ?array
-{
+function scope(?array $ranges, array $spans): ?array {
     if ($ranges === null) return null;
 
     $scope = $ranges;
@@ -232,8 +222,7 @@ function scope(?array $ranges, array $spans): ?array
     return $scope;
 }
 
-function inScope(?array $scope, int $line): bool
-{
+function inScope(?array $scope, int $line): bool {
     if ($scope === null) return true;
 
     foreach ($scope as [$from, $to]) {
@@ -243,8 +232,7 @@ function inScope(?array $scope, int $line): bool
     return false;
 }
 
-function tokenFindings(array $tokens): array
-{
+function tokenFindings(array $tokens): array {
     $findings = [];
     $stack = [];
 
@@ -274,6 +262,14 @@ function tokenFindings(array $tokens): array
         }
 
         if ($id === T_FN && $next !== null && $next['id'] === T_WHITESPACE) $findings[] = [$line, $line, 'arrow-fn-space'];
+
+        if ($id === '{' && $previous !== null && isBreak($previous)) {
+            $owner = significant($tokens, $i, -1);
+
+            if ($owner !== null && !in_array($tokens[$owner]['id'], [';', '{', '}', ':', T_OPEN_TAG], true)) {
+                $findings[] = [$line, $tokens[$owner]['line'], 'brace-same-line'];
+            }
+        }
 
         if (in_array($id, CONTINUATIONS, true) && $previous !== null && isBreak($previous) && ($tokens[$i - 2]['id'] ?? null) === '}') {
             $findings[] = [$line, $line, 'continuation-same-line'];
@@ -339,8 +335,7 @@ function tokenFindings(array $tokens): array
     return $findings;
 }
 
-function lineFindings(array $tokens): array
-{
+function lineFindings(array $tokens): array {
     $masked = '';
 
     foreach ($tokens as $token) {
@@ -367,8 +362,7 @@ function lineFindings(array $tokens): array
     return $findings;
 }
 
-function check(string $file, ?array $ranges): array
-{
+function check(string $file, ?array $ranges): array {
     $tokens = tokenize(file_get_contents($file));
     $scope = scope($ranges, functionSpans($tokens));
     $results = [];
@@ -383,13 +377,15 @@ function check(string $file, ?array $ranges): array
 $args = array_slice($argv, 1);
 $all = in_array('--all', $args, true);
 $fileArgs = array_values(array_filter($args, fn($arg) => !str_starts_with($arg, '--')));
+$baseArg = array_values(array_filter($args, fn($arg) => str_starts_with($arg, '--base=')))[0] ?? null;
+$base = $baseArg !== null ? substr($baseArg, strlen('--base=')) : 'HEAD';
 $untracked = array_map('realpath', lines(git(['ls-files', '--others', '--exclude-standard'])));
 
 if ($fileArgs === []) {
-    $changed = git(['diff', '--name-only', 'HEAD']);
+    $changed = git(['diff', '--name-only', $base]);
 
     if ($changed === null) {
-        echo "GAP self-check — no se pudo leer `git diff HEAD`; pasar los archivos explícitos.\n";
+        echo "GAP self-check — no se pudo leer `git diff {$base}`; pasar los archivos explícitos.\n";
 
         exit(2);
     }
@@ -398,10 +394,16 @@ if ($fileArgs === []) {
 }
 
 $files = array_values(array_unique(array_filter($fileArgs, fn($file) => isSource($file) && is_file($file))));
+if ($files === []) {
+    echo "GAP self-check — 0 archivos PHP en el alcance; no cuenta como limpio. Pasar archivos existentes o `--base=<ref>` con los commits de la tarea.\n";
+
+    exit(2);
+}
+
 $results = [];
 
 foreach ($files as $file) {
-    $results = [...$results, ...check($file, changedRanges($file, $all, $untracked))];
+    $results = [...$results, ...check($file, changedRanges($file, $all, $untracked, $base))];
 }
 
 $results = array_values(array_unique($results));

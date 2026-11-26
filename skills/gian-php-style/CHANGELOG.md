@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.0 — 2026-11-26
+
+- `assets/self-check.php`: FAIL `brace-same-line` (`{` en su propia línea tras class/trait/interface/enum/método/closure/control; el estilo Pint/PSR pasaba sin hallazgo). `--base=<ref>` revisa lo commiteado desde `<ref>` (antes un archivo commiteado no tenía diff contra `HEAD` y salía limpio). 0 archivos PHP en el alcance → `GAP` exit 2 en vez de `0 pendientes (0 archivos)`. Caso real: migración bonito, 32/38 archivos con la llave abajo y self-check en 0.
+
 ## 1.4.0 — 2026-11-23
 
 - `assets/self-check.php`: script de verificación (PHP CLI, `token_get_all`) con el contrato de `gian-ts-style/assets/self-check.mjs`. Sin argumentos revisa los métodos tocados en `git diff HEAD` y los archivos nuevos; `--all` revisa todo; exit 0/1/2 (2 = GAP). Cubre 14 reglas mecánicas. Alineación de `=>`, líneas en blanco, modifiers y `read-group` quedan manuales. `gian-development-workflow` reemplaza `Self-check PHP: manual` por este script.
