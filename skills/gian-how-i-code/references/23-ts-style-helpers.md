@@ -219,7 +219,7 @@ Excepción: APIs del runtime que exigen `Date` (p. ej. firma de librería extern
 | `utils/` | Cosas **pequeñas** y genéricas (pocas líneas, sin dominio rico) | `export const … = () =>` (sintaxis: `gian-ts-style`) | `.util.ts` |
 | `helpers/` | Agrupan un **área** (fechas, números, usuario, formatos humanos, reglas de dominio, **Record de meta de enum**) | `export class XxxHelper` | `.helper.ts` |
 
-Ejemplos de helpers de área: `DateHelper`, `HumanFormatsHelper`, `NumberHelper`, `UserHelper`, `FormDataHelper`.
+Ejemplos de helpers de área: `DateHelper`, `HumanFormatsHelper`, `NumberHelper`, `UserHelper`, `FormDataHelper`. Si ese archivo ya existe en otro panel, es kit copiado: se extiende la clase y el test viaja con ella (`33`). No se abre un helper nuevo con el mismo eje.
 
 Un helper puro es clase estática en cualquier TS. En Angular, se usa un service solo si necesita DI.
 

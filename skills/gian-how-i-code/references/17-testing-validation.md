@@ -51,6 +51,8 @@ Al quitar un helper de formato, se borran sus tests. Si el valor que formateaba 
 
 No obligar tests artificiales en docs/audit-only.
 
+Una pieza compartida se prueba con su molde, no con un feature test HTTP. Front: el test al lado del archivo (`33` §4). Laravel: `tests/Unit/Rules` con `AssertsValidationRule`, o `Validator::make` sobre el FormRequest cuando el correo está inline (`32` §7 y §8).
+
 ## Al aplicar migración
 
 Tras cada lote: validación focalizada. Al final: lint y typecheck de cada lado tocado (FE, BE o ambos), más PHPStan/Psalm si el repo los tiene configurados. El cierre registra cada comando y su resultado.

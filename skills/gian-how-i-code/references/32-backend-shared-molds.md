@@ -1,8 +1,8 @@
 # 32 — Moldes backend compartidos (Laravel)
 
-Cargar cuando: `CustomException`, envelope de error, activity log, traits, state machines, jobs con tenant, infra copiada entre repos (backup, Dropbox, `FilterHelper`, `AttachmentService`, `SyncPermissions`).
+Cargar cuando: `CustomException`, envelope de error, activity log, traits, state machines, jobs con tenant, una regla de `app/Rules` (`EmailAddress`, `RfcStructural`, `Clabe`, `E164Phone`, `HumanName`, `StrongPassword`), infra copiada entre repos (backup, Dropbox, `FilterHelper`, `AttachmentService`, `SyncPermissions`, `MoneyHelper`).
 
-Estas piezas existen en casi todos los repos y cada uno tiene su variante. La variante equivocada produce bugs (worker con el tenant equivocado, `status()` que pierde el modelo, dos envelopes de error). Regla general (HARD): si el repo no tiene la pieza, se crea con el molde de aquí. Si tiene otra forma, la auditoría la marca PROP para alinearla; no se reescribe sin pedirlo. Moldes de referencia: `elcaba-api` / `fortezza-api`.
+Estas piezas existen en casi todos los repos y cada uno tiene su variante. La variante equivocada produce bugs (worker con el tenant equivocado, `status()` que pierde el modelo, dos envelopes de error, un refresh de Dropbox que avisa en cada intento). Regla general (HARD): si el repo no tiene la pieza, se crea con el molde de aquí. Si tiene otra forma, la auditoría la marca PROP para alinearla; no se reescribe sin pedirlo. Moldes de referencia: `elcaba-api` / `fortezza-api`. Dropbox y backup: `mrpobox-core` (§8).
 
 ## 1. Error: `ApiErrorResponse` + `CustomException` (HARD)
 
@@ -150,9 +150,33 @@ final class TenantHelper {
 
 ## 6. Infra copiada entre repos (PROP)
 
-`DatabaseBackupRunner`, `BackupRunResultCache`, `ValidateDropboxToken`, `FilterHelper`, `AttachmentService`, `SyncPermissions`, `TenantHelper` están copiados en 4 a 8 repos con 4 a 8 variantes. Un fix en uno no llega a los demás.
+`DatabaseBackupRunner`, `BackupRunResultCache`, `ValidateDropboxToken`, `AutoRefreshingTokenProvider`, `FilterHelper`, `AttachmentService`, `SyncPermissions`, `TenantHelper`, `MoneyHelper` están copiados en varios repos con variantes distintas. Un fix en uno no llega a los demás. Dropbox y backup no usan "la más completa": su referencia es §8.
 
-- Antes de tocar una de estas piezas: compararla con la variante de referencia (la más completa y reciente; elcaba/fortezza si la tienen) y decir qué difiere.
+- Antes de tocar una de estas piezas: compararla con la variante de referencia (Dropbox y backup, §8; el resto, la más completa y reciente; elcaba/fortezza si la tienen) y decir qué difiere.
 - Un bug encontrado en una copia se reporta como hallazgo en las demás copias conocidas (PROP: "mismo bug en X, Y").
 - Propuesta de fondo (PROP, `19`): extraer la pieza a un paquete compartido. No se hace sin OK.
 - No se crea una variante nueva: se copia la de referencia.
+
+## 7. Reglas de validación copiadas (HARD)
+
+`elcaba-api` y `fortezza-api` comparten, byte a byte, `Clabe`, `E164Phone`, `EmailAddress`, `HumanName`, `KnownContractTemplatePlaceholders`, `PlatformSubdomain`, `RfcStructural`, `Settlement` y `StrongPassword`. Los tests viven en `elcaba-api` (`tests/Unit/Rules/`, trait `tests/Concerns/AssertsValidationRule`). `fortezza-api` es la copia y no trae esos tests. `ActiveClient` no es el mismo archivo. `AssignableWarehouse` y `AssignableApartment` son del producto: no se portan.
+
+- Si el repo ya tiene una de esas clases, el FormRequest la usa. No se reescribe el regex en el request ni se sustituye `EmailAddress` por `'email'` suelto.
+- Un repo que valida el correo en el FormRequest (`email`, `email.email`, `email.unique`), sin `app/Rules`, se queda así. No se le impone `EmailAddress` en la misma tarea. Ahí cada regla lleva su mensaje (`05`).
+- Un bug en una clase idéntica se reporta en la otra copia (PROP). No se reescribe la otra sin pedirlo.
+- El ejemplo del mensaje sale de `CompanyEmailHelper` (el dominio del producto), no de un dominio escrito en la regla. El test no afirma el dominio de otro producto.
+
+Test de una clase en `app/Rules`: `tests/Unit/Rules/<Regla>Test.php` con `AssertsValidationRule`. Un caso que pasa (`assertRulePasses`) y uno que falla con el mensaje exacto (`assertRuleFails`). No hace falta un feature test HTTP. Test de un correo inline en el FormRequest: la regla está en `rules()`, la clave (`email.email`, `email.unique`) está en `messages()`, y `Validator::make` afirma el texto.
+
+## 8. Dropbox y backup (HARD)
+
+Referencia: `mrpobox-core`. `ValidateDropboxToken::check` es el mismo en mrpobox y amartinez. Lo que la copia vieja no tiene, y aquí se exige:
+
+- `AutoRefreshingTokenProvider` comprueba credenciales, formatea el error de Dropbox y manda `DropboxBackupFailed`. `Cache::add` con TTL de una hora: un refresh roto avisa una vez, no en cada intento. Un provider que solo tiene `getToken` y `refresh` es la variante delgada.
+- `BackupDisks::usable()`: si faltan `DROPBOX_APP_KEY`, `DROPBOX_APP_SECRET` o `DROPBOX_REFRESH_TOKEN`, ese disco se omite con un aviso y el respaldo sigue a los otros. No se aborta el respaldo porque Dropbox no está configurado.
+- `DatabaseBackupRunner` guarda la config que va a pisar, arma el plan con esos discos, devuelve `false` si no hay destino, restaura la config, y vuelve a registrar el comando de Spatie (`Config::rebind()`, olvidar `BackupCommand`, `registerCommand`) para que el comando use los discos recién calculados.
+- `BackupRunResultCache::recordCentralSkipped`: un central omitido no cuenta como éxito ni como fallo.
+
+Al tocar cualquiera de estas clases, se compara contra mrpobox y el delta se reporta. Las copias anteriores quedan como PROP. No se reescriben en una tarea que no pidió alinearlas.
+
+Tests que viajan con la pieza: `AutoRefreshingTokenProviderTest`, `ValidateDropboxTokenTest`, `DatabaseBackupRunnerTest`, `BackupDisksTest`, y el del comando `backup:all` si el repo tiene ese comando. `MoneyHelper` no tiene molde propio: solo entra en la lista de §6.

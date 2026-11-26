@@ -4,7 +4,7 @@ description: "Estándar oficial de Gian para implementar, auditar, migrar y cons
 license: Apache-2.0
 metadata:
   author: gian
-  version: "1.4.66"
+  version: "1.4.67"
 ---
 
 # gian-how-i-code
@@ -175,7 +175,8 @@ Alcance **repositorio completo** → protocolo `24` (coverage ledger + gate). Pr
 | Implementar (cualquier archivo tocado) | `22-design-quality`, `21-output-contracts` |
 | Calidad de diseño / traits / límites / refactor cohesión | `22-design-quality` |
 | Trait (archivo) | `05-backend-mold`, `22-design-quality`, `32-backend-shared-molds` §3 |
-| `CustomException`, envelope de error, activity log, state machine, job con tenant, backup/Dropbox/FilterHelper/AttachmentService/SyncPermissions | `32-backend-shared-molds` |
+| `CustomException`, envelope de error, activity log, state machine, job con tenant, backup/Dropbox/FilterHelper/AttachmentService/SyncPermissions, `EmailAddress`/`RfcStructural`/`Clabe` u otra regla de `app/Rules` | `32-backend-shared-molds` |
+| `src/shared`, `schemas/shared`, helper o schema copiado entre paneles (`DateHelper`, `createEmailSchema`, `useExport`) | `33-frontend-shared-molds`, `23-ts-style-helpers` |
 | Migración, índice, query de listado, eager load, export | `27-data-migrations` |
 | Job, listener en cola, comando programado, webhook, integración externa | `28-async-jobs`, `05-backend-mold` |
 | `Log::`, `catch`, acción sensible, cache, throttle o endpoint público | `29-observability` |

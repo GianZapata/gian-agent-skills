@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.67 — 2026-11-26
+
+- `32` §7: kit de Rules copiado (`EmailAddress`, `HumanName`, `StrongPassword`, `E164Phone`, `Clabe`, `RfcStructural` y las otras clases idénticas). El FormRequest usa la clase que ya existe. Test en `tests/Unit/Rules` con `AssertsValidationRule`. El correo inline del FormRequest no se convierte a esa clase en la misma tarea.
+- `32` §8: Dropbox y backup toman `mrpobox-core`. El provider avisa como máximo una vez por hora. Un disco sin credenciales se omite y el respaldo sigue. El runner restaura la config y re-registra el comando de Spatie. Un central omitido no cuenta como éxito ni como fallo. `MoneyHelper` entra a la lista de §6, sin molde propio.
+- Nueva `references/33-frontend-shared-molds.md`: kit de `shared` entre paneles, `createEmailSchema` sin nombrar el producto, y el test al lado del archivo. Punteros en `05`, `10`, `17` y `23`.
+
 ## 1.4.66 — 2026-11-26
 
 - `05` Claves del Resource HARD: clave = columna en inglés del esquema/glosario, sin alias ni mezcla de idiomas; un concepto un nombre; booleanos `is_`/`has_`/`can_`, conteos `_count`, códigos `_code`; nombre descriptivo del dominio, no traducción literal; casts en el Model y derivados en accessor; el Resource no ramifica por ruta; un Resource por entidad y contexto, solo `toArray` explícito (sin `FIELDS`); en migración se corrige el glosario antes del esquema. Eval `audit-resource-key-naming` (caso bonito).
