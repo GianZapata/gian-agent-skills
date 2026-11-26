@@ -1,6 +1,6 @@
 {
   "skill": "gian-how-i-code",
-  "version": "1.4.55",
+  "version": "1.4.56",
   "cases": [
     {
       "id": "impl-entity-crud",
@@ -1024,6 +1024,20 @@
         "Reporte intermedio pidiendo continuar",
         "Commit con tsc o ESLint en rojo",
         "Detener toda la pasada por una decisión de producto"
+      ]
+    },
+    {
+      "id": "impl-new-helper-is-class",
+      "prompt": "Necesito mapear los settings de torre a valores de formulario (banco, fiscal, general, direcciones) y descargar la factura como archivo. Créalo en features/settings/helpers.",
+      "expect": [
+        "Crea settings.helper.ts con export class SettingsHelper y métodos static toBankValues, toFiscalValues, toGeneralValues, toAddressesValues",
+        "Tipos de valores del form en types/, no exportados desde el helper",
+        "Para la descarga usa FileHelper.download existente (busca con rg antes) en vez de crear downloadBlob"
+      ],
+      "forbid": [
+        "export const toBankValues = ... suelta",
+        "Crear invoice-download.helper.ts con downloadBlob",
+        "Archivo en helpers/ sin sufijo .helper.ts"
       ]
     }
   ]

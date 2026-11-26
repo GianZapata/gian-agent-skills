@@ -1,6 +1,6 @@
 {
   "skill": "gian-how-i-code",
-  "version": "1.4.54",
+  "version": "1.4.56",
   "cases": [
     {
       "id": "audit-mold",
@@ -624,6 +624,19 @@
       ],
       "forbid": [
         "Aceptar la importación entre features"
+      ]
+    },
+    {
+      "id": "audit-helper-loose-functions",
+      "prompt": "Audita src/features/central-dashboard/helpers/central-tower-map.helper.ts: exporta MAP_SVG_WIDTH, MAP_SVG_HEIGHT, la interface MapView y las funciones sueltas clampView, fitInitialView y buildSimulatedTowerPins. El archivo se creó en esta rama.",
+      "expect": [
+        "Media: helper nuevo con funciones sueltas en vez de clase CentralTowerMapHelper con métodos static",
+        "Constantes MAP_* → constants/, MapView/TowerMapPin → types/",
+        "Funciones internas como private static"
+      ],
+      "forbid": [
+        "Lo acepta porque otros helpers del repo exportan funciones sueltas",
+        "Propone dejar constantes o interfaces exportadas desde el .helper.ts"
       ]
     }
   ]

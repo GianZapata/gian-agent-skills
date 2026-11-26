@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.56 — 2026-11-26
+
+- SKILL: forma de un helper (HARD). `helpers/<eje>.helper.ts` exporta una sola clase `<Eje>Helper` con estáticos; constantes a `constants/`, tipos a `types/`, privados `private static`; duplicados se borran. Severidad: nuevo Media, no tocado Baja.
+- Evals: audit +1 (`audit-helper-loose-functions`, 55), implementation +1 (`impl-new-helper-is-class`, 80).
+
 ## 1.4.55 — 2026-11-26
 
 - SKILL: ejecución de correcciones de auditoría de corrido (HARD). Sin pausas ni reportes intermedios; decisiones de producto se anotan como «Pendiente — decisión» y se sigue; fallo doble → revertir y «Bloqueado»; orden regresiones/Alto/Media/Baja; cierre único con preguntas al final.
