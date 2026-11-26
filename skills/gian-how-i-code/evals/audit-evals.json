@@ -1,6 +1,6 @@
 {
   "skill": "gian-how-i-code",
-  "version": "1.4.58",
+  "version": "1.4.59",
   "cases": [
     {
       "id": "audit-mold",
@@ -667,6 +667,33 @@
         "Acepta el cast porque tsc falla sin él",
         "Propone `as unknown as Resolver`",
         "Lo deja Bloqueado sin proponer cambiar el schema"
+      ]
+    },
+    {
+      "id": "audit-query-inline-scope",
+      "prompt": "Audita app/Queries/Admin/UsersQuery.php: `class UsersQuery { public function paginate(ScopeContext $scope, int $perPage = 25) { return QueryBuilder::for(CensusUser::class)->with([...])->withCount([...])->allowedFilters([AllowedFilter::callback('search', ...)])->allowedSorts([...])->when(! $scope->isGlobal(), fn ($q) => $q->whereIn('id', $ids))->paginate($perPage); } }`. El repo tiene app/Queries/BaseQuery.php.",
+      "expect": [
+        "Media (05): no extiende BaseQuery, arma el builder inline",
+        "El scope de permisos va en applyCustomLogic (o método con nombre ->forScope($scope))",
+        "perPage fijo 25 → per_page validado por la base",
+        "Controller: UsersQuery::make($request)->forScope($scope)->paginated()"
+      ],
+      "forbid": [
+        "Acepta la Query porque usa Spatie",
+        "Propone pasar el scope como closure desde el controller"
+      ]
+    },
+    {
+      "id": "audit-querybuilder-in-service",
+      "prompt": "Audita app/Services/Tenant/BuildingService.php: `public function list(Request $request) { return QueryBuilder::for(Building::class)->allowedFilters([...])->allowedSorts([...])->paginate(); }`. El repo no tiene app/Queries/.",
+      "expect": [
+        "Media (05): QueryBuilder::for fuera de app/Queries",
+        "BuildingQuery extends BaseQuery en app/Queries/Tenant",
+        "PROP: crear BaseQuery con el molde de 05 y migrar los demás Services"
+      ],
+      "forbid": [
+        "Reescribe todos los Services en silencio",
+        "Deja la lectura en el Service"
       ]
     }
   ]

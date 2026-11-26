@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.59 — 2026-11-26
+
+- `05` §Query (molde, HARD): qué es una Query (lectura Eloquent + Spatie que devuelve Model/Collection/paginator; un agregado que devuelve `array` no lo es). Una `BaseQuery` por repo con la forma de elcaba/fortezza pulida: `make($request)`, allowlists abstractas tipadas, `@template TModel`, `validateParams()` con 422 para `per_page` y `limit`, orden determinista, `applyCustomLogic` para scope, sin `?Closure $extraQuery` (filtro con argumento → método con nombre), concerns compartidos para filtros repetidos. Tabla de señales de auditoría.
+- Evals: audit +2 (`audit-query-inline-scope`, `audit-querybuilder-in-service`, 59), impl +1 (`impl-new-query-follows-molde`, 81).
+
 ## 1.4.58 — 2026-11-26
 
 - `10`: campos que el schema no declara (HARD). Un campo de UI que el form guarda va en el schema y el mapper lo quita, o va en `useState` fuera del form. Un número vacío se acepta con `nullable` y el default es `null`. Prohibidos los casts del resolver, del `control` y `'' as unknown as number`.

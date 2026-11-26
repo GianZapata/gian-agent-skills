@@ -1,6 +1,6 @@
 {
   "skill": "gian-how-i-code",
-  "version": "1.4.56",
+  "version": "1.4.59",
   "cases": [
     {
       "id": "impl-entity-crud",
@@ -1038,6 +1038,21 @@
         "export const toBankValues = ... suelta",
         "Crear invoice-download.helper.ts con downloadBlob",
         "Archivo en helpers/ sin sufijo .helper.ts"
+      ]
+    },
+    {
+      "id": "impl-new-query-follows-molde",
+      "prompt": "Agrega el listado GET /contracts con filtros status y date_between, sort por folio y created_at. El repo tiene app/Queries/BaseQuery.php y ClientQuery ya filtra date_between con un callback privado.",
+      "expect": [
+        "final class ContractQuery extends BaseQuery en app/Queries/<Contexto>",
+        "getAllowedFilters/getAllowedSorts tipados con @return list<...>",
+        "date_between sale a app/Queries/Concerns/FiltersDateRange y ClientQuery lo reutiliza",
+        "Controller: ContractQuery::make($request)->paginated() → ContractResource::collection"
+      ],
+      "forbid": [
+        "Copia el callback de fechas de ClientQuery",
+        "Pasa un closure $extraQuery desde el controller",
+        "QueryBuilder::for en el controller"
       ]
     }
   ]

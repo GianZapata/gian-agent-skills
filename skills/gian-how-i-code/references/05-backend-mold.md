@@ -46,7 +46,7 @@ El cierre MUST incluir el bloque **Revisión del caso**:
 - mejora aplicada o propuesta, o "ninguna" con el motivo en una línea.
 
 - Actions: mutaciones, transacciones, dominio
-- Queries: includes, filters, sorts, counts. Todo GET (collection y show) MUST pasar por una Query (`06`)
+- Queries: includes, filters, sorts, counts. Todo GET (collection y show) MUST pasar por una Query (`06`) con la forma de §Query (molde)
 - Resources: serializan; **no** cargan relaciones ni disparan queries; `whenLoaded` al ctor del Resource (`06`)
 - Lista: `Resource::collection` o el `ResourceCollection` de la feature si la lista necesita envoltura propia. No una clase aparte para el arreglo.
 - Services Laravel: solo integraciones externas
@@ -95,6 +95,86 @@ La idempotencia no es un `catch` ni un default de cada `create`. Cuando el efect
 Saldo, stock, cupo o disponibilidad se protegen junto con la escritura: índice único, operación atómica o bloqueo. Una comprobación previa, aunque sea de backend, puede quedar vieja. La comprobación previa orienta al sistema. No se publica como "Disponible". Guardar resuelve la colisión.
 
 Los efectos de afuera no los deshace la base. Por cada efecto externo creado o tocado, el cierre MUST declarar: cuándo corre (`afterCommit` o inline), qué pasa si se repite, y cómo se recupera si la base ya confirmó y después falla: reintento, estado pendiente o compensación. `afterCommit()` espera la transacción exterior. La idempotencia evita repetir el efecto. No se exigen los dos mecanismos iguales en cada integración.
+
+## Query (molde, HARD)
+
+Qué es una Query: lectura Eloquent con Spatie QueryBuilder que devuelve `Model`, `Collection` o paginator. Un agregado que junta servicios y devuelve un `array` (perfil + 2FA + sesiones) no es Query: es un Service de lectura o una Action, y no se llama `*Query`.
+
+Una base por repo: `app/Queries/BaseQuery.php`. Cada Query es `final class <Entity>Query extends BaseQuery` en `app/Queries/<Contexto>/`. El molde (forma de elcaba-api / fortezza-api, pulida):
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Queries;
+
+/**
+ * @template TModel of Model
+ */
+abstract class BaseQuery
+{
+    protected const int DEFAULT_PER_PAGE = 10;
+    protected const int MAX_PER_PAGE = 100;
+    protected const int MAX_LIMIT = 100;
+
+    public function __construct(protected Request $request) {
+        $this->validateParams();
+    }
+
+    public static function make(?Request $request = null): static {
+        return new static($request ?? request());
+    }
+
+    /** @return class-string<TModel> */
+    abstract protected function getModel(): string;
+
+    /** @return list<AllowedFilter|string> */
+    abstract protected function getAllowedFilters(): array;
+
+    /** @return list<AllowedSort|string> */
+    abstract protected function getAllowedSorts(): array;
+
+    /** @return list<AllowedInclude|string> */
+    protected function getAllowedIncludes(): array { return []; }
+
+    protected function getDefaultSort(): string { return '-created_at'; }
+
+    protected function applyCustomLogic(QueryBuilder $query): QueryBuilder { return $query; }
+
+    public function with(string|array $relations): static { /* acumula */ }
+    public function withCount(string|array $relations): static { /* acumula */ }
+
+    public function paginated(): LengthAwarePaginator|Collection { /* has_pagination=false → get() con limit */ }
+    public function get(): Collection { /* ... */ }
+    /** @return TModel */
+    public function findByIdOrFail(int|string $id): Model { /* includes + eager + applyCustomLogic */ }
+    public function count(): int { /* ... */ }
+}
+```
+
+Reglas del molde:
+
+- Controller: `XQuery::make($request)->paginated()` / `->findByIdOrFail($id)` → Resource. El controller no pasa closures ni `where`: sin `?Closure $extraQuery`. Un filtro fijo (scope de permisos, tenant, padre) va en `applyCustomLogic`; uno con argumento es un método con nombre de la Query (`->forTower($towerId)`) que guarda el valor y lo aplica en `applyCustomLogic`.
+- `per_page` y `limit` se validan una vez (en `validateParams()`): entero ≥ 1 y ≤ máximo, si no 422 con mensaje. Nunca corregir en silencio a un default.
+- Orden determinista: `defaultSort` + desempate por PK en la dirección del sort principal. Una tabla sin `created_at` sobrescribe `getDefaultSort()`.
+- `paginated()` devuelve paginator o `Collection` según `has_pagination`; el Resource collection maneja los dos.
+- Un filtro que se repite entre Queries (rango de fechas, búsqueda por nombre completo) va en un concern de `app/Queries/Concerns/` (`FiltersDateRange` con `AllowedFilter::callback('date_between', ...)`), no copiado en cada Query.
+- `with` / `withCount` / scope dentro de la Query, no inline en un método único con `perPage` fijo.
+- Repo sin base: crearla con este molde en la primera Query nueva y marcar PROP para migrar las existentes. Repo con otra base: PROP para alinearla; no se reescribe sin pedirlo.
+
+Auditoría (señales):
+
+| Señal | Severidad |
+|---|---|
+| `QueryBuilder::for` fuera de `app/Queries/` (Service, controller, Action) | Media |
+| `->where(` / `DB::table` de lectura en un controller | Media |
+| Query que no extiende la base del repo o arma el builder inline | Media |
+| Controller que pasa `$extraQuery` / closure a la Query | Media |
+| `per_page` fijo o corregido en silencio | Baja |
+| Filtro de fecha o búsqueda duplicado entre Queries | Baja |
+| Clase `*Query` que devuelve `array` de servicios | Baja (renombrar a Service de lectura) |
+| Base distinta al molde | PROP |
 
 ## Query table aliases
 
