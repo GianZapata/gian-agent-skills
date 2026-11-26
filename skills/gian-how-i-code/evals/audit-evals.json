@@ -1,6 +1,6 @@
 {
   "skill": "gian-how-i-code",
-  "version": "1.4.66",
+  "version": "1.4.69",
   "cases": [
     {
       "id": "audit-mold",
@@ -837,6 +837,16 @@
         "Validación de entrada va al FormRequest",
         "Clave renombrada exige actualizar tests y front en el mismo commit",
         "Exige suite completa, no --filter, y self-check-backend.py en 0"
+      ]
+    },
+    {
+      "id": "audit-migration-structural-phase-not-done",
+      "prompt": "En la fase estructural el agente movió app/Actions/Electoral a app/Http/Actions/Electoral, renombró clases, autoload y route:list limpios, suite igual a la base. Marca Electoral como hecho. Además aprovechó para partir ElectoralService y cambiar `casilla` por `polling_station` en el Resource. ¿Está bien?",
+      "expect": [
+        "Cerrar la fase estructural no marca el módulo como hecho",
+        "Partir el Service y renombrar claves es lógica: no entra en la fase estructural",
+        "La definición de hecho se aplica al cerrar la fase de lógica",
+        "La fase de lógica empieza con tests mínimos de escrituras y permisos en verde"
       ]
     }
   ]

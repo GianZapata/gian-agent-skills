@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.69 — 2026-11-26
+
+- `05` §Migración: orden opcional en dos fases. La fase estructural mueve y renombra sin cambiar comportamiento y se verifica con autoload, `route:list` y la suite igual a la base; nunca marca un módulo hecho. La fase de lógica exige tests mínimos antes (escrituras y permisos) y cierra con la definición de hecho.
+
 ## 1.4.68 — 2026-11-26
 
 - `05` §Migración: definición de hecho HARD ampliada: cero `App\Core\*`, cero validación de entrada en Action/Controller, clave renombrada actualiza tests y front en el mismo commit, `self-check-backend.py` en 0, suite completa en verde (no `--filter`).

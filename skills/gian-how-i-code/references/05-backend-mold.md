@@ -70,6 +70,9 @@ El cierre MUST incluir el bloque **Revisión del caso**:
 
 - Nada nuevo en una raíz no canónica (`app/Actions`, `app/Auth/*Service`, `app/Http/Support`). Lo nuevo nace en la raíz canónica.
 - Al tocar un módulo, se mueve a la raíz canónica todo el módulo, no solo lo editado.
+- Orden en dos fases (opcional, recomendado en repos grandes):
+  - **Fase estructural** (todo el repo o un módulo): mover carpetas y namespaces a las raíces canónicas, renombrar clases y archivos, mover traits. Prohibido cambiar cuerpos de métodos, claves del JSON, validación o piezas `App\Core`; un Service se mueve tal cual, no se parte. Se cierra con `composer dump-autoload` limpio, `php artisan route:list` igual a la base salvo nombres de clase, la suite completa con el mismo conjunto de verdes y rojos que la base (anotado) y `self-check.php --base` en 0 sobre lo tocado. Cerrar esta fase **nunca** marca un módulo como hecho.
+  - **Fase de lógica** (módulo por módulo): antes de tocar código, tests mínimos sobre el código actual (uno por ruta que escribe en BD: status + fila; uno de permisos por rol en rutas sensibles), en verde. Después `App\Core` → nativo, validación al FormRequest, Services disueltos, Resources limpios y renombres de claves con su front. Se cierra con la definición de hecho de abajo.
 - Definición de hecho de un módulo (HARD, todo a la vez):
   - su `<Contexto>Service` de dominio ya no existe (disuelto en Actions + Queries), sus clases están en las raíces canónicas y sus traits en `app/Traits/<anfitrión>/`;
   - cero `App\Core\*` en sus Controllers, Actions, Queries y Requests;
