@@ -33,7 +33,7 @@ Cargar cuando: arranque humano, modo Consultar, orientación general.
 | 27 | `27-data-migrations.md` | Migraciones, índices, N+1, paginación y procesos masivos |
 | 28 | `28-async-jobs.md` | Jobs, colas, reintentos, unicidad, comandos programados y webhooks |
 | 29 | `29-observability.md` | Logging, auditoría, cache y rate limiting |
-| 32 | `32-backend-shared-molds.md` | Moldes backend compartidos: CustomException + ApiErrorResponse, activity log, traits, HasManagedStateMachines, TenantHelper en jobs, Rules copiadas, Dropbox/backup (mrpobox), infra copiada entre repos |
+| 32 | `32-backend-shared-molds.md` | Moldes backend compartidos: CustomException + ApiErrorResponse, activity log, traits, HasManagedStateMachines, TenantHelper en jobs, Rules copiadas, Dropbox/backup, exports XLSX/CSV (`ExportContract` + `OpenSpout`), PDFs con Blade (`barryvdh/laravel-dompdf`), correos en cola + Blade + Horizon |
 | 33 | `33-frontend-shared-molds.md` | Kit frontend copiado entre paneles: helpers y schemas de `shared`, `createEmailSchema`, test al lado del archivo |
 | 30 | `30-screen-audit.md` | Auditoría de pantalla: foco, lenguaje, coherencia texto↔acción, densidad, estados, visto en vivo |
 

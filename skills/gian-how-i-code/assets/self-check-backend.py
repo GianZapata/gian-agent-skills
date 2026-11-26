@@ -68,6 +68,18 @@ CHECKS = [
         lambda rel: rel.startswith("app/Http/Resources/"),
         "el Resource ramifica por ruta",
     ),
+    (
+        "action-trait-writes-db",
+        re.compile(r"->(?:create|update|delete|forceDelete|upsert|insert|save)\(|DB::(?:transaction|table)\("),
+        lambda rel: rel.startswith("app/Traits/Actions/"),
+        "trait en `app/Traits/Actions/` que escribe en BD (Service disfrazado; `22` §Traits / `05` §Migración)",
+    ),
+    (
+        "raw-dompdf-new",
+        re.compile(r"\bnew\s+\\?(?:Dompdf\\)?Dompdf\b"),
+        lambda rel: rel.startswith("app/"),
+        "instancia directa de `Dompdf`; usar `barryvdh/laravel-dompdf` + Blade en `resources/views/pdf/` (`32` §9)",
+    ),
 ]
 
 

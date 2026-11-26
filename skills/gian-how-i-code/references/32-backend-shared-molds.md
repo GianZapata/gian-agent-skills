@@ -1,6 +1,6 @@
 # 32 — Moldes backend compartidos (Laravel)
 
-Cargar cuando: `CustomException`, envelope de error, activity log, traits, state machines, jobs con tenant, una regla de `app/Rules` (`EmailAddress`, `RfcStructural`, `Clabe`, `E164Phone`, `HumanName`, `StrongPassword`), infra copiada entre repos (backup, Dropbox, `FilterHelper`, `AttachmentService`, `SyncPermissions`, `MoneyHelper`).
+Cargar cuando: `CustomException`, envelope de error, activity log, traits, state machines, jobs con tenant, una regla de `app/Rules` (`EmailAddress`, `RfcStructural`, `Clabe`, `E164Phone`, `HumanName`, `StrongPassword`), infra copiada entre repos (backup, Dropbox, `FilterHelper`, `AttachmentService`, `SyncPermissions`, `MoneyHelper`), exports XLSX/CSV (`ExportContract` + `OpenSpout`), PDFs con Blade (`barryvdh/laravel-dompdf`), correos en cola, plantillas Blade de correo o colas Horizon.
 
 Estas piezas existen en casi todos los repos y cada uno tiene su variante. La variante equivocada produce bugs (worker con el tenant equivocado, `status()` que pierde el modelo, dos envelopes de error, un refresh de Dropbox que avisa en cada intento). Regla general (HARD): si el repo no tiene la pieza, se crea con el molde de aquí. Si tiene otra forma, la auditoría la marca PROP para alinearla; no se reescribe sin pedirlo. Moldes de referencia: `elcaba-api` / `fortezza-api`. Dropbox y backup: `mrpobox-core` (§8).
 
@@ -180,3 +180,37 @@ Referencia: `mrpobox-core`. `ValidateDropboxToken::check` es el mismo en mrpobox
 Al tocar cualquiera de estas clases, se compara contra mrpobox y el delta se reporta. Las copias anteriores quedan como PROP. No se reescriben en una tarea que no pidió alinearlas.
 
 Tests que viajan con la pieza: `AutoRefreshingTokenProviderTest`, `ValidateDropboxTokenTest`, `DatabaseBackupRunnerTest`, `BackupDisksTest`, y el del comando `backup:all` si el repo tiene ese comando. `MoneyHelper` no tiene molde propio: solo entra en la lista de §6.
+
+## 9. Exports XLSX/CSV y PDFs con Blade (HARD)
+
+### Exports (`openspout/openspout`)
+
+- Contrato base en `app/Exports/ExportContract.php` (`filename(): string`, `headings(): array`, `rows(): iterable`) y extensión opcional `app/Exports/FormattedExport.php` (`columnWidths(): array`, `columnFormats(): array`).
+- Cada export (`app/Exports/<Entity>Export.php`) reutiliza la **`BaseQuery`** del módulo (`<Entity>Query::make($queryRequest)->getBuilder()->lazy(500)`) y produce filas con `yield $this->mapRow($model)` sobre el `Model` ya cargado.
+- Prohibido duplicar filtros o scope territorial dentro de un `ReportService` o cargar tablas completas con `->get()` en memoria antes de escribir el archivo (`27`).
+- El streaming HTTP usa `OpenSpout` escribiendo en `php://output` (o un almacenamiento temporal si un reporte pesado corre en un Job). Cambiar de descarga directa a Job no cambia el contrato `ExportContract`.
+
+```php
+interface ExportContract {
+    public function filename(): string;
+
+    public function headings(): array;
+
+    public function rows(): iterable;
+}
+```
+
+### PDFs (`barryvdh/laravel-dompdf` + Blade)
+
+- Todo PDF se renderiza desde una vista **Blade** en `resources/views/pdf/<nombre>.blade.php` usando `barryvdh/laravel-dompdf` (`Pdf::loadView('pdf.<nombre>', $data)`).
+- Prohibido instanciar `new Dompdf(...)` directamente en `app/` o construir HTML concatenando strings en PHP (`raw-dompdf-new` en `self-check-backend.py`).
+- Si el PDF se adjunta a un correo o consume datos pesados externos, la generación corre dentro de un Job (`28`), nunca bloqueando el request HTTP.
+
+## 10. Correos en cola, plantillas Blade y colas Horizon (HARD)
+
+- **Configuración de entorno:** `.env.example` declara siempre `MAIL_MAILER=log` (local) / `smtp` (producción), `MAIL_SCHEME`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM_ADDRESS`, `MAIL_FROM_NAME="${APP_NAME}"`, junto con `QUEUE_CONNECTION` y `REDIS_*`. En `phpunit.xml`: `MAIL_MAILER=array` y `QUEUE_CONNECTION=sync`.
+- **Plantillas Blade:** componentes base reutilizables en `resources/views/emails/components/layout.blade.php` y `button.blade.php`; vistas por dominio en `resources/views/emails/<contexto>/`. Sin HTML de correo escrito dentro de clases PHP.
+- **Envío asíncrono y trazabilidad:** los Mailables viven en `app/Mail/<Contexto>/` y **nunca** se envían síncronos por SMTP dentro del request HTTP. Se despachan vía Jobs en la cola dedicada `emails` con `->afterCommit()`, `$tries` y `backoff()` (`28`). El envío y los fallos relevantes se trazan en `spatie/laravel-activitylog` (`ActivityLogName::Mail`), sin guardar secretos ni PII sensible (`29`).
+- **Colas Horizon (`config/horizon.php`):** separar supervisores por criticidad (por ejemplo `emails`, `webhooks`/integraciones, `default`) con `tries`, `backoff` y `timeout` explícitos (con `timeout` menor que `retry_after`, `28`). No dejar todos los trabajos mezclados en una sola cola `default` cuando conviven correos, webhooks y procesos pesados.
+
+Auditoría (§9 y §10): `new Dompdf(` directo (Media), `->get()` sin `lazy`/`chunkById` en export masivo (Media), envío de `Mail::send()` síncrono dentro de un controller o transacción (Media), `.env.example` sin claves `MAIL_*` en un proyecto que envía correos (Baja).

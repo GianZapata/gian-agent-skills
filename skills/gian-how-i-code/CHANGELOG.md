@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.70 — 2026-11-26
+
+- `32` §9 (HARD): exports XLSX/CSV con `App\Exports\ExportContract` (`filename`, `headings`, `rows`) + `OpenSpout` en streaming (`$query->lazy(500)`) reutilizando la `BaseQuery` del módulo (sin `->get()` en RAM ni filtros duplicados); PDFs con `barryvdh/laravel-dompdf` + vistas Blade en `resources/views/pdf/` (sin `new Dompdf` a mano ni HTML concatenado).
+- `32` §10 (HARD): correos en cola con `.env.example` configurado (`MAIL_*`, `QUEUE_CONNECTION`, `REDIS_*`; tests `MAIL_MAILER=array` + `QUEUE_CONNECTION=sync`), componentes Blade en `resources/views/emails/components/{layout,button}.blade.php`, Mailables en `app/Mail/<Contexto>/` despachados en Jobs de la cola `emails` (`->afterCommit()`, `$tries`, `backoff()`) trazados en `activity_log` (`ActivityLogName::Mail`), y colas dedicadas en `config/horizon.php`.
+- `05` §Query: las Queries cargan el `Model` completo con `with()`/`withCount()` sin `select(...)` ni `with(['rel:id,name'])` frágiles por default ni `->map()` devolviendo arrays; el Resource es la única fuente de verdad del mapeo JSON.
+- `05` §Migración: orden Bottom-Up cuando no hay datos en producción (cimientos: esquema inglés, modelos, enums/SM, auth nativa, roles/Policies y `BaseQuery` primero → olas verticales BE+FE); poda previa de tablas legacy cubiertas por Laravel/paquetes (`activity_log`, `spatie/laravel-permission`, `RateLimiter`, `migrations`, vistas sin consumidores); prohibido disolver Services en traits de negocio que escriben en BD (`app/Traits/Actions/`) o dejar wrappers puente en módulos ya migrados.
+- `assets/self-check-backend.py`: nuevos checks `action-trait-writes-db` y `raw-dompdf-new`.
+
 ## 1.4.69 — 2026-11-26
 
 - `05` §Migración: orden opcional en dos fases. La fase estructural mueve y renombra sin cambiar comportamiento y se verifica con autoload, `route:list` y la suite igual a la base; nunca marca un módulo hecho. La fase de lógica exige tests mínimos antes (escrituras y permisos) y cierra con la definición de hecho.

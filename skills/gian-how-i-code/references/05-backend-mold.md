@@ -70,12 +70,14 @@ El cierre MUST incluir el bloque **Revisión del caso**:
 
 - Nada nuevo en una raíz no canónica (`app/Actions`, `app/Auth/*Service`, `app/Http/Support`). Lo nuevo nace en la raíz canónica.
 - Al tocar un módulo, se mueve a la raíz canónica todo el módulo, no solo lo editado.
-- Orden en dos fases (opcional, recomendado en repos grandes):
+- Orden en dos fases (opcional, recomendado en repos grandes con datos o tráfico vivo):
   - **Fase estructural** (todo el repo o un módulo): mover carpetas y namespaces a las raíces canónicas, renombrar clases y archivos, mover traits. Prohibido cambiar cuerpos de métodos, claves del JSON, validación o piezas `App\Core`; un Service se mueve tal cual, no se parte. Se cierra con `composer dump-autoload` limpio, `php artisan route:list` igual a la base salvo nombres de clase, la suite completa con el mismo conjunto de verdes y rojos que la base (anotado) y `self-check.php --base` en 0 sobre lo tocado. Cerrar esta fase **nunca** marca un módulo como hecho.
   - **Fase de lógica** (módulo por módulo): antes de tocar código, tests mínimos sobre el código actual (uno por ruta que escribe en BD: status + fila; uno de permisos por rol en rutas sensibles), en verde. Después `App\Core` → nativo, validación al FormRequest, Services disueltos, Resources limpios y renombres de claves con su front. Se cierra con la definición de hecho de abajo.
+- **Orden Bottom-Up cuando ningún entorno tiene datos (`migrate:fresh --seed`):** reconstruir primero los **cimientos** (glosario inglés aprobado + poda de tablas legacy cubiertas por Laravel/paquetes + migraciones Schema Builder + modelos/enums/state machines + auth/sesión nativa + roles/Policies + `BaseQuery` canónica + mail/Horizon) y luego ejecutar **olas verticales por módulo (BE + FE + tests)** en una sola pasada definitiva. Evita migrar Actions sobre columnas legacy para volver a reescribirlas después.
+- **Podar tablas legacy cubiertas por el framework o paquetes (HARD):** antes de recrear una tabla legacy en una migración nueva, comprobar si ya la cubre Laravel o un paquete adoptado del proyecto: bitácoras, historiales de cambios de entidad y logs de acceso → `activity_log` (`spatie/laravel-activitylog`, `32` §2); tablas de intentos de login sin consumidores de lectura → `RateLimiter` / `throttle` nativo; tabla `roles` manual → `spatie/laravel-permission`; tabla de control de migraciones manual → `migrations` de Laravel; vistas SQL sin consumidores → eliminar.
 - Definición de hecho de un módulo (HARD, todo a la vez):
-  - su `<Contexto>Service` de dominio ya no existe (disuelto en Actions + Queries), sus clases están en las raíces canónicas y sus traits en `app/Traits/<anfitrión>/`;
-  - cero `App\Core\*` en sus Controllers, Actions, Queries y Requests;
+  - su `<Contexto>Service` de dominio ya no existe (disuelto en Actions + Queries), sus clases están en las raíces canónicas y sus traits en `app/Traits/<anfitrión>/` sin ocultar lógica de negocio ni escrituras en BD;
+  - cero `App\Core\*` y cero wrappers puente de sesión/auth/CSRF legacy en sus Controllers, Actions, Queries y Requests una vez activo el runtime nativo;
   - cero validación de entrada en Action o Controller (`new ValidationException([...])`, `if (!$file) throw`): va en el FormRequest (`rules()`/`after()`). La Action solo lanza reglas de negocio que dependen del estado (duplicado en BD, transición inválida);
   - una clave renombrada (Resource, payload, campo de form) actualiza en el mismo commit sus tests y todos sus consumidores del front (`rg` de la clave vieja en `resources/js` y `public/` da 0);
   - `gian-php-style` `self-check.php --base=<commit previo a la tarea>` da 0 pendientes;
@@ -83,8 +85,8 @@ El cierre MUST incluir el bloque **Revisión del caso**:
   - la suite **completa** pasa (`php artisan test`, no `--filter`) y el front compila si se tocó (`typecheck`/`build`). Un test que ya fallaba en la base se demuestra corriéndolo en la base y se anota en el log; cualquier otro rojo deja la tarea abierta.
 - Prohibido posponer una regla HARD del módulo con `PROP`, "hasta T#" o "fuera de alcance" y marcarlo hecho (HARD). `PROP` solo vale para código fuera del módulo, o con un bloqueo que el usuario aprobó y quedó en el log con su cita. Sin eso, la tarea sigue `in progress`.
 - No se adelanta una tarea que espera aprobación: si el log dice "se muestra para aprobación", el árbol no lleva esos cambios hasta el visto bueno.
-- Service de dominio → se elimina, no se envuelve (HARD). Cada mutación pasa a su propia Action con la lógica adentro; cada lectura, a una Query; la lógica compartida, a un helper o un trait de dominio. Un Service de 5 operaciones da 5 Actions, nunca una `<Contexto>Action` gigante.
-- Hallazgo: Action que solo delega a un Service de dominio (`__construct(private MapService $service)` + `return $this->service->...`). No cuenta como migrada.
+- Service de dominio → se elimina, no se envuelve (HARD). Cada mutación pasa a su propia Action con la lógica adentro; cada lectura, a una Query; la lógica compartida pura sin escrituras, a un helper o un trait horizontal válido. Un Service de 5 operaciones da 5 Actions, nunca una `<Contexto>Action` gigante ni un trait de negocio en `app/Traits/Actions/` que escriba en BD (`22` §Traits — hallazgo Alto).
+- Hallazgo: Action que solo delega a un Service de dominio (`__construct(private MapService $service)` + `return $this->service->...`), o trait en `app/Traits/Actions/` que esconde escrituras en BD / reglas de dominio (`action-trait-writes-db`). No cuenta como migrada.
 - Hallazgo: Service que importa Actions (dependencia invertida). La Action no depende de nada más arriba que Queries, helpers, traits e integraciones.
 - Un import/export CSV o una reconciliación masiva es una Action que llama un comando o un Job, no un Service.
 - Se queda como Service solo el archivo que llama fuera (HTTP, gateway, parseo de un formato externo, `Storage` de un proveedor) en `app/Services/<Integración>/`. En una carpeta mixta se decide archivo por archivo.
@@ -217,6 +219,7 @@ Reglas del molde:
 - `paginated()` devuelve paginator o `Collection` según `has_pagination`; el Resource collection maneja los dos.
 - Un filtro que se repite entre Queries (rango de fechas, búsqueda por nombre completo) va en un trait de `app/Traits/Queries/` (`FiltersDateRange` con `AllowedFilter::callback('date_between', ...)`), no copiado en cada Query.
 - `with` / `withCount` / scope dentro de la Query, no inline en un método único con `perPage` fijo.
+- **Modelos completos en Query; mapeo único en Resource (HARD):** una Query carga el `Model` completo y sus relaciones (`with(['zone', 'colony'])`, `withCount(...)`) sin recortar columnas por costumbre (`select([...])`, `with(['zone:id,name'])`) ni transformar resultados con `->map(fn => [...])` a arrays. El Resource es la única fuente de verdad del mapeo JSON (`06`). Solo se excluye explícitamente una columna blob/JSON pesada (p. ej. una geometría/polígono grande) en un listado masivo cuando haya evidencia de costo.
 - Repo sin base: crearla con este molde en la primera Query nueva y marcar PROP para migrar las existentes. Repo con otra base: PROP para alinearla; no se reescribe sin pedirlo.
 
 Auditoría (señales):
