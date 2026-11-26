@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.57 — 2026-11-26
+
+- Evals: audit +1 (`audit-effect-reset-on-open`, 56): el `useEffect` que resetea al abrir se reporta aunque el archivo se toque por otro motivo; ts-style 2.11.0 lo marca como `effect-reset-on-open`.
+
 ## 1.4.56 — 2026-11-26
 
 - SKILL: forma de un helper (HARD). `helpers/<eje>.helper.ts` exporta una sola clase `<Eje>Helper` con estáticos; constantes a `constants/`, tipos a `types/`, privados `private static`; duplicados se borran. Severidad: nuevo Media, no tocado Baja.

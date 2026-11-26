@@ -436,6 +436,26 @@ const check = (file) => {
         }
       }
 
+      if (ts.isExpressionStatement(statement) && ts.isCallExpression(statement.expression) && calleeName(statement.expression) === 'useEffect') {
+        const callback = statement.expression.arguments[0];
+        const body = callback && isFunctionLike(callback) ? callback.body : null;
+        let resetOnOpen = false;
+
+        const visit = (node) => {
+          if (ts.isIfStatement(node) && /\b(is)?[oO]pen\w*\b/.test(node.expression.getText(sf)) && /\b(reset|set[A-Z]\w*)\(/.test(node.thenStatement.getText(sf))) {
+            resetOnOpen = true;
+          }
+
+          ts.forEachChild(node, visit);
+        };
+
+        if (body) visit(body);
+
+        if (resetOnOpen) {
+          report('FAIL', file, at(statement), 'effect-reset-on-open', 'useEffect que resetea al abrir → montar con {isOpen && <X />} o key; el estado inicial va en defaultValues/useState (gian-how-i-code 09/12)');
+        }
+      }
+
       if (slot !== null) {
         const higher = seenSlots.filter((entry) => entry.slot > slot && slot !== 7);
         const dependsOnHigher = references(statement, new Set(higher.flatMap((entry) => [...entry.names])));

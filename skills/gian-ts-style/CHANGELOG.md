@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.11.0 — 2026-11-26
+
+- Regla HARD `effect-reset-on-open`: `self-check.mjs` marca FAIL un `useEffect` con `if` sobre `isOpen`/`open` que llama `reset(` o `setX(`. Se corrige con montaje condicional o `key` (how-i-code `09`/`12`). Un efecto de DOM bajo `isOpen` no se marca.
+
 ## 2.10.1 — 2026-11-25
 
 - Alcance: una corrección que mete una función entera al self-check se resuelve con un commit `style` previo de esa función; no es razón para posponerla.

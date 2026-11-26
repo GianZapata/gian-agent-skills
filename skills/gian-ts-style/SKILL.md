@@ -4,7 +4,7 @@ description: "Mandatory visual TS/TSX style for any TS stack. Load when creating
 license: Apache-2.0
 metadata:
   author: gian
-  version: "2.10.1"
+  version: "2.11.0"
 when-to-use: "Any .ts/.tsx create/edit/refactor/review/audit/fix in any TS stack (React, Vue sibling .ts or inline script setup lang=ts, Angular, Node); ts-style-audit; ts-style-fix; format TypeScript. Not for .js/.jsx/.mjs/.cjs, Vue template/style, Angular .html, PHP, CSS, SQL-only, or architecture-only consults."
 ---
 
@@ -56,6 +56,7 @@ No vender preferencias de Gian como best practice universal. `references/princip
 - Self-check: WRITE y FIX no cierran sin correr `node <ruta de esta skill>/assets/self-check.mjs` desde la raíz del repo. Cada FAIL se corrige y se vuelve a correr hasta `Self-check TS: 0 pendientes`. El cierre pega esa línea tal cual sale. Si sale `GAP` (exit 2), se reporta así. Nunca se escribe `0 pendientes` sin la salida del script. `assets/self-check.mjs`
 - Derivado con 3+ ramas, o ternario o booleano que junta 3+ partes con `&&` / `||`: en componente o hook, `useMemo<T>` + `if` + early return (`gian-how-i-code` `23` C); fuera, `if` / `return`. Prohibidos el ternario anidado y la IIFE. `references/expressions-ternaries.md`
 - Todo `useMemo` lleva genérico explícito (`useMemo<boolean>`, `useMemo<string | null>`): declara el tipo de retorno y TypeScript marca la rama que no lo devuelve. HARD `usememo-explicit-generic`. `references/expressions-ternaries.md` §Derived multi-branch.
+- Un `useEffect` que resetea al abrir (`if (isOpen) reset(...)` / `setX(...)`) es HARD `effect-reset-on-open`: el padre monta con `{isOpen && <X />}` o `key` y el estado inicial va en `defaultValues` / `useState`. Un efecto bajo `isOpen` que sincroniza con el DOM (scroll lock, foco) no cuenta. Lo decide `gian-how-i-code` `09`/`12`.
 - Type-only import → `import type`. `references/types-imports.md`
 - Tipos (verifica `self-check.mjs`): unión de strings propia → enum de la feature, y si ya existe uno con esos valores, ese; color / variant / size de MUI → `NonNullable<XProps['prop']>`; objeto inline con 2+ campos → `interface` con nombre; metadata por miembro de enum → una `Record<Enum, Meta>` en el helper, no en el `.tsx`. `references/types-imports.md`, `gian-how-i-code` `07`
 - Comentarios: WRITE no emite narración/JSDoc. Strip ruido obvio. Conservar directives. `references/comments.md`

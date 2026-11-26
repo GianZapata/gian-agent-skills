@@ -1,6 +1,6 @@
 {
   "skill": "gian-how-i-code",
-  "version": "1.4.56",
+  "version": "1.4.57",
   "cases": [
     {
       "id": "audit-mold",
@@ -637,6 +637,21 @@
       "forbid": [
         "Lo acepta porque otros helpers del repo exportan funciones sueltas",
         "Propone dejar constantes o interfaces exportadas desde el .helper.ts"
+      ]
+    },
+    {
+      "id": "audit-effect-reset-on-open",
+      "prompt": "Audita ClientContactDialog.tsx: `useEffect(() => { if (isOpen) reset(contact ?? EMPTY_CONTACT); }, [isOpen, contact, reset]);` y el padre ClientContactsField lo renderiza siempre: `<ClientContactDialog isOpen={isDialogOpen} contact={editingContact} ... />`.",
+      "expect": [
+        "Media (09/12): reset al abrir con useEffect",
+        "Padre monta con {isDialogOpen && (<ClientContactDialog ... />)}",
+        "useForm con defaultValues: contact ?? EMPTY_CONTACT y se borra el useEffect",
+        "Busca otros diálogos montados siempre en el padre"
+      ],
+      "forbid": [
+        "Lo acepta porque el efecto ya existía",
+        "Propone key={Date.now()} o un contador para forzar el reset",
+        "Deja el useEffect y solo agrega montaje condicional"
       ]
     }
   ]
