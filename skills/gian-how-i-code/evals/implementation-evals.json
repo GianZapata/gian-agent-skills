@@ -1046,7 +1046,7 @@
       "expect": [
         "final class ContractQuery extends BaseQuery en app/Queries/<Contexto>",
         "getAllowedFilters/getAllowedSorts tipados con @return list<...>",
-        "date_between sale a app/Queries/Concerns/FiltersDateRange y ClientQuery lo reutiliza",
+        "date_between sale a app/Traits/Queries/FiltersDateRange y ClientQuery lo reutiliza",
         "Controller: ContractQuery::make($request)->paginated() → ContractResource::collection"
       ],
       "forbid": [

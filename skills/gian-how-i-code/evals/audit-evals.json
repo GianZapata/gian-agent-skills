@@ -701,8 +701,8 @@
       "prompt": "Audita app/Traits/Models/HasManagedStateMachines.php (142 líneas): bootHasManagedStateMachines registra `MacroableModels::addMacro(static::class, $field, fn () => new State($this->{$field}, ...))` por cada state machine. Corre en Horizon.",
       "expect": [
         "Alta (32 §4): macro global que puede perder el modelo en workers de larga vida",
-        "Molde Models/Concerns/HasManagedStateMachines con whenBooted + __call",
-        "Mover de app/Traits a app/Models/Concerns (32 §3)"
+        "Molde app/Traits/Models/HasManagedStateMachines con whenBooted + __call",
+        "La ubicación app/Traits/Models ya es correcta (05, 32 §3): no se mueve"
       ],
       "forbid": [
         "Lo acepta porque funciona en local",
@@ -727,7 +727,7 @@
       "prompt": "Audita amartinez-core: 54 modelos con `getActivitylogOptions(): LogOptions { return LogOptions::defaults()->logOnly([...])->useLogName('building'); }`. No hay enum ActivityLogName.",
       "expect": [
         "Media (32 §2): nombre de log literal y options copiado",
-        "Crear App\\Enums\\ActivityLogName y trait Models/Concerns/LogsModelActivity",
+        "Crear App\\Enums\\ActivityLogName y trait app/Traits/Models/LogsModelActivity",
         "Cada modelo implementa activityLogAttributes() y activityLogName()"
       ],
       "forbid": [
@@ -749,12 +749,12 @@
       ]
     },
     {
-      "id": "audit-duplicated-concern",
-      "prompt": "Audita: app/Http/Controllers/Concerns/ResolvesScope.php (21 líneas) y app/Http/Controllers/Api/Concerns/ResolvesScope.php (22 líneas), md5 distintos. app/Traits/HasPhoneValidation.php en otro repo.",
+      "id": "audit-duplicated-trait",
+      "prompt": "Audita: app/Http/Controllers/Concerns/ResolvesScope.php (21 líneas) y app/Http/Controllers/Api/Concerns/ResolvesScope.php (22 líneas), md5 distintos. app/Models/Concerns/HasPersonName.php en otro repo.",
       "expect": [
-        "Media (32 §3): mismo concern en dos carpetas con contenido divergente",
-        "Una sola copia en Controllers/Concerns, diff de lo que cambió",
-        "app/Traits → Concerns de la capa que lo usa"
+        "Media (32 §3): mismo trait en dos carpetas con contenido divergente",
+        "Una sola copia en app/Traits/Controllers/ResolvesScope.php, diff de lo que cambió",
+        "Concerns/ → app/Traits/<anfitrión> al tocarlo (Baja)"
       ],
       "forbid": [
         "Elige una copia sin comparar",

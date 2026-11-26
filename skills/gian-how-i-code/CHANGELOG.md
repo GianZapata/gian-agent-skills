@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.61 — 2026-11-26
+
+- `32` §3 corregido: los traits van en `app/Traits/<anfitrión>/` (regla existente de `05`/`22`), no en `Concerns/`. La 1.4.60 la contradecía. `32` §2/§4, `05` §Query (`FiltersDateRange` → `app/Traits/Queries/`) y §State machines, `00-index` y 4 evals alineados. Trait en `Concerns/` = Baja, se mueve al tocarlo.
+
 ## 1.4.60 — 2026-11-26
 
 - Nueva `references/32-backend-shared-molds.md` (HARD), tomada de comparar 10+ repos de acsyt: §1 `ApiErrorResponse` + `CustomException` (molde fortezza/elcaba, `errorCode` estable, señales de variante mínima y excepción HTTP legacy); §2 `ActivityLogName` + `LogsModelActivity` (sin `useLogName('literal')` ni `getActivitylogOptions` copiado); §3 traits en `Concerns/` por capa, nunca `app/Traits`, una copia por responsabilidad; §4 `HasManagedStateMachines` (`whenBooted` + `__call`, prohibido `MacroableModels::addMacro` propio); §5 `TenantHelper::run` con `finally` y `tenantId` escalar en jobs; §6 infra copiada entre repos → comparar con la referencia, PROP de paquete.

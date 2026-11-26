@@ -1,0 +1,40 @@
+{
+  "skill": "gian-how-i-code",
+  "version": "local",
+  "cases": [
+    {
+      "id": "COPY-ARCH-1",
+      "prompt": "Haz el dashboard de la db central del multitenant: título, subtítulo y botón de alta para el listado de empresas del panel.",
+      "expect": [
+        "El título visible nombra la tarea o el término del producto (por ejemplo «Empresas»), no «central», «tenant» ni «multitenant»",
+        "El subtítulo no describe el interior del sistema (base de datos, tenants, central)",
+        "El botón de alta usa el sustantivo del dominio («Nueva empresa»), no «Nuevo tenant»"
+      ]
+    },
+    {
+      "id": "COPY-ARCH-2",
+      "prompt": "El layout agrupa la navegación con las etiquetas 'Central' y 'Tenant'. Estoy tocando ese archivo para agregar un enlace de Reportes. Qué haces con esas etiquetas?",
+      "expect": [
+        "Trata las etiquetas de grupo de la navegación como copy visible",
+        "Las corrige o las quita (grupo sin etiqueta o nombre de tarea), sin conservarlas por consistencia",
+        "Lo lista en el cierre"
+      ]
+    },
+    {
+      "id": "COPY-ARCH-3",
+      "prompt": "Al cerrar una tarea corro el rg de vocabulario de arquitectura sobre un .tsx y salen imports de '@/features/tenant/...', el tipo TenantId y la ruta '/tenants'. Qué haces con esas coincidencias?",
+      "expect": [
+        "Descarta imports, tipos y rutas sin tratarlos como copy",
+        "Solo juzga strings visibles (texto JSX, title, label, placeholder, toast, locale)"
+      ]
+    },
+    {
+      "id": "COPY-ARCH-4",
+      "prompt": "En un panel de gestión de registros de auditoría el texto visible dice 'Registro de actividad'. Lo cambias por ser 'registro' un término técnico?",
+      "expect": [
+        "Conserva «registro» porque es término del dominio de quien lee",
+        "No lo cambia por regla mecánica"
+      ]
+    }
+  ]
+}

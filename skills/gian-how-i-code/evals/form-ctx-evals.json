@@ -1,0 +1,57 @@
+{
+  "skill": "gian-how-i-code",
+  "version": "local",
+  "cases": [
+    {
+      "id": "FORM-CTX-1",
+      "prompt": "Crea un formulario nuevo de alta de empresa con un campo RFC. Qué haces con ese campo?",
+      "expect": [
+        "Trata el RFC como string, no type=number",
+        "Normaliza el valor real a mayúsculas (no solo CSS) y quita espacios al pegar",
+        "Aplica regex del formato y maxLength por ser un campo nuevo",
+        "El formato no queda solo en el placeholder (addon o ayuda corta)"
+      ]
+    },
+    {
+      "id": "FORM-CTX-2",
+      "prompt": "Estoy editando un formulario existente que ya tiene un campo RFC, solo para agregar un campo de teléfono. Qué haces con el RFC?",
+      "expect": [
+        "No recorre el formulario cambiando el RFC como si fuera su alcance, o aplica solo normalización sin pérdida",
+        "Regex y maxLength nuevos en el RFC existente van como propuesta (PROP), no en silencio"
+      ]
+    },
+    {
+      "id": "FORM-CTX-3",
+      "prompt": "Agrega un selector de cliente a un formulario nuevo de factura. Hay 3000 clientes. El repo ya tiene un componente combobox y un endpoint de búsqueda de clientes. Qué control usas?",
+      "expect": [
+        "Usa combobox o autocomplete, no un select nativo",
+        "Usa el componente y el endpoint de búsqueda que el repo ya tiene"
+      ]
+    },
+    {
+      "id": "FORM-CTX-4",
+      "prompt": "Igual que un selector de cliente con 3000 registros, pero el repo no tiene endpoint de búsqueda de clientes. Qué haces?",
+      "expect": [
+        "No inventa una ruta nueva",
+        "Propone el endpoint como propuesta y no lo implementa en el mismo corte",
+        "Usa el control que el repo ya tiene mientras tanto, o filtra en cliente solo si el catálogo ya está cargado"
+      ]
+    },
+    {
+      "id": "FORM-CTX-5",
+      "prompt": "Agrega un campo de estado con 5 opciones fijas (Nuevo, En proceso, Pausado, Cerrado, Archivado), sin precios ni límites, a un formulario nuevo. Qué control usas?",
+      "expect": [
+        "Usa select (o radio con motivo), no radio cards",
+        "Justifica el control en una línea"
+      ]
+    },
+    {
+      "id": "FORM-CTX-6",
+      "prompt": "Crea un formulario nuevo de alta de empresa con nombre, RFC, plan (básico o pro, con precio y límite de usuarios) y correo. Qué escribes antes de escribir código?",
+      "expect": [
+        "Escribe una línea por campo antes del código con qué representa, tipo, control, normalización y ayuda",
+        "El plan usa radio cards por traer precio y límite que comparar"
+      ]
+    }
+  ]
+}

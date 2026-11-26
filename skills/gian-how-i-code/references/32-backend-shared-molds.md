@@ -1,6 +1,6 @@
 # 32 — Moldes backend compartidos (Laravel)
 
-Cargar cuando: `CustomException`, envelope de error, activity log, traits/concerns, state machines, jobs con tenant, infra copiada entre repos (backup, Dropbox, `FilterHelper`, `AttachmentService`, `SyncPermissions`).
+Cargar cuando: `CustomException`, envelope de error, activity log, traits, state machines, jobs con tenant, infra copiada entre repos (backup, Dropbox, `FilterHelper`, `AttachmentService`, `SyncPermissions`).
 
 Estas piezas existen en casi todos los repos y cada uno tiene su variante. La variante equivocada produce bugs (worker con el tenant equivocado, `status()` que pierde el modelo, dos envelopes de error). Regla general (HARD): si el repo no tiene la pieza, se crea con el molde de aquí. Si tiene otra forma, la auditoría la marca PROP para alinearla; no se reescribe sin pedirlo. Moldes de referencia: `elcaba-api` / `fortezza-api`.
 
@@ -51,7 +51,7 @@ Auditoría:
 ## 2. Activity log: `ActivityLogName` + `LogsModelActivity` (HARD con `spatie/laravel-activitylog`)
 
 - `App\Enums\ActivityLogName: string`, un case por área (`User = 'user'`, `ContractTemplate = 'contract_template'`). El nombre del log nunca es un string suelto.
-- Trait `App\Models\Concerns\LogsModelActivity`:
+- Trait `App\Traits\Models\LogsModelActivity` (`app/Traits/Models/`):
 
 ```php
 trait LogsModelActivity {
@@ -77,15 +77,16 @@ trait LogsModelActivity {
 
 Auditoría: `useLogName('literal')` (Media), `getActivitylogOptions` copiado en 2+ modelos (Media), `activity('literal')` (Baja), atributo sensible en `logOnly` (Alta).
 
-## 3. Traits = `Concerns/` por capa (HARD)
+## 3. Traits = `app/Traits/<anfitrión>/` (HARD)
 
-- Un trait vive en el `Concerns/` de la capa que lo usa: `app/Models/Concerns`, `app/Http/Requests/Concerns`, `app/Http/Controllers/Concerns`, `app/Queries/Concerns`, `app/Jobs/Concerns`. Nunca `app/Traits/`.
-- Un concern por responsabilidad en todo el repo. Si el mismo trait aparece en dos capas o dos carpetas (`Controllers/Concerns/ResolvesScope` y `Controllers/Api/Concerns/ResolvesScope`), es hallazgo Media: una sola copia, en la capa más baja que lo necesita.
+- La ubicación es la de `05` §Dónde va (`app/Traits/<anfitrión>/Nombre.php`, namespace `App\Traits\<Anfitrión>`): `Traits/Models`, `Traits/Requests`, `Traits/Controllers`, `Traits/Queries`, `Traits/Jobs`. Un solo nivel. Nunca `Concerns/` ni dentro de `app/Models`.
+- Un trait en `Concerns/` (`Models/Concerns`, `Http/Controllers/Concerns`) es hallazgo Baja: se mueve al tocarlo, no en silencio.
+- Un trait por responsabilidad en todo el repo. Si el mismo trait aparece en dos carpetas (`Controllers/Concerns/ResolvesScope` y `Controllers/Api/Concerns/ResolvesScope`), es hallazgo Media: una sola copia en `app/Traits/Controllers/`, con el diff de lo que difería.
 - Un trait no es una bolsa de helpers: tiene una responsabilidad y su nombre la dice (`HasPersonName`, `LogsModelActivity`, `FiltersDateRange`). Lo que no lee `$this` es un helper (`08`), no un trait. Criterio de diseño en `22`.
 
 ## 4. State machines: `HasManagedStateMachines` (HARD con `asantibanez/laravel-eloquent-state-machines`)
 
-`App\Models\Concerns\HasManagedStateMachines` (molde elcaba):
+`App\Traits\Models\HasManagedStateMachines` (molde elcaba; en elcaba/fortezza vive en `Models/Concerns`, se mueve al tocarlo):
 
 ```php
 trait HasManagedStateMachines {

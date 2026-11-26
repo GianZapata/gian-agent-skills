@@ -159,7 +159,7 @@ Reglas del molde:
 - `per_page` y `limit` se validan una vez (en `validateParams()`): entero ≥ 1 y ≤ máximo, si no 422 con mensaje. Nunca corregir en silencio a un default.
 - Orden determinista: `defaultSort` + desempate por PK en la dirección del sort principal. Una tabla sin `created_at` sobrescribe `getDefaultSort()`.
 - `paginated()` devuelve paginator o `Collection` según `has_pagination`; el Resource collection maneja los dos.
-- Un filtro que se repite entre Queries (rango de fechas, búsqueda por nombre completo) va en un concern de `app/Queries/Concerns/` (`FiltersDateRange` con `AllowedFilter::callback('date_between', ...)`), no copiado en cada Query.
+- Un filtro que se repite entre Queries (rango de fechas, búsqueda por nombre completo) va en un trait de `app/Traits/Queries/` (`FiltersDateRange` con `AllowedFilter::callback('date_between', ...)`), no copiado en cada Query.
 - `with` / `withCount` / scope dentro de la Query, no inline en un método único con `perPage` fijo.
 - Repo sin base: crearla con este molde en la primera Query nueva y marcar PROP para migrar las existentes. Repo con otra base: PROP para alinearla; no se reescribe sin pedirlo.
 
@@ -228,7 +228,7 @@ Se reportan como `GAP` con `archivo:línea` y el alias propuesto. No se reescrib
 
 - Paquete tipo `asantibanez/laravel-eloquent-state-machines`
 - Prohibido `update` de `status` a mano
-- Modelo con `$stateMachines` → trait `Models/Concerns/HasManagedStateMachines` (`32` §4: `whenBooted` + `__call`). Prohibido `MacroableModels::addMacro` propio: pierde el modelo en workers de larga vida
+- Modelo con `$stateMachines` → trait `app/Traits/Models/HasManagedStateMachines` (`32` §4: `whenBooted` + `__call`). Prohibido `MacroableModels::addMacro` propio: pierde el modelo en workers de larga vida
 - Estados como `public const` UPPER_SNAKE en la SM + `values()` (fuente única; ver `07`)
 - Nuevo estado = SM (const + transitions) + DB enum/constraint + factories + labels UI (TS string enum)
 - Prohibido un backed Enum PHP paralelo para los mismos estados, salvo la excepción única de `07` §Excepción — backed Enum paralelo
