@@ -1,6 +1,6 @@
 {
   "skill": "gian-how-i-code",
-  "version": "1.4.59",
+  "version": "1.4.60",
   "cases": [
     {
       "id": "audit-mold",
@@ -694,6 +694,71 @@
       "forbid": [
         "Reescribe todos los Services en silencio",
         "Deja la lectura en el Service"
+      ]
+    },
+    {
+      "id": "audit-sm-macroable-models",
+      "prompt": "Audita app/Traits/Models/HasManagedStateMachines.php (142 líneas): bootHasManagedStateMachines registra `MacroableModels::addMacro(static::class, $field, fn () => new State($this->{$field}, ...))` por cada state machine. Corre en Horizon.",
+      "expect": [
+        "Alta (32 §4): macro global que puede perder el modelo en workers de larga vida",
+        "Molde Models/Concerns/HasManagedStateMachines con whenBooted + __call",
+        "Mover de app/Traits a app/Models/Concerns (32 §3)"
+      ],
+      "forbid": [
+        "Lo acepta porque funciona en local",
+        "Propone registrar más macros"
+      ]
+    },
+    {
+      "id": "audit-legacy-http-exception",
+      "prompt": "Audita el backend de bonito: `App\\Core\\Exception\\HttpException extends RuntimeException` con `status()`, sin render, 80 `throw new HttpException(422, '...')` en Services. bootstrap/app.php responde errores con LegacyErrorResponse. No hay CustomException.",
+      "expect": [
+        "Media (32 §1): excepción HTTP sin envelope estable",
+        "PROP: crear ApiErrorResponse + CustomException con el molde y migrar los throw con errorCode",
+        "El handler usa ApiErrorResponse para las del framework"
+      ],
+      "forbid": [
+        "Reescribe los 80 throw sin OK",
+        "Inventa un shape de error nuevo"
+      ]
+    },
+    {
+      "id": "audit-activitylog-literal",
+      "prompt": "Audita amartinez-core: 54 modelos con `getActivitylogOptions(): LogOptions { return LogOptions::defaults()->logOnly([...])->useLogName('building'); }`. No hay enum ActivityLogName.",
+      "expect": [
+        "Media (32 §2): nombre de log literal y options copiado",
+        "Crear App\\Enums\\ActivityLogName y trait Models/Concerns/LogsModelActivity",
+        "Cada modelo implementa activityLogAttributes() y activityLogName()"
+      ],
+      "forbid": [
+        "Deja los strings",
+        "Agrega el enum pero mantiene getActivitylogOptions en cada modelo"
+      ]
+    },
+    {
+      "id": "audit-job-tenant-no-restore",
+      "prompt": "Audita app/Jobs/SendStatementJob.php: `public function __construct(public string $tenantId, public int $clientId) {}` y en handle `tenancy()->initialize(Tenant::find($this->tenantId)); $this->action->execute(Client::findOrFail($this->clientId));`. Sin finally.",
+      "expect": [
+        "Alta (32 §5): initialize sin restaurar, el worker queda en ese tenant",
+        "TenantHelper::run(Tenant::findOrFail($this->tenantId), fn () => ...)",
+        "findOrFail en vez de find"
+      ],
+      "forbid": [
+        "Propone serializar el Tenant",
+        "Solo agrega tenancy()->end() al final sin finally"
+      ]
+    },
+    {
+      "id": "audit-duplicated-concern",
+      "prompt": "Audita: app/Http/Controllers/Concerns/ResolvesScope.php (21 líneas) y app/Http/Controllers/Api/Concerns/ResolvesScope.php (22 líneas), md5 distintos. app/Traits/HasPhoneValidation.php en otro repo.",
+      "expect": [
+        "Media (32 §3): mismo concern en dos carpetas con contenido divergente",
+        "Una sola copia en Controllers/Concerns, diff de lo que cambió",
+        "app/Traits → Concerns de la capa que lo usa"
+      ],
+      "forbid": [
+        "Elige una copia sin comparar",
+        "Crea una tercera versión"
       ]
     }
   ]

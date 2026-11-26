@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.60 — 2026-11-26
+
+- Nueva `references/32-backend-shared-molds.md` (HARD), tomada de comparar 10+ repos de acsyt: §1 `ApiErrorResponse` + `CustomException` (molde fortezza/elcaba, `errorCode` estable, señales de variante mínima y excepción HTTP legacy); §2 `ActivityLogName` + `LogsModelActivity` (sin `useLogName('literal')` ni `getActivitylogOptions` copiado); §3 traits en `Concerns/` por capa, nunca `app/Traits`, una copia por responsabilidad; §4 `HasManagedStateMachines` (`whenBooted` + `__call`, prohibido `MacroableModels::addMacro` propio); §5 `TenantHelper::run` con `finally` y `tenantId` escalar en jobs; §6 infra copiada entre repos → comparar con la referencia, PROP de paquete.
+- `05` §State machines: se reemplaza "`bootHasStateMachines()` en `boot()`" por el trait de `32` §4. `05`, `16`, `28`, `29` apuntan a `32`.
+- Evals: audit +5 (64).
+
 ## 1.4.59 — 2026-11-26
 
 - `05` §Query (molde, HARD): qué es una Query (lectura Eloquent + Spatie que devuelve Model/Collection/paginator; un agregado que devuelve `array` no lo es). Una `BaseQuery` por repo con la forma de elcaba/fortezza pulida: `make($request)`, allowlists abstractas tipadas, `@template TModel`, `validateParams()` con 422 para `per_page` y `limit`, orden determinista, `applyCustomLogic` para scope, sin `?Closure $extraQuery` (filtro con argumento → método con nombre), concerns compartidos para filtros repetidos. Tabla de señales de auditoría.

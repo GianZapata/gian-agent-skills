@@ -23,6 +23,6 @@ Solo si el repo tiene tenancy o el usuario lo pide. No asumir en apps single-ten
 - [ ] Pieza nueva declara contexto
 - [ ] Fetcher correcto
 - [ ] No filtrar autoridad canónica al tenant
-- [ ] Jobs y colas inicializan el tenant antes de leer o escribir
+- [ ] Jobs y colas inicializan el tenant antes de leer o escribir y lo restauran (`TenantHelper::run` con `finally`, `tenantId` escalar; `32` §5)
 - [ ] Keys de caché y paths de storage llevan el tenant
 - [ ] Tests cubren cada contexto tocado (Central, Shared, Tenant)

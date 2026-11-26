@@ -20,7 +20,7 @@ Cargar cuando: Job nuevo o editado, `dispatch`, listener en cola, notificación 
 8. **Timeout:** `$timeout` menor que el `retry_after` de la conexión. Si no, el mismo job corre dos veces en paralelo.
 9. **Llamadas externas:** timeout explícito en el cliente HTTP (`Http::timeout()->retry()`), y para un 429 o 5xx `release($delay)` en vez de fallar.
 10. **Comandos programados:** `withoutOverlapping()` y `onOneServer()` cuando hay más de un servidor. Un comando que procesa muchos registros despacha jobs por lote (`28` + `27` §procesos masivos).
-11. **Tenancy:** el job conoce su tenant (el paquete del repo lo hace, o se pasa explícito). Verificarlo en `16`.
+11. **Tenancy:** el job conoce su tenant: `QueueTenancyBootstrapper` activo, o `tenantId` escalar + `TenantHelper::run` que restaura en `finally` (`32` §5). Nunca `tenancy()->initialize()` sin restaurar. Verificarlo en `16`.
 12. **Webhook entrante:** validar la firma, responder 2xx rápido y procesar en un job. Deduplicar por el ID del evento del proveedor.
 
 ```php

@@ -19,7 +19,7 @@ Cargar cuando: `Log::` o logger, `catch` que traga o re-lanza, integración exte
 
 ## Auditoría
 
-1. Acción sensible (cambio de rol o permiso, dinero, borrado, exportación de datos personales) deja rastro de quién, cuándo, qué y valor anterior. Usar el mecanismo del repo (activity log, state machine `recordHistory` en `05`, tabla de auditoría). Si el repo no tiene ninguno, es PROP (`19`), no se instala sin OK.
+1. Acción sensible (cambio de rol o permiso, dinero, borrado, exportación de datos personales) deja rastro de quién, cuándo, qué y valor anterior. Usar el mecanismo del repo (activity log con `ActivityLogName` + `LogsModelActivity`, `32` §2; state machine `recordHistory` en `05`, tabla de auditoría). Si el repo no tiene ninguno, es PROP (`19`), no se instala sin OK.
 2. El log de aplicación no es auditoría: rota y no se consulta desde el producto.
 
 ## Cache

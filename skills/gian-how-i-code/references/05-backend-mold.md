@@ -88,7 +88,7 @@ Si B escribió y falla, A puede seguir con un resultado parcial autorizado solo 
 
 Durante la transacción se conserva el error que Laravel usa para reintentar, deadlock incluido. No se traduce a `CustomException` mientras esos reintentos sigan abiertos. Cuando se agotan, puede mapearse a una respuesta controlada, con `previous` y el reporte.
 
-El handler traduce las excepciones del framework al envelope. No se copia dentro de cada Action. El borde ajeno traduce lo conocido a `CustomException` y relanza el resto. Los mensajes visibles, incluidos los errores por campo, usan el idioma soportado del usuario y el fallback del proyecto. `code`, status y claves de campo quedan estables. Se traduce el mensaje, no la clave. La traducción puede ocurrir antes de construir `CustomException`. Se recorre ese camino. Si no existe, se identifica y se propone. No se inventa un sistema de i18n en el mismo corte. `ShouldntReport` no reporta solo: un fallo técnico convertido en `CustomException` conserva la causa y define cómo se reporta.
+Forma de `CustomException` y del envelope: `32` §1. El handler traduce las excepciones del framework al envelope. No se copia dentro de cada Action. El borde ajeno traduce lo conocido a `CustomException` y relanza el resto. Los mensajes visibles, incluidos los errores por campo, usan el idioma soportado del usuario y el fallback del proyecto. `code`, status y claves de campo quedan estables. Se traduce el mensaje, no la clave. La traducción puede ocurrir antes de construir `CustomException`. Se recorre ese camino. Si no existe, se identifica y se propone. No se inventa un sistema de i18n en el mismo corte. `ShouldntReport` no reporta solo: un fallo técnico convertido en `CustomException` conserva la causa y define cómo se reporta.
 
 La idempotencia no es un `catch` ni un default de cada `create`. Cuando el efecto no puede repetirse, se nombran la clave, el alcance de tenant y actor, la adquisición atómica, el resultado guardado, y qué pasa si la misma clave llega con otros datos. No se devuelve el resultado viejo si el payload cambió. Se autoriza antes de devolver un resultado protegido.
 
@@ -228,7 +228,7 @@ Se reportan como `GAP` con `archivo:línea` y el alias propuesto. No se reescrib
 
 - Paquete tipo `asantibanez/laravel-eloquent-state-machines`
 - Prohibido `update` de `status` a mano
-- `bootHasStateMachines()` en `boot()` para jobs async
+- Modelo con `$stateMachines` → trait `Models/Concerns/HasManagedStateMachines` (`32` §4: `whenBooted` + `__call`). Prohibido `MacroableModels::addMacro` propio: pierde el modelo en workers de larga vida
 - Estados como `public const` UPPER_SNAKE en la SM + `values()` (fuente única; ver `07`)
 - Nuevo estado = SM (const + transitions) + DB enum/constraint + factories + labels UI (TS string enum)
 - Prohibido un backed Enum PHP paralelo para los mismos estados, salvo la excepción única de `07` §Excepción — backed Enum paralelo
