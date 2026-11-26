@@ -1,6 +1,6 @@
 {
   "skill": "gian-how-i-code",
-  "version": "1.4.63",
+  "version": "1.4.64",
   "cases": [
     {
       "id": "audit-mold",
@@ -788,6 +788,22 @@
       "forbid": [
         "Deja MapService como Service",
         "Propone una sola MapAction con todas las operaciones"
+      ]
+    },
+    {
+      "id": "audit-inline-new-legacy-array",
+      "prompt": "Audita el módulo auth migrado: `LoginController::store(LoginRequest $request, AuthenticateLogin $action)` llama `$action->handle($username, $password, Request::capture())` y lee `$user['requires_two_factor']`; `show()` hace `(new LoginService)->hasPendingTwoFactor()` y usa `App\\Core\\Session::pullFlash`. `AuthenticateLogin::handle()` es `return (new LoginService)->authenticate($username, $password, $request);`. Es Inertia.",
+      "expect": [
+        "Alta: `new LoginService` dentro de clases; inyección por método/constructor",
+        "Alta: Action envoltorio; LoginService se disuelve en Actions",
+        "La Action devuelve `User`, no array",
+        "`App\\Core\\*` se reemplaza por lo nativo en este módulo",
+        "El Controller devuelve `Inertia::render`/`redirect`; no se exige Resource"
+      ],
+      "forbid": [
+        "Propone `app(LoginService::class)` como arreglo",
+        "Propone `AuthenticateLogin::handle()` estático",
+        "Exige un Resource en el controller Inertia"
       ]
     }
   ]

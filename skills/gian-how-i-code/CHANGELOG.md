@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.64 — 2026-11-26
+
+- `22` Inyección HARD: ninguna clase crea o resuelve Action/Service/adaptador con `new`, `app()`, `resolve()` o Facade. Controller por método (`CreateUser $action` → `$action->handle()`), nunca estático; Action/Job/Listener/Command por constructor; Query por `::make()`; `new` solo para Model, DTO, excepción, Resource, Carbon.
+- `05` §Migración: hallazgos Action que devuelve array legacy (devuelve Model) y uso de `App\Core\*` en el módulo migrado (se reemplaza por lo nativo ahí, no en el cutover). Contrato de capas: en Inertia el Controller devuelve `Inertia::render`/`redirect`; Resource solo en API. Eval `audit-inline-new-legacy-array`.
+
 ## 1.4.63 — 2026-11-26
 
 - `05` §Migración: Service de dominio se elimina, no se envuelve (HARD): mutación → Action con la lógica, lectura → Query, compartido → helper/trait; N operaciones = N Actions. Hallazgos: Action que solo delega a un Service de dominio, Service que importa Actions. CSV/reconciliación = Action llamada por comando/Job. Solo el archivo que llama fuera queda en `app/Services/<Integración>/`. Contrato: la Action devuelve el Model, el Controller construye el Resource. §Qué es una Query: el agregado es una Action de lectura que compone Queries. Eval `audit-action-wraps-domain-service` (caso bonito).

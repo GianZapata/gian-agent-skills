@@ -69,7 +69,12 @@ Si el comportamiento tiene dependencias, configuración, estado propio o side ef
 - No clases `Manager` / `Helper` / `Service` **cajón de sastre** (multi-dominio). Sí se permiten `*Helper` con **un solo eje cohesivo** (`DateHelper`, `NumberHelper`, `UserHelper`, etc.) — ver `23`.
 - Nombres del dominio.
 - Prohibida una clase abstracta con una sola implementación.
-- En Actions y servicios de dominio, toda dependencia va por constructor. Prohibido resolver otra Action, un servicio de dominio o un adaptador con `app()` o con una Facade dentro de la clase. El constructor no autoriza una clase nueva.
+- Inyección (HARD). Ninguna clase (Controller, Action, Query, Job, Command, Listener) crea ni resuelve una Action, un Service o un adaptador con `new`, `app()`, `resolve()` o una Facade. `return (new LoginService)->authenticate(...)` es hallazgo.
+  - Controller: inyección por método, `store(StoreUserRequest $request, CreateUser $action)` y `$user = $action->handle(...)`. Prohibido `CreateUser::handle()` estático: no se puede mockear ni recibe dependencias.
+  - Action, Job, Listener, Command: constructor con promotion `private readonly`; Job y Command también por método en `handle()`.
+  - Query: `<Entity>Query::make()` (fábrica estática de la base), no `new`.
+  - `new` permitido: Model, DTO, value object, excepción, Resource, Carbon, colecciones.
+  - El constructor no autoriza una clase nueva.
 - No crear `Support` ni agregar un archivo ahí porque la carpeta existe. El lugar lo decide `05`: config, modelo, enum, helper, adaptador, método privado o fixture.
 - Transacciones en la Action dueña del caso de uso. Eventos, jobs, mails, notificaciones y llamadas externas disparados dentro de una transacción van `afterCommit` (`05`).
 - Métodos privados para pasos legibles, no solo para acortar.

@@ -76,7 +76,9 @@ El cierre MUST incluir el bloque **Revisión del caso**:
 - Hallazgo: Service que importa Actions (dependencia invertida). La Action no depende de nada más arriba que Queries, helpers, traits e integraciones.
 - Un import/export CSV o una reconciliación masiva es una Action que llama un comando o un Job, no un Service.
 - Se queda como Service solo el archivo que llama fuera (HTTP, gateway, parseo de un formato externo, `Storage` de un proveedor) en `app/Services/<Integración>/`. En una carpeta mixta se decide archivo por archivo.
-- Contrato de capas: la Action resuelve y devuelve el `Model` (o `Collection`/paginator vía Query); el Controller envuelve en el Resource (`new <Entity>Resource($model)`). La Action no construye Resource ni `JsonResponse`.
+- Hallazgo: Action que devuelve un `array` de fila legacy (`$user['requires_two_factor']`). Devuelve el `Model` y el estado se lee de atributos o métodos (`$user->requiresTwoFactor()`).
+- Hallazgo: Controller, Action o Query que usa piezas del framework legacy (`App\Core\Auth`, `Session`, `Csrf`, `Request::capture()`, `App\Core\Exception\*`). Se reemplazan en el módulo que se migra por lo nativo: `$request->user()`/`Auth`, `$request->session()`, CSRF del middleware, `$request` inyectado, excepciones de Laravel. No se deja para el cutover.
+- Contrato de capas: la Action resuelve y devuelve el `Model` (o `Collection`/paginator vía Query); el Controller envuelve en el Resource (`new <Entity>Resource($model)`). La Action no construye Resource ni `JsonResponse`. En web/Inertia el Controller devuelve `Inertia::render()` o `redirect()` con el Model; la regla del Resource aplica a API. La Action nunca construye la respuesta, en ningún caso.
 - Si el plan (ODD, spec) fija otra raíz, se corrige el plan antes de seguir; no se sigue un plan que contradice esta tabla.
 
 ## Dónde va un valor, no en Support
