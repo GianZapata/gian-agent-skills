@@ -3,11 +3,12 @@
 //   node <skill>/assets/self-check.mjs              -> units touched in `git diff HEAD` + untracked files
 //   node <skill>/assets/self-check.mjs a.tsx b.ts   -> units touched in those files (whole file if untracked)
 //   node <skill>/assets/self-check.mjs --all a.tsx  -> every unit in those files
+//   node <skill>/assets/self-check.mjs --all src    -> a directory expands to its .ts/.tsx/.vue files (skips node_modules, dist, vendor)
 // Paths filter files, not hunks. A versioned class selects each member by its own span.
 // Exit 0: 0 pendientes. Exit 1: FAIL. Exit 2: could not run (report as GAP).
 
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 
@@ -67,8 +68,18 @@ const changedRanges = (file) => {
   return ranges;
 };
 
+const SKIP_DIRS = new Set(['node_modules', 'dist', 'build', 'vendor', '.git', 'coverage']);
+
+const expand = (arg) => {
+  if (!existsSync(arg) || !statSync(arg).isDirectory()) return [arg];
+
+  return readdirSync(arg, { withFileTypes: true })
+    .filter((entry) => !SKIP_DIRS.has(entry.name))
+    .flatMap((entry) => expand(path.join(arg, entry.name)));
+};
+
 const filesToCheck = () => {
-  if (fileArgs.length > 0) return fileArgs.filter(isSource);
+  if (fileArgs.length > 0) return fileArgs.flatMap(expand).filter(isSource);
 
   const tracked = (git(['diff', '--name-only', 'HEAD']) ?? '').split('\n').filter(Boolean);
 
@@ -312,6 +323,8 @@ const check = (file) => {
 
   const isEarlyReturn = (statement) => ts.isIfStatement(statement) && !statement.elseStatement && (ts.isReturnStatement(statement.thenStatement) || ts.isThrowStatement(statement.thenStatement));
 
+  const isEffectName = (name) => Boolean(name && EFFECT.test(name) && !(name === 'watch' && !isVue));
+
   const slotOf = (statement) => {
     if (ts.isReturnStatement(statement) || isEarlyReturn(statement)) return 7;
     if (ts.isFunctionDeclaration(statement)) return 5;
@@ -319,7 +332,7 @@ const check = (file) => {
     if (ts.isExpressionStatement(statement)) {
       const name = calleeName(statement.expression);
 
-      if (name && EFFECT.test(name)) return 6;
+      if (isEffectName(name)) return 6;
       if (name && DEPS.test(name)) return 1;
       if (name && /^use[A-Z]/.test(name)) return 3;
 
@@ -338,7 +351,7 @@ const check = (file) => {
     if (name && STATE.test(name)) return 2;
     if (name && DERIVED_HOOK.test(name)) return 4;
     if (name && FUNCTION_HOOK.test(name)) return 5;
-    if (name && EFFECT.test(name)) return 6;
+    if (isEffectName(name)) return 6;
     if (name && /^use[A-Z]/.test(name)) return 3;
 
     return 4;
@@ -350,7 +363,7 @@ const check = (file) => {
     if (ts.isExpressionStatement(statement)) {
       const name = calleeName(statement.expression);
 
-      return Boolean(name && EFFECT.test(name));
+      return isEffectName(name);
     }
 
     const init = initializer(statement);
@@ -439,19 +452,21 @@ const check = (file) => {
       if (ts.isExpressionStatement(statement) && ts.isCallExpression(statement.expression) && calleeName(statement.expression) === 'useEffect') {
         const callback = statement.expression.arguments[0];
         const body = callback && isFunctionLike(callback) ? callback.body : null;
-        let resetOnOpen = false;
+        let guardsOnOpen = false;
 
         const visit = (node) => {
-          if (ts.isIfStatement(node) && /\b(is)?[oO]pen\w*\b/.test(node.expression.getText(sf)) && /\b(reset|set[A-Z]\w*)\(/.test(node.thenStatement.getText(sf))) {
-            resetOnOpen = true;
-          }
+          if (ts.isIfStatement(node) && /\b(is)?[oO]pen\w*\b/.test(node.expression.getText(sf))) guardsOnOpen = true;
 
           ts.forEachChild(node, visit);
         };
 
         if (body) visit(body);
 
-        if (resetOnOpen) {
+        const text = body ? body.getText(sf) : '';
+        const setsState = /\b(reset|set[A-Z]\w*)\(/.test(text);
+        const syncsExternal = /\.then\(|\bawait\b|\bfetch\(|Service\.|addEventListener|subscribe|setTimeout|setInterval|requestAnimationFrame|\bdocument\.|\bwindow\.|\.focus\(|\bnew [A-Z]|return \(\) =>|return function/.test(text);
+
+        if (guardsOnOpen && setsState && !syncsExternal) {
           report('FAIL', file, at(statement), 'effect-reset-on-open', 'useEffect que resetea al abrir → montar con {isOpen && <X />} o key; el estado inicial va en defaultValues/useState (gian-how-i-code 09/12)');
         }
       }
@@ -722,6 +737,12 @@ const check = (file) => {
     const parent = fn.parent;
 
     if (parent && ts.isVariableDeclaration(parent) && ts.isIdentifier(parent.name)) return parent.name.text;
+
+    if (parent && ts.isCallExpression(parent) && /^(forwardRef|memo)$/.test(calleeName(parent) ?? '')) {
+      if (ts.isFunctionExpression(fn) && fn.name) return fn.name.text;
+
+      return unitName(parent);
+    }
 
     return null;
   };

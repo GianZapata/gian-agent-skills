@@ -1,6 +1,6 @@
 {
   "skill": "gian-how-i-code",
-  "version": "1.4.57",
+  "version": "1.4.58",
   "cases": [
     {
       "id": "audit-mold",
@@ -652,6 +652,21 @@
         "Lo acepta porque el efecto ya existía",
         "Propone key={Date.now()} o un contador para forzar el reset",
         "Deja el useEffect y solo agrega montaje condicional"
+      ]
+    },
+    {
+      "id": "audit-form-ui-fields-cast",
+      "prompt": "Audita ClientForm.tsx: `useForm<ClientFormValues>({ resolver: zodResolver(createClientSchema) as never })`. ClientFormValues tiene countryId, stateId y municipalityId para la cascada de dirección, que el schema no declara. ApartmentForm tiene `area: '' as unknown as number` en defaultValues.",
+      "expect": [
+        "Media (10/23): cast del resolver que tapa campos de UI fuera del schema",
+        "countryId/stateId/municipalityId entran al schema y toPayload los quita (o salen a useState si no participan del form)",
+        "area: z.number().nullable() con refine de requerido y default null",
+        "useForm<z.input, unknown, z.output> sin cast"
+      ],
+      "forbid": [
+        "Acepta el cast porque tsc falla sin él",
+        "Propone `as unknown as Resolver`",
+        "Lo deja Bloqueado sin proponer cambiar el schema"
       ]
     }
   ]

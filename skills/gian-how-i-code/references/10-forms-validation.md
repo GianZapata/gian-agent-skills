@@ -12,6 +12,8 @@ Cargar cuando: formularios, RHF, Zod, DTOs de mutation (body HTTP), campos condi
 
 RHF + Zod + zodResolver. Schemas fuera del componente. Tipos con `z.infer` / `z.input` / `z.output`. No form state solo con `useState` (salvo micro-forms locales justificados). Resolver sin cast: `useForm<z.input<…>, unknown, z.output<…>>` o schema alineado (`23` §Casts).
 
+**Campos que el schema no declara (HARD).** Si el form guarda un campo que la API no recibe (`countryId` / `stateId` de una cascada, un toggle de UI), ese campo va en el schema y el mapper del submit (`toPayload`) lo quita. Si no participa del form (no se valida, no entra en `reset` ni en `isDirty`), va en `useState` fuera del form. Un número vacío al inicio lo acepta el schema (`z.number().nullable()` + `refine` de requerido, o `z.coerce.number()`) y el default es `null`. Nunca `zodResolver(schema) as never`, `as unknown as Resolver<…>`, `control as unknown as Control<…>` ni `'' as unknown as number`: el cast tapa justo ese hueco entre el schema y los valores del form.
+
 ## Input / DTO (regla)
 
 - El shape de form y el **body HTTP** salen del **schema nombrado** (`schemas/`; Zod en TypeScript).

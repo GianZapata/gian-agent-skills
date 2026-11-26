@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.58 — 2026-11-26
+
+- `10`: campos que el schema no declara (HARD). Un campo de UI que el form guarda va en el schema y el mapper lo quita, o va en `useState` fuera del form. Un número vacío se acepta con `nullable` y el default es `null`. Prohibidos los casts del resolver, del `control` y `'' as unknown as number`.
+- Evals: audit +1 (`audit-form-ui-fields-cast`, 57).
+
 ## 1.4.57 — 2026-11-26
 
 - Evals: audit +1 (`audit-effect-reset-on-open`, 56): el `useEffect` que resetea al abrir se reporta aunque el archivo se toque por otro motivo; ts-style 2.11.0 lo marca como `effect-reset-on-open`.

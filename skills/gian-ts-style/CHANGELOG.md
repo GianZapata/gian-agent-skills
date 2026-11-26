@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.11.1 — 2026-11-26
+
+- `effect-reset-on-open` marca también el reset que sigue a `if (!isOpen) return;` / `if (isOpen) return;`. Ya no marca un efecto que sincroniza con algo externo (fetch, `.then`, `await`, DOM, timers, suscripción, cleanup).
+- `self-check.mjs`: un directorio como argumento se expande a sus `.ts`/`.tsx`/`.vue` (sin `node_modules`, `dist`, `vendor`); `--all src` ya funciona.
+- `self-check.mjs`: `forwardRef(function X…)` y `memo(...)` entran al chequeo de slots.
+- `self-check.mjs`: en React, `watch()` de React Hook Form es derivada, no efecto (en Vue sigue siendo efecto).
+- `expressions-ternaries.md`: un booleano de 3+ partes es caso C; se quitó la frase que lo dejaba como expresión.
+
 ## 2.11.0 — 2026-11-26
 
 - Regla HARD `effect-reset-on-open`: `self-check.mjs` marca FAIL un `useEffect` con `if` sobre `isOpen`/`open` que llama `reset(` o `setX(`. Se corrige con montaje condicional o `key` (how-i-code `09`/`12`). Un efecto de DOM bajo `isOpen` no se marca.

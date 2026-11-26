@@ -87,7 +87,7 @@ const statusLabel = (() => {
 })();
 ```
 
-Dos resultados con una condición de 1 o 2 partes → ternario simple (`simple-jsx-ternary` o ternario de valor). Un boolean puro (`const canPay = a && b && c`) no es ternario: se queda como expresión.
+Dos resultados con una condición de 1 o 2 partes → ternario simple (`simple-jsx-ternary` o ternario de valor). Un boolean de 1 o 2 partes (`const canPay = isActive && hasBalance`) se queda como expresión. Uno de 3+ partes (`a && b && c`) es caso C: `useMemo<boolean>` con `if` y early return (`derived-multi-branch`, `gian-how-i-code` `23`).
 
 ## Memoización
 
