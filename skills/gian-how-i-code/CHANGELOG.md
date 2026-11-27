@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.73 — 2026-11-27
+
+- `assets/self-check-backend.py`: new checks for legacy that a green suite hides: `legacy-auth-array` (`toLegacyArray`, `ActorHelper::`), `parallel-exceptions` (`app/Http/Exceptions/*`, try/catch in Controllers), `response-envelope` (`'ok' =>`), `hand-validator` (`*Validator.php`, `Validator::make`, `$request->merge/replace` outside FormRequest), `action-mold` (public method besides `handle()`, `Get|List|Show*` Action → Query), `redirect-literal` (`redirect('/...')`). Full-app runs add `policy-unused` and `alias-model` (Model extending another Model or sharing its table).
+- `05` DoD lists them.
+
 ## 1.4.72 — 2026-11-27
 
 - `05` definición de hecho (HARD): cero Services de dominio vivos. Un Controller, Command, Resource, Job o Middleware que importa un Service que consulta o escribe la BD sin integración externa es un hallazgo; el Service se borra.

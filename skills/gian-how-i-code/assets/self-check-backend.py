@@ -91,7 +91,39 @@ CHECKS = [
         lambda rel: rel.startswith("app/"),
         "instancia directa de `Dompdf`; usar `barryvdh/laravel-dompdf` + Blade en `resources/views/pdf/` (`32` §9)",
     ),
+    (
+        "legacy-auth-array",
+        re.compile(r"toLegacyArray\(|\bActorHelper::|->attributes->get\('user'\)"),
+        lambda rel: True,
+        "usuario legacy como array; se lee `auth()->user()` (`User`) y sus métodos (`05` DoD)",
+    ),
+    (
+        "parallel-exceptions",
+        re.compile(r"^\s*\}?\s*catch \(", re.M),
+        lambda rel: rel.startswith("app/Http/Controllers/"),
+        "try/catch en el Controller; la excepción sube a `CustomException` / el handler (`05` Errores)",
+    ),
+    (
+        "response-envelope",
+        re.compile(r"'ok'\s*=>"),
+        lambda rel: rel.startswith("app/Http/"),
+        "sobre `'ok' =>` hecho a mano; el status HTTP y el Resource ya dicen si salió bien (`05` Respuesta del Controller)",
+    ),
+    (
+        "hand-validator",
+        re.compile(r"Validator::make\(|\$request->(?:merge|replace)\("),
+        lambda rel: rel.startswith(("app/Http/Controllers/", "app/Http/Actions/", "app/Services/")),
+        "validación o mutación del Request fuera del FormRequest; va en `rules()` / `prepareForValidation()`",
+    ),
+    (
+        "redirect-literal",
+        re.compile(r"redirect\(\s*['\"]/"),
+        lambda rel: True,
+        "redirect a URL literal; usar `to_route('<nombre>')` (`05` Rutas)",
+    ),
 ]
+
+PUBLIC_METHOD = re.compile(r"^\s*public (?:static )?function (\w+)\(", re.M)
 
 
 STRING_LITERAL = re.compile(r"'(?:[^'\\]|\\.)*'|\"(?:[^\"\\]|\\.)*\"")
@@ -156,6 +188,69 @@ def php_files(root: Path, targets: list[str]) -> list[Path]:
     return sorted(set(files))
 
 
+def snake_plural(name: str) -> str:
+    snake = re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
+    if snake.endswith("y") and not snake.endswith(("ay", "ey", "oy", "uy")):
+        return snake[:-1] + "ies"
+    return snake if snake.endswith("s") else snake + "s"
+
+
+def alias_model_findings(root: Path) -> list[str]:
+    models = sorted((root / "app" / "Models").rglob("*.php")) if (root / "app" / "Models").exists() else []
+    tables: dict[str, list[tuple[str, bool, int]]] = {}
+    for path in models:
+        text = path.read_text(encoding="utf-8", errors="replace")
+        if not re.search(r"extends\s+\\?[\w\\]*(Model|Authenticatable|Pivot)\b", text):
+            continue
+        match = re.search(r"protected \$table\s*=\s*['\"](\w+)['\"]", text)
+        table = match.group(1) if match else snake_plural(path.stem)
+        line = text.count("\n", 0, match.start()) + 1 if match else 1
+        tables.setdefault(table, []).append((path.relative_to(root).as_posix(), bool(match), line))
+    names = {path.stem for path in models}
+    findings = []
+    for path in models:
+        text = path.read_text(encoding="utf-8", errors="replace")
+        match = re.search(r"class \w+ extends \\?(?:App\\Models\\)?(\w+)\b", text)
+        if match and match.group(1) in names:
+            line = text.count("\n", 0, match.start()) + 1
+            findings.append(
+                f"FAIL {path.relative_to(root).as_posix()}:{line} alias-model — alias de `{match.group(1)}`; "
+                "los consumidores usan ese Model (`05` DoD)"
+            )
+    for table, owners in tables.items():
+        if len(owners) < 2:
+            continue
+        for rel, explicit, line in owners:
+            if explicit:
+                others = ", ".join(o[0].rsplit("/", 1)[-1] for o in owners if o[0] != rel)
+                findings.append(f"FAIL {rel}:{line} alias-model — tabla `{table}` ya es de {others}; un Model por tabla (`05` DoD)")
+    return findings
+
+
+def policy_findings(root: Path) -> list[str]:
+    policies = sorted((root / "app" / "Policies").glob("*Policy.php")) if (root / "app" / "Policies").exists() else []
+    if not policies:
+        return []
+    corpus = "\n".join(
+        path.read_text(encoding="utf-8", errors="replace")
+        for base in ("app", "routes")
+        if (root / base).exists()
+        for path in (root / base).rglob("*.php")
+        if "/Policies/" not in path.as_posix()
+    )
+    uses = re.compile(r"(?:authorize\(|Gate::\w+\(|->can(?:not)?\(|can:|Gate::policy\()[^\n]*")
+    used = " ".join(m.group(0) for m in uses.finditer(corpus))
+    findings = []
+    for path in policies:
+        model = path.stem[: -len("Policy")]
+        if not re.search(rf"\b{re.escape(model)}\b|\${model[:1].lower() + model[1:]}\b", used):
+            findings.append(
+                f"FAIL {path.relative_to(root).as_posix()}:1 policy-unused — ninguna ruta ni Controller autoriza `{model}`; "
+                "se conecta (`authorize` / `can:`) o se borra (`05` Autorización)"
+            )
+    return findings
+
+
 def main() -> int:
     if len(sys.argv) < 2:
         print(__doc__.strip())
@@ -183,6 +278,20 @@ def main() -> int:
             for match in pattern.finditer(text):
                 line = text.count("\n", 0, match.start()) + 1
                 findings.append(f"FAIL {rel}:{line} {name} — {message}")
+
+        if rel.startswith("app/Http/Exceptions/"):
+            findings.append(f"FAIL {rel}:1 parallel-exceptions — familia de excepciones paralela; se usa `CustomException` / `abort` / `ValidationException` (`05` Errores)")
+
+        if rel.startswith(("app/", "app/Http/")) and re.search(r"/\w+Validator\.php$", rel) and "app/Rules/" not in rel:
+            findings.append(f"FAIL {rel}:1 hand-validator — validador hecho a mano; las reglas viven en el FormRequest o en `app/Rules/`")
+
+        if rel.startswith("app/Http/Actions/"):
+            extra = [m for m in PUBLIC_METHOD.finditer(text) if m.group(1) not in ("__construct", "handle")]
+            for match in extra:
+                line = text.count("\n", 0, match.start()) + 1
+                findings.append(f"FAIL {rel}:{line} action-mold — método público `{match.group(1)}`; una Action tiene solo `handle()` (`05` Action)")
+            if re.match(r"(Get|List|Show|Find|Fetch)[A-Z]", parts_name := rel.rsplit("/", 1)[-1]):
+                findings.append(f"FAIL {rel}:1 action-mold — `{parts_name}` es una lectura; va en `app/Queries/<Contexto>/` (`05` Query)")
 
         if rel.startswith(LEGACY_DIRS):
             findings.append(f"FAIL {rel}:1 legacy-runtime — carpeta del runtime legacy; se borra, no se renombra (`05` DoD)")
@@ -232,6 +341,10 @@ def main() -> int:
                         f"FAIL {rel}:{line} action-uses-domain-service — `{match.group(1)}` no llama fuera; "
                         "se disuelve en Actions/Queries (`05` §Migración)"
                     )
+
+    if not args:
+        findings.extend(policy_findings(root))
+        findings.extend(alias_model_findings(root))
 
     bootstrap = root / "bootstrap" / "app.php"
     if not args and bootstrap.exists():

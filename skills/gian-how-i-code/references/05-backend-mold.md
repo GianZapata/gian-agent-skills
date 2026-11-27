@@ -84,7 +84,7 @@ El cierre MUST incluir el bloque **Revisión del caso**:
   - cero validación de entrada en Action o Controller (`new ValidationException([...])`, `if (!$file) throw`): va en el FormRequest (`rules()`/`after()`). La Action solo lanza reglas de negocio que dependen del estado (duplicado en BD, transición inválida);
   - una clave renombrada (Resource, payload, campo de form) actualiza en el mismo commit sus tests y todos sus consumidores del front (`rg` de la clave vieja en `resources/js` y `public/` da 0);
   - `gian-php-style` `self-check.php --base=<commit previo a la tarea>` da 0 pendientes;
-  - `assets/self-check-backend.py <repo> <rutas del módulo>` da 0 pendientes;
+  - `assets/self-check-backend.py <repo> <rutas del módulo>` da 0 pendientes (incluye `legacy-auth-array`, `parallel-exceptions`, `response-envelope`, `hand-validator`, `action-mold`, `redirect-literal`; corrido sin rutas suma `policy-unused` y `alias-model`). Una Action con un método público fuera de `handle()` o un nombre `Get|List|Show*` no cumple el molde aunque la suite pase;
   - la suite **completa** pasa (`php artisan test`, no `--filter`) y el front compila si se tocó (`typecheck`/`build`). Un test que ya fallaba en la base se demuestra corriéndolo en la base y se anota en el log; cualquier otro rojo deja la tarea abierta.
 - Prohibido posponer una regla HARD del módulo con `PROP`, "hasta T#" o "fuera de alcance" y marcarlo hecho (HARD). `PROP` solo vale para código fuera del módulo, o con un bloqueo que el usuario aprobó y quedó en el log con su cita. Sin eso, la tarea sigue `in progress`.
 - No se adelanta una tarea que espera aprobación: si el log dice "se muestra para aprobación", el árbol no lleva esos cambios hasta el visto bueno.
