@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.72 — 2026-11-27
+
+- `05` definición de hecho (HARD): cero Services de dominio vivos. Un Controller, Command, Resource, Job o Middleware que importa un Service que consulta o escribe la BD sin integración externa es un hallazgo; el Service se borra.
+- `assets/self-check-backend.py`: nuevo check `controller-uses-domain-service`. Las integraciones (HTTP, `Storage`, parsers CSV/XLSX/KML, clientes SDK, `Contracts`/`DTO`/`Exceptions`) y los builders puros que solo tipan Models quedan fuera. `INTEGRATION_MARKERS` se amplió.
+- Eval: `audit-controller-calls-domain-service`.
+
 ## 1.4.71 — 2026-11-26
 
 - `05` §Migración, definición de hecho (HARD): el runtime legacy (sesión/CSRF/auth/validator/view hechos a mano, middleware `Legacy*`) se borra; renombrar `app/Core` a otro namespace sigue siendo legacy. Paridad esquema/código: con el esquema en inglés, cero literales con columnas viejas en `app/`; una suite verde que no pasa por la ruta no cuenta.

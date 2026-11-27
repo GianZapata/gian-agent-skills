@@ -20,7 +20,8 @@ from pathlib import Path
 
 INTEGRATION_MARKERS = re.compile(
     r"Http::|Guzzle|curl_|Storage::disk|SimpleXML|XMLReader|DOMDocument|fopen\(|ZipArchive|"
-    r"PhpSpreadsheet|OpenSpout|Process::|proc_open|socket_",
+    r"PhpSpreadsheet|OpenSpout|Process::|proc_open|socket_|Storage::|SplFileObject|fgetcsv\(|"
+    r"new \\?\w*Client\(|\\Stripe\\|Gateway\b",
 )
 
 CHECKS = [
@@ -109,6 +110,32 @@ def load_glossary(path: Path) -> list[tuple[str, str]]:
     return pairs
 
 
+DOMAIN_SERVICE_CONSUMERS = ("app/Http/Controllers/", "app/Console/", "app/Http/Resources/", "app/Jobs/", "app/Http/Middleware/")
+DB_TOUCH = re.compile(
+    r"\bDB::|::query\(|::where\w*\(|::find\w*\(|::first\w*\(|::all\(|::create\(|::updateOrCreate\(|"
+    r"->save\(|->update\(|->insert\(|->upsert\(|->increment\(|->decrement\(|->refresh\(",
+)
+DB_WRITE = re.compile(r"->save\(|::create\(|->update\(|DB::transaction|->insert\(|->upsert\(|::updateOrCreate\(|->forceDelete\(|Model::destroy\(")
+
+
+def is_domain_service(path: Path) -> bool:
+    """A Service class that reads or writes the database: either it does no outside I/O, or it also writes rows.
+
+    Pure builders/parsers with no database access and clients/stores that only talk to the outside are not domain.
+    """
+    if not path.exists():
+        return False
+    posix = path.as_posix()
+    if any(part in posix for part in ("/Contracts/", "/DTO/", "/Exceptions/")):
+        return False
+    body = path.read_text(encoding="utf-8", errors="replace")
+    if not re.search(r"^(final\s+|abstract\s+|readonly\s+)*class\s", body, re.M):
+        return False
+    if not DB_TOUCH.search(body):
+        return False
+    return not INTEGRATION_MARKERS.search(body) or bool(DB_WRITE.search(body))
+
+
 def delegates_dispatch(root: Path, text: str) -> bool:
     """True when an imported Action/Service of the webhook entry point dispatches a Job."""
     for match in re.finditer(r"^use (App\\(?:Http\\Actions|Services)\\[\w\\]+);", text, re.M):
@@ -184,6 +211,16 @@ def main() -> int:
         if rel.startswith(("app/Http/Actions/", "app/Queries/")) and len(parts) == (4 if rel.startswith("app/Http") else 3) \
                 and not parts[-1].startswith("Base"):
             findings.append(f"FAIL {rel}:1 loose-root — archivo suelto; va en `<raíz>/<Contexto>/`")
+
+        if rel.startswith(DOMAIN_SERVICE_CONSUMERS):
+            for match in re.finditer(r"^use (App\\Services\\[\w\\]+);", text, re.M):
+                service = root / "app" / (match.group(1)[len("App\\"):].replace("\\", "/") + ".php")
+                if is_domain_service(service):
+                    line = text.count("\n", 0, match.start()) + 1
+                    findings.append(
+                        f"FAIL {rel}:{line} controller-uses-domain-service — `{match.group(1)}` es un Service de dominio; "
+                        "se borra y el consumidor llama a la Action o Query (`05` §Migración)"
+                    )
 
         if rel.startswith("app/Http/Actions/"):
             for match in re.finditer(r"^use (App\\Services\\[\w\\]+);", text, re.M):

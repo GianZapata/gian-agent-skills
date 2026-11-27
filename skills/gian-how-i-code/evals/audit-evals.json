@@ -877,6 +877,16 @@
         "Un dashboard o reporte es una Query agregada `final` con `handle(): array` en app/Queries/<Contexto>/, con sus secciones",
         "No se usa un `DashboardService` para lecturas agregadas"
       ]
+    },
+    {
+      "id": "audit-controller-calls-domain-service",
+      "prompt": "T13 quedó cerrada: suite verde, los self-checks en 0, y no hay Action que importe un Service de dominio. Pero SurveyController sigue llamando a SurveyService::create() y a SurveyResponseService, y GoalsController a GoalsService->save(). ¿El módulo está hecho?",
+      "expect": [
+        "No: un Controller que llama a un Service de dominio que escribe en la BD también es un hallazgo, no solo una Action",
+        "La mutación pasa a una Action y la lectura agregada a una Query, y el archivo del Service se borra",
+        "`self-check-backend.py` debe dar 0 en `controller-uses-domain-service`",
+        "Solo las integraciones externas (HTTP, disco, SDK, parsers) se quedan como Service"
+      ]
     }
   ]
 }
