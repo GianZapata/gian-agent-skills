@@ -848,6 +848,35 @@
         "La definición de hecho se aplica al cerrar la fase de lógica",
         "La fase de lógica empieza con tests mínimos de escrituras y permisos en verde"
       ]
+    },
+    {
+      "id": "audit-cutover-renamed-runtime",
+      "prompt": "El cutover terminó: `rg 'App\\\\Core' app` da 0 porque se movió app/Core a app/Runtime (Session, Csrf, Auth, Validator, View) y los middleware LegacySession/LegacyCsrf siguen en bootstrap/app.php. ¿Cerramos el cutover?",
+      "expect": [
+        "No: renombrar el runtime hecho a mano no lo vuelve nativo",
+        "El runtime legacy se borra y sus consumidores pasan a session/auth/validación de Laravel",
+        "Los middleware Legacy* en bootstrap/app.php también son hallazgo",
+        "`self-check-backend.py` debe dar 0 en `legacy-runtime` antes de cerrar"
+      ]
+    },
+    {
+      "id": "audit-green-suite-schema-drift",
+      "prompt": "Las migraciones ya crean el esquema en inglés (zone_id, phone, captured_at) y la suite está 137/137 en verde. CitizensQuery todavía filtra por 'zona_id' y 'celular', pero ningún test pasa por esa ruta. ¿El módulo está hecho?",
+      "expect": [
+        "No: la suite verde no cubre la ruta, en producción falla",
+        "La paridad esquema/código es parte de la definición de hecho",
+        "Con el glosario viejo→nuevo, `rg` de columnas viejas en app/ debe dar 0 (`--glossary` en `self-check-backend.py`)",
+        "Cada ruta de listado o reporte que toca esas columnas necesita un test"
+      ]
+    },
+    {
+      "id": "audit-listing-vs-aggregate-query",
+      "prompt": "Para el dashboard creé DashboardService con métodos stats(), byZone() y timeline() que hacen DB::table(...)->groupBy(). Los listados de ciudadanos son Queries que no extienden BaseQuery. ¿Está bien?",
+      "expect": [
+        "Un listado extiende `BaseQuery` (allowlists, orden determinista, paginación)",
+        "Un dashboard o reporte es una Query agregada `final` con `handle(): array` en app/Queries/<Contexto>/, con sus secciones",
+        "No se usa un `DashboardService` para lecturas agregadas"
+      ]
     }
   ]
 }

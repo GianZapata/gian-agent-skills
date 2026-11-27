@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.4.71 — 2026-11-26
+
+- `05` §Migración, definición de hecho (HARD): el runtime legacy (sesión/CSRF/auth/validator/view hechos a mano, middleware `Legacy*`) se borra; renombrar `app/Core` a otro namespace sigue siendo legacy. Paridad esquema/código: con el esquema en inglés, cero literales con columnas viejas en `app/`; una suite verde que no pasa por la ruta no cuenta.
+- `32` §9: un solo `app/Exports/XlsxWriter` + enum `ExportModule`; nueva subsección Imports (Reader de openspout, parser en `Services/<Formato>` que hace yield, Action `Import<Entity>` por chunks con transacción por bloque, Job si es grande; lector XLSX a mano con ZipArchive es hallazgo); el PDF se genera en una Action, solo un renderer externo (Gotenberg) es Service.
+- `32` §10: un Mailable `ShouldQueue` en la cola `emails` con tries/backoff/`afterCommit()` equivale al Job wrapper; el wrapper solo se exige con SMTP por tenant. Un supervisor de Horizon sin jobs es hallazgo.
+- `32` §11 nueva (HARD): Query de listado (`BaseQuery`) vs. Query agregada (`final`, `handle(): array|DTO`, secciones); nunca `DashboardService`.
+- `28` regla 0: layout `app/Jobs/<Contexto>/<Verbo><Sustantivo>Job.php`, `final`, `Queueable`, `onQueue()` + `afterCommit()` en el constructor, `tags()`.
+- `assets/self-check-backend.py`: nuevos checks `legacy-runtime`, `schema-column-drift` (`--glossary <archivo>`), `hand-rolled-xlsx` y `sync-webhook`.
+- Evals: `audit-cutover-renamed-runtime`, `audit-green-suite-schema-drift`, `audit-listing-vs-aggregate-query`.
+
 ## 1.4.70 — 2026-11-26
 
 - `32` §9 (HARD): exports XLSX/CSV con `App\Exports\ExportContract` (`filename`, `headings`, `rows`) + `OpenSpout` en streaming (`$query->lazy(500)`) reutilizando la `BaseQuery` del módulo (sin `->get()` en RAM ni filtros duplicados); PDFs con `barryvdh/laravel-dompdf` + vistas Blade en `resources/views/pdf/` (sin `new Dompdf` a mano ni HTML concatenado).

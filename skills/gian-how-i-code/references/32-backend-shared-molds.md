@@ -188,6 +188,7 @@ Tests que viajan con la pieza: `AutoRefreshingTokenProviderTest`, `ValidateDropb
 - Contrato base en `app/Exports/ExportContract.php` (`filename(): string`, `headings(): array`, `rows(): iterable`) y extensión opcional `app/Exports/FormattedExport.php` (`columnWidths(): array`, `columnFormats(): array`).
 - Cada export (`app/Exports/<Entity>Export.php`) reutiliza la **`BaseQuery`** del módulo (`<Entity>Query::make($queryRequest)->getBuilder()->lazy(500)`) y produce filas con `yield $this->mapRow($model)` sobre el `Model` ya cargado.
 - Prohibido duplicar filtros o scope territorial dentro de un `ReportService` o cargar tablas completas con `->get()` en memoria antes de escribir el archivo (`27`).
+- Un solo escritor compartido: `app/Exports/XlsxWriter.php` (o `ExportWriter`) recibe un `ExportContract` y escribe con OpenSpout; un enum `ExportModule` mapea el módulo a su clase (`exportClass()`). Prohibido repetir el bucle `Writer`/`Row::fromValues` en cada Controller o Service.
 - El streaming HTTP usa `OpenSpout` escribiendo en `php://output` (o un almacenamiento temporal si un reporte pesado corre en un Job). Cambiar de descarga directa a Job no cambia el contrato `ExportContract`.
 
 ```php
@@ -200,17 +201,33 @@ interface ExportContract {
 }
 ```
 
+### Imports (`openspout/openspout` Reader)
+
+- Leer XLSX/CSV con el Reader de OpenSpout. Prohibido un lector a mano con `ZipArchive` + `XMLReader` sobre `xl/worksheets` (`hand-rolled-xlsx`, Media).
+- Parse y persistencia separados: un parser en `app/Services/<Formato>/` (integración con el archivo) hace `yield` de filas normalizadas; una Action `Import<Entity>` valida y persiste por bloques (`chunk` de 500 con una transacción por bloque, nunca una sola transacción para todo el archivo).
+- El archivo se valida en el FormRequest (`mimes`, `max`). Un import de más de unos cientos de filas corre en un Job (`28`) que recibe la ruta del archivo guardado, y deja un resumen (filas creadas, actualizadas, rechazadas con motivo) que el usuario puede ver.
+- Auditoría: Service de import que parsea y escribe en BD dentro del request (Media).
+
 ### PDFs (`barryvdh/laravel-dompdf` + Blade)
 
 - Todo PDF se renderiza desde una vista **Blade** en `resources/views/pdf/<nombre>.blade.php` usando `barryvdh/laravel-dompdf` (`Pdf::loadView('pdf.<nombre>', $data)`).
 - Prohibido instanciar `new Dompdf(...)` directamente en `app/` o construir HTML concatenando strings en PHP (`raw-dompdf-new` en `self-check-backend.py`).
 - Si el PDF se adjunta a un correo o consume datos pesados externos, la generación corre dentro de un Job (`28`), nunca bloqueando el request HTTP.
+- El PDF se genera en una Action (`app/Http/Actions/<Contexto>/Generate<Doc>Pdf.php`) que arma los datos y llama a `Pdf::loadView`. Solo un renderer externo (Gotenberg u otro por HTTP) es Service en `app/Services/<Proveedor>/`. Un `<X>PdfRenderer` Service que solo llama a dompdf es un Service de dominio (`05` §Migración).
 
 ## 10. Correos en cola, plantillas Blade y colas Horizon (HARD)
 
 - **Configuración de entorno:** `.env.example` declara siempre `MAIL_MAILER=log` (local) / `smtp` (producción), `MAIL_SCHEME`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM_ADDRESS`, `MAIL_FROM_NAME="${APP_NAME}"`, junto con `QUEUE_CONNECTION` y `REDIS_*`. En `phpunit.xml`: `MAIL_MAILER=array` y `QUEUE_CONNECTION=sync`.
 - **Plantillas Blade:** componentes base reutilizables en `resources/views/emails/components/layout.blade.php` y `button.blade.php`; vistas por dominio en `resources/views/emails/<contexto>/`. Sin HTML de correo escrito dentro de clases PHP.
-- **Envío asíncrono y trazabilidad:** los Mailables viven en `app/Mail/<Contexto>/` y **nunca** se envían síncronos por SMTP dentro del request HTTP. Se despachan vía Jobs en la cola dedicada `emails` con `->afterCommit()`, `$tries` y `backoff()` (`28`). El envío y los fallos relevantes se trazan en `spatie/laravel-activitylog` (`ActivityLogName::Mail`), sin guardar secretos ni PII sensible (`29`).
+- **Envío asíncrono y trazabilidad:** los Mailables viven en `app/Mail/<Contexto>/` y **nunca** se envían síncronos por SMTP dentro del request HTTP. Se encolan en la cola dedicada `emails` con `->afterCommit()`, `$tries` y `backoff()` (`28`): un Mailable `ShouldQueue` con `$queue = 'emails'`, `$tries`, `backoff()` y `afterCommit()` cumple; el Job envoltorio (`Send<X>MailJob` + `DeliverMail`) solo se exige cuando el transporte cambia por tenant o por cuenta (SMTP por tenant). El envío y los fallos relevantes se trazan en `spatie/laravel-activitylog` (`ActivityLogName::Mail`), sin guardar secretos ni PII sensible (`29`).
+- **Supervisor vacío:** un supervisor de Horizon al que ningún Job despacha (por ejemplo `webhooks` mientras el webhook se procesa en el request) es hallazgo Media; o se mueve el trabajo al Job o se quita el supervisor.
 - **Colas Horizon (`config/horizon.php`):** separar supervisores por criticidad (por ejemplo `emails`, `webhooks`/integraciones, `default`) con `tries`, `backoff` y `timeout` explícitos (con `timeout` menor que `retry_after`, `28`). No dejar todos los trabajos mezclados en una sola cola `default` cuando conviven correos, webhooks y procesos pesados.
 
-Auditoría (§9 y §10): `new Dompdf(` directo (Media), `->get()` sin `lazy`/`chunkById` en export masivo (Media), envío de `Mail::send()` síncrono dentro de un controller o transacción (Media), `.env.example` sin claves `MAIL_*` en un proyecto que envía correos (Baja).
+## 11. Query de listado vs. Query agregada (HARD)
+
+- **Listado** (tabla paginada, select, export): extiende `BaseQuery` (`05`), con allowlists de filtros/sorts/includes y orden determinista. Un listado que arma su `QueryBuilder` a mano o pagina con `perPage` fijo es hallazgo.
+- **Agregada** (dashboard, reporte, KPI, mapa): `final class <X>Query` en `app/Queries/<Contexto>/` con un único `handle(...): array` (o DTO) que recibe los filtros ya validados (rango de fechas, scope). Cuando crece, se parte en secciones (`<X>Section` o métodos privados por bloque), no en un Service.
+- Prohibido `DashboardService`, `ReportService` o `<X>AnalyticsService` de dominio: la lectura es Query (`05` §Migración).
+- Ambas aplican el scope territorial/tenant en un solo lugar (trait de la Query o `BaseQuery`), nunca repetido por método.
+
+Auditoría (§9, §10 y §11): `new Dompdf(` directo (Media), `->get()` sin `lazy`/`chunkById` en export masivo (Media), envío de `Mail::send()` síncrono dentro de un controller o transacción (Media), `.env.example` sin claves `MAIL_*` en un proyecto que envía correos (Baja).

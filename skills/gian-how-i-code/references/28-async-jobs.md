@@ -10,6 +10,7 @@ Cargar cuando: Job nuevo o editado, `dispatch`, listener en cola, notificación 
 
 ## Reglas
 
+0. **Layout:** `app/Jobs/<Contexto>/<Verbo><Sustantivo>Job.php`, `final`, con `Queueable`; `onQueue('<cola>')` y `afterCommit()` en el constructor; `$tries`, `$timeout`, `backoff()` y `tags()` declarados. Nada de Jobs sueltos en `app/Jobs/` ni colas elegidas en el `dispatch`. Si `config/horizon.php` declara una cola, al menos un Job la usa.
 1. **El Job no tiene lógica de negocio.** Recibe IDs, carga el modelo y llama a la Action (`05`). La lógica se prueba en la Action sin cola.
 2. **Payload chico:** IDs o modelos (`SerializesModels` los re-hidrata). Nunca colecciones grandes, archivos ni arrays con datos personales.
 3. **Despachar después del commit.** Un dispatch dentro de `DB::transaction` usa `->afterCommit()` (o `after_commit` en la conexión de cola). Si no, el worker puede leer datos que todavía no existen o que se revirtieron.

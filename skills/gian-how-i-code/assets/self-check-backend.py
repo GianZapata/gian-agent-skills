@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """Structural self-check for a Laravel backend (gian-how-i-code `05`).
 
-Usage: python3 self-check-backend.py <repo-root> [<path-inside-app> ...]
+Usage: python3 self-check-backend.py <repo-root> [--glossary <file>] [<path-inside-app> ...]
+
+`--glossary` takes a file with one `old_column new_column` pair per line
+(`#` comments allowed). Any string literal in `app/` that still names an old
+column is reported as `schema-column-drift` (`05` DoD, schema/code parity).
 
 Without paths it scans all of `app/`. With paths (for example
 `app/Http/Actions/Electoral app/Http/Controllers/Admin/ActController.php`)
@@ -75,12 +79,43 @@ CHECKS = [
         "trait en `app/Traits/Actions/` que escribe en BD (Service disfrazado; `22` §Traits / `05` §Migración)",
     ),
     (
+        "legacy-runtime",
+        re.compile(r"^use App\\(?:Runtime|Core|Legacy\w*)\\|\bsession_start\(|\$_SESSION\b", re.M),
+        lambda rel: True,
+        "runtime hecho a mano (sesión/CSRF/auth/validator/view); renombrarlo no lo vuelve nativo (`05` DoD)",
+    ),
+    (
         "raw-dompdf-new",
         re.compile(r"\bnew\s+\\?(?:Dompdf\\)?Dompdf\b"),
         lambda rel: rel.startswith("app/"),
         "instancia directa de `Dompdf`; usar `barryvdh/laravel-dompdf` + Blade en `resources/views/pdf/` (`32` §9)",
     ),
 ]
+
+
+STRING_LITERAL = re.compile(r"'(?:[^'\\]|\\.)*'|\"(?:[^\"\\]|\\.)*\"")
+LEGACY_DIRS = ("app/Runtime/", "app/Core/", "app/Legacy")
+WEBHOOK_DISPATCH = re.compile(r"::dispatch\(|dispatch\(|Bus::|->onQueue\(")
+
+
+def load_glossary(path: Path) -> list[tuple[str, str]]:
+    pairs: list[tuple[str, str]] = []
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.split("#", 1)[0].strip()
+        if not line:
+            continue
+        old, _, new = line.replace("=", " ").partition(" ")
+        pairs.append((old.strip(), new.strip()))
+    return pairs
+
+
+def delegates_dispatch(root: Path, text: str) -> bool:
+    """True when an imported Action/Service of the webhook entry point dispatches a Job."""
+    for match in re.finditer(r"^use (App\\(?:Http\\Actions|Services)\\[\w\\]+);", text, re.M):
+        target = root / "app" / (match.group(1)[len("App\\"):].replace("\\", "/") + ".php")
+        if target.exists() and WEBHOOK_DISPATCH.search(target.read_text(encoding="utf-8", errors="replace")):
+            return True
+    return False
 
 
 def php_files(root: Path, targets: list[str]) -> list[Path]:
@@ -98,8 +133,14 @@ def main() -> int:
     if len(sys.argv) < 2:
         print(__doc__.strip())
         return 2
+    args = sys.argv[2:]
+    glossary: list[tuple[str, str]] = []
+    if "--glossary" in args:
+        index = args.index("--glossary")
+        glossary = load_glossary(Path(args[index + 1]))
+        args = args[:index] + args[index + 2:]
     root = Path(sys.argv[1]).resolve()
-    files = php_files(root, sys.argv[2:])
+    files = php_files(root, args)
     if not files:
         print("GAP self-check backend: 0 archivos PHP en el alcance; pasa rutas dentro de app/")
         return 2
@@ -115,6 +156,27 @@ def main() -> int:
             for match in pattern.finditer(text):
                 line = text.count("\n", 0, match.start()) + 1
                 findings.append(f"FAIL {rel}:{line} {name} — {message}")
+
+        if rel.startswith(LEGACY_DIRS):
+            findings.append(f"FAIL {rel}:1 legacy-runtime — carpeta del runtime legacy; se borra, no se renombra (`05` DoD)")
+
+        if glossary:
+            columns = {old: new for old, new in glossary}
+            pattern = re.compile(r"\b(" + "|".join(map(re.escape, columns)) + r")\b")
+            for literal in STRING_LITERAL.finditer(text):
+                for match in pattern.finditer(literal.group(0)):
+                    line = text.count("\n", 0, literal.start()) + 1
+                    findings.append(
+                        f"FAIL {rel}:{line} schema-column-drift — columna `{match.group(1)}` ya no existe; "
+                        f"es `{columns[match.group(1)]}` (`05` DoD)"
+                    )
+
+        if "ZipArchive" in text and "xl/worksheets" in text:
+            findings.append(f"FAIL {rel}:1 hand-rolled-xlsx — lector XLSX a mano; usar el Reader de openspout (`32` §9 Imports)")
+
+        if re.search(r"Webhook", rel) and rel.startswith(("app/Http/Controllers/", "app/Services/")) \
+                and not WEBHOOK_DISPATCH.search(text) and not delegates_dispatch(root, text):
+            findings.append(f"FAIL {rel}:1 sync-webhook — webhook procesado en el request; responder y despachar un Job (`28` regla 12)")
 
         parts = rel.split("/")
         if rel.startswith("app/Actions/"):
@@ -133,6 +195,13 @@ def main() -> int:
                         f"FAIL {rel}:{line} action-uses-domain-service — `{match.group(1)}` no llama fuera; "
                         "se disuelve en Actions/Queries (`05` §Migración)"
                     )
+
+    bootstrap = root / "bootstrap" / "app.php"
+    if not args and bootstrap.exists():
+        text = bootstrap.read_text(encoding="utf-8", errors="replace")
+        for match in re.finditer(r"Legacy\w*", text):
+            line = text.count("\n", 0, match.start()) + 1
+            findings.append(f"FAIL bootstrap/app.php:{line} legacy-runtime — middleware `{match.group(0)}` del runtime legacy")
 
     for finding in findings:
         print(finding)
