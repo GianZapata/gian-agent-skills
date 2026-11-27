@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.74 — 2026-11-27
+
+- `32` §1 nueva subsección Render según el request (HARD con Inertia): una sola `CustomException` cuyo `render()` responde envelope JSON a JSON, `back()->withErrors(...)` a Inertia con 422 o `errors`, y página de error solo para 401/403/404/5xx. Prohibido el segundo camino (`FormError::reject`). Un test por rama.
+- `assets/self-check-backend.py`: checks `inertia-error-render` (`CustomException` que renderiza página sin `withErrors`) y `form-error-helper` (`ValidationException::withMessages` en otra clase de `app/Exceptions/`).
+
 ## 1.4.73 — 2026-11-27
 
 - `assets/self-check-backend.py`: checks nuevos para el legacy que una suite verde esconde: `legacy-auth-array` (`toLegacyArray`, `ActorHelper::`), `parallel-exceptions` (`app/Http/Exceptions/*`, try/catch en Controllers), `response-envelope` (`'ok' =>`), `hand-validator` (`*Validator.php`, `Validator::make`, `$request->merge/replace` fuera del FormRequest), `action-mold` (método público además de `handle()`, Action `Get|List|Show*` → Query), `redirect-literal` (`redirect('/...')`). Corrido sin rutas suma `policy-unused` y `alias-model` (Model que extiende otro Model o comparte su tabla).

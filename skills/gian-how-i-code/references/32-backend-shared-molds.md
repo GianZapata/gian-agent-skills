@@ -21,17 +21,41 @@ class CustomException extends Exception implements ShouldntReport {
         parent::__construct($message, $statusCode, $previous);
     }
 
-    public function render($request): JsonResponse {
-        return ApiErrorResponse::make(
-            message: $this->getMessage(),
-            code: $this->errorCode,
-            status: $this->statusCode,
-            params: $this->params,
-            errors: $this->errors,
-        );
+    public function render($request): JsonResponse|RedirectResponse|Response {
+        if ($request->expectsJson() || $request->is('api/*'))
+            return ApiErrorResponse::make(
+                message: $this->getMessage(),
+                code: $this->errorCode,
+                status: $this->statusCode,
+                params: $this->params,
+                errors: $this->errors,
+            );
+
+        if ($this->statusCode === 422 || $this->errors !== [])
+            return back()->withErrors($this->errors !== [] ? $this->errors : ['message' => $this->getMessage()]);
+
+        return Inertia::render('errors/Show', ['status' => $this->statusCode, 'message' => $this->getMessage()])
+            ->toResponse($request)
+            ->setStatusCode($this->statusCode);
     }
 }
 ```
+
+### Render según el request (HARD con Inertia)
+
+Una sola `CustomException`. Su `render()` elige la forma de la respuesta y la Action no sabe quién la llamó.
+
+| Request | Status | Respuesta |
+|---|---|---|
+| JSON (`expectsJson()`, `api/*`) | cualquiera | `ApiErrorResponse` (envelope) |
+| Inertia / web | 422 o `errors` no vacío | `back()->withErrors($errors ?: ['message' => $msg])`: el form conserva lo escrito y muestra el error en el campo (`useForm().errors`) o en el aviso del layout (`page.props.errors.message`) |
+| Inertia / web | 401, 403, 404, 409 sin `errors`, 5xx | página de error (`errors/Show`) con el status |
+
+- Un error de negocio que nace en un form (duplicado, transición inválida, teléfono ya usado) lleva `errors` con la clave del campo: `throw new CustomException('El teléfono ya pertenece a un usuario.', 422, ['phone' => ['El teléfono ya pertenece a un usuario.']])`. Sin campo, `['message' => ...]`.
+- Prohibido renderizar la página de error para un 422 en Inertia: el usuario pierde el form.
+- Prohibido un segundo camino para lo mismo (`FormError::reject()`, `ValidationException::withMessages` envuelto en un helper, `back()->withErrors` en la Action o el Controller). La Action lanza `CustomException` y el `render()` decide.
+- La validación de input (formato, longitud, fechas) no es `CustomException`: va en el FormRequest (`05` DoD).
+- Test que lo fija, uno por rama: POST Inertia que viola la regla → `assertRedirect()` + `assertSessionHasErrors('<campo>')`; mismo caso con `postJson` → `assertStatus(422)->assertJsonPath('errors.<campo>.0', ...)`; recurso ajeno en Inertia → status 403/404 y componente `errors/Show`.
 
 - Para un error de negocio esperado (regla del dominio, estado inválido, recurso ajeno). Se lanza con argumentos con nombre: `throw new CustomException('El contrato ya está firmado.', 409, errorCode: 'contract_already_signed')`.
 - `errorCode` es `snake_case` estable: el front lo consume (`14`), no se renombra. El mensaje se traduce; el código no.
@@ -47,6 +71,8 @@ Auditoría:
 | `response()->json(['message' => ...], 4xx)` en controller o Action | Media |
 | `abort()` en Action o Service (el `abort` es del borde HTTP) | Baja |
 | Dos shapes de error en el mismo repo | Alta |
+| `CustomException::render` que pinta la página de error para un 422 en Inertia | Alta |
+| Helper paralelo de errores de form (`FormError::reject`, `ValidationException::withMessages` envuelto) | Media |
 
 ## 2. Activity log: `ActivityLogName` + `LogsModelActivity` (HARD con `spatie/laravel-activitylog`)
 

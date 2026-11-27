@@ -279,6 +279,20 @@ def main() -> int:
                 line = text.count("\n", 0, match.start()) + 1
                 findings.append(f"FAIL {rel}:{line} {name} — {message}")
 
+        if rel == "app/Exceptions/CustomException.php" and re.search(r"Inertia|PageErrorResponse|view\(", text) \
+                and "withErrors" not in text:
+            findings.append(
+                f"FAIL {rel}:1 inertia-error-render — `render()` pinta la página de error también para 422; "
+                "en Inertia un 422 o `errors` va a `back()->withErrors(...)` (`32` §1 Render según el request)"
+            )
+
+        if rel.startswith("app/Exceptions/") and rel != "app/Exceptions/CustomException.php" \
+                and "ValidationException::withMessages" in text:
+            findings.append(
+                f"FAIL {rel}:1 form-error-helper — segundo camino para errores de form; la Action lanza "
+                "`CustomException` con `errors` (`32` §1 Render según el request)"
+            )
+
         if rel.startswith("app/Http/Exceptions/"):
             findings.append(f"FAIL {rel}:1 parallel-exceptions — familia de excepciones paralela; se usa `CustomException` / `abort` / `ValidationException` (`05` Errores)")
 
