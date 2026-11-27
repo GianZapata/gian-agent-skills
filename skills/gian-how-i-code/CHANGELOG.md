@@ -2,8 +2,8 @@
 
 ## 1.4.73 — 2026-11-27
 
-- `assets/self-check-backend.py`: new checks for legacy that a green suite hides: `legacy-auth-array` (`toLegacyArray`, `ActorHelper::`), `parallel-exceptions` (`app/Http/Exceptions/*`, try/catch in Controllers), `response-envelope` (`'ok' =>`), `hand-validator` (`*Validator.php`, `Validator::make`, `$request->merge/replace` outside FormRequest), `action-mold` (public method besides `handle()`, `Get|List|Show*` Action → Query), `redirect-literal` (`redirect('/...')`). Full-app runs add `policy-unused` and `alias-model` (Model extending another Model or sharing its table).
-- `05` DoD lists them.
+- `assets/self-check-backend.py`: checks nuevos para el legacy que una suite verde esconde: `legacy-auth-array` (`toLegacyArray`, `ActorHelper::`), `parallel-exceptions` (`app/Http/Exceptions/*`, try/catch en Controllers), `response-envelope` (`'ok' =>`), `hand-validator` (`*Validator.php`, `Validator::make`, `$request->merge/replace` fuera del FormRequest), `action-mold` (método público además de `handle()`, Action `Get|List|Show*` → Query), `redirect-literal` (`redirect('/...')`). Corrido sin rutas suma `policy-unused` y `alias-model` (Model que extiende otro Model o comparte su tabla).
+- La definición de hecho de `05` los lista.
 
 ## 1.4.72 — 2026-11-27
 
